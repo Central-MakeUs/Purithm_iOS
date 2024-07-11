@@ -11,6 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.makeFeatureModule(
     .auth,
     dependencies: [
+        .core(.network),
         .thirdParty(.rxSwift),
         .thirdParty(.rxKakaoSDK)
     ]

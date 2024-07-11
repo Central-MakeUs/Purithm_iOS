@@ -8,4 +8,9 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeCoreModule(.network)
+let project = Project.makeCoreModule(
+    .network,
+    dependencies: [
+        .thirdParty(.alamofire)
+    ]
+)

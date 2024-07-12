@@ -101,7 +101,7 @@ extension Project {
             settings: .settings(defaultSettings: .recommended),
             targets: [
                 makeTarget(
-                    name: "\(name)Core",
+                    name: "Core\(name)",
                     product: .framework,
                     bundleID: "\(bundleID).\(name).core",
                     dependencies: dependencies

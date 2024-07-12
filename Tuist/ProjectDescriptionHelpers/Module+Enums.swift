@@ -21,6 +21,7 @@ public enum Module {
     public enum Core: String, CaseIterable {
         case cache = "Cache"
         case network = "Network"
+        case keychain = "Keychain"
     }
     
     public enum ThirdParty: String {

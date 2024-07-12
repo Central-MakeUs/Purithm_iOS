@@ -26,7 +26,7 @@ public extension TargetDependency {
         _ target: Module.Core
     ) -> TargetDependency {
         return .project(
-            target: "\(target.rawValue)Core",
+            target: "Core\(target.rawValue)",
             path: .relativeToRoot("Projects/Core/\(target.rawValue)")
         )
     }

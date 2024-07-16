@@ -9,7 +9,7 @@ import Foundation
 
 public enum Module {
     public enum Feature: String, CaseIterable {
-        case auth = "Auth"
+        case login = "Login"
         case filter = "Filter"
         case author = "Author"
         case payment = "Payment"
@@ -22,6 +22,7 @@ public enum Module {
         case cache = "Cache"
         case network = "Network"
         case keychain = "Keychain"
+        case auth = "PurithmAuth"
     }
     
     public enum ThirdParty: String {

@@ -9,9 +9,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeExampleModule(
-    appName: "Auth",
+    appName: "Login",
     dependencies: [
-        .feature(.auth),
+        .core(.auth),
         .thirdParty(.snapKit),
         .thirdParty(.then),
         .thirdParty(.combineCocoa),

@@ -32,7 +32,7 @@ extension KeychainManager: AuthKeychainManageable {
         try authKeychainItem.delete()
     }
     
-    public func retriveAuthToken() throws -> PurithmAuthToken {
+    public func retriveAuthToken() throws -> PurithmAuthToken? {
         try authKeychainItem.retrieve()
     }
 }

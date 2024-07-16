@@ -19,7 +19,8 @@ import AuthenticationServices
 import CoreNetwork
 
 import Alamofire
-import KeychainCore
+import CombineExt
+import CoreKeychain
 
 protocol AuthenticationManageable {
     func isAlreadyLoggedIn() -> Bool
@@ -59,10 +60,15 @@ extension AuthRepository {
             }
             .subscribe(onNext: { purithmToken in
                 // token 키체인에 저장
-                try? KeychainManager.shared.saveAuthToken(
-                    accessToken: purithmToken.accessToken,
-                    refreshToken: purithmToken.refreshToken
-                )
+                do {
+                    try KeychainManager.shared.saveAuthToken(
+                        accessToken: purithmToken.accessToken,
+                        refreshToken: purithmToken.refreshToken
+                    )
+                } catch {
+                    print("::: 키체인 저장 실패")
+                    promise(.failure(error))
+                }
                 promise(.success(Void()))
             }, onError: { error in
                 promise(.failure(error))

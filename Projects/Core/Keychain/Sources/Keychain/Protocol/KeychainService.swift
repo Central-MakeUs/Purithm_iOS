@@ -12,6 +12,8 @@ public enum KeychainError: Error {
     case unexpectedPasswordData
     case unexpectedItemData
     case unhandledError
+    case itemNotFound
+    case decodeError(expected: Any.Type, actual: Any.Type)
 }
 
 //TODO: 이름 추천좀 받자.
@@ -21,58 +23,54 @@ public protocol KeychainService {
     var service: String { get } // App Bundle ID
     var account: String { get } // User ID
     
-    func retrieve() throws -> KeychainData
+    func retrieve() throws -> KeychainData?
     func save(with data: KeychainData) throws
     func delete() throws
 }
 
 extension KeychainService {
-    public func retrieve() throws -> KeychainData {
-        var query = [String: AnyObject]()
+    public func retrieve() throws -> KeychainData? {
+        // 1. service, account 정보 설정
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service as AnyObject,
+            kSecAttrAccount as String: account as AnyObject,
+            kSecReturnData as String: kCFBooleanTrue as AnyObject,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
         
-        //1. service, account 정보 설정
-        query[kSecClass as String] = kSecClassGenericPassword
-        query[kSecAttrService as String] = service as AnyObject
-        query[kSecAttrAccount as String] = account as AnyObject
+        // Retrieve item from keychain
+        var dataTypeRef: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
         
-        // 2. 탐색 결과 제한을 하나로 설정
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        
-        // 3. 항목의 속성 정보와 데이터 값을 반환하도록 설정
-        query[kSecReturnAttributes as String] = kCFBooleanTrue
-        query[kSecReturnData as String] = kCFBooleanTrue
-        
-        // 4. Keychain 쿼리를 실행하여 결과를 queryResult에 저장
-        var queryResult: AnyObject?
-        let status = withUnsafeMutablePointer(to: &queryResult) {
-            SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
+        // 2. 상태 처리
+        switch status {
+        case errSecSuccess:
+            guard let data = dataTypeRef as? Data,
+                  let decodedData = try? JSONDecoder().decode(KeychainData.self, from: data) else {
+                throw KeychainError.decodeError(expected: KeychainData.self, actual: Data.self)
+            }
+            
+            return decodedData
+        case errSecItemNotFound:
+            throw KeychainError.itemNotFound
+        default:
+            throw KeychainError.unhandledError
         }
-        
-        // 5. 항목이 존재하지 않는 경우 오류 처리
-        guard status != errSecItemNotFound else { throw KeychainError.noPassword }
-        
-        // 6. 쿼리 실행 중 오류가 발생한 경우 오류 처리
-        guard status == noErr else { throw KeychainError.unhandledError }
-        
-        guard let existingItem = queryResult as? [String: AnyObject],
-              let keychainData = existingItem[kSecValueData as String] as? KeychainData else {
-            throw KeychainError.unexpectedPasswordData
-        }
-        
-        return keychainData
     }
     
     public func save(with data: KeychainData) throws {
-        var query = [String: AnyObject]()
-        var status: OSStatus
-        
-        //1. service, account 정보 설정
-        query[kSecClass as String] = kSecClassGenericPassword
-        query[kSecAttrService as String] = service as AnyObject
-        query[kSecAttrAccount as String] = account as AnyObject
-        
-        // 2. Data Encoding Check
+        // 1. Data Encoding Check
         let encodedData = try encode(with: data)
+        
+        // 2. service, account 정보 설정
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service as AnyObject,
+            kSecAttrAccount as String: account as AnyObject,
+            kSecValueData as String: encodedData as AnyObject
+        ]
+        var status: OSStatus
         
         // 3. 존재 여부 체크
         let isExistData = try? retrieve()
@@ -81,11 +79,11 @@ extension KeychainService {
             let attributesToUpdate = [kSecValueData as String: encodedData as AnyObject]
             status = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
         } else {
-            query[kSecValueData as String] = encodedData as AnyObject
             status = SecItemAdd(query as CFDictionary, nil)
         }
         
-        guard status == noErr else { throw KeychainError.unhandledError }
+        guard status == errSecSuccess else { throw KeychainError.unhandledError }
+        print("::: 저장 성공 > \(data)")
     }
     
     public func delete() throws {

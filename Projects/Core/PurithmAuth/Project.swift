@@ -8,13 +8,15 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeFeatureModule(
+let project = Project.makeCoreModule(
     .auth,
     dependencies: [
         .core(.network),
         .core(.keychain),
+        .thirdParty(.combineExt),
         .thirdParty(.rxSwift),
         .thirdParty(.rxKakaoSDK)
     ]
 )
+
 

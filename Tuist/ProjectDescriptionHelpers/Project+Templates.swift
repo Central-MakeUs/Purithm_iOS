@@ -24,7 +24,14 @@ extension Project {
                     name: appName,
                     product: .app,
                     bundleID: "\(bundleID).app",
-                    infoPlist: .default,
+                    //TODO: infoPlist 별도 파일로 분리하여 작업
+                    infoPlist: .extendingDefault(
+                        with: [
+                            "UILaunchStoryboardName": "LaunchScreen.storyboard",
+                            "NSCameraUsageDescription": "이 앱은 카메라를 사용합니다.",
+                            "NSPhotoLibraryUsageDescription": "이 앱은 사진 앨범에 접근합니다."
+                        ]
+                    ),
 //                    infoPlist: .file(path: "Sources/Info.plist"),
                     hasResource: true,
                     dependencies: dependencies
@@ -58,7 +65,7 @@ extension Project {
                     name: "\(name)",
                     product: .framework,
                     bundleID: "\(bundleID).\(name).feature",
-                    infoPlist: target == .auth ? makeAuthModuleInfoPlist() : .default,
+                    infoPlist: .default,
                     dependencies: dependencies
                 )
             ]
@@ -104,6 +111,7 @@ extension Project {
                     name: "Core\(name)",
                     product: .framework,
                     bundleID: "\(bundleID).\(name).core",
+                    infoPlist: target == .auth ? makeAuthModuleInfoPlist() : .default,
                     dependencies: dependencies
                 ),
             ]

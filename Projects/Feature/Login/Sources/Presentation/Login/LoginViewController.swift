@@ -1,56 +1,81 @@
 //
 //  LoginViewController.swift
-//  Purithm
+//  Login
 //
-//  Created by 이숭인 on 7/11/24.
+//  Created by 이숭인 on 7/16/24.
 //
 
 import UIKit
-import CorePurithmAuth
+import Combine
+
 import SnapKit
 import Then
-
-import Combine
 import CombineCocoa
 
-final class LoginViewController: UIViewController {
+import CorePurithmAuth
+
+import AuthenticationServices
+
+public final class LoginViewController: UIViewController {
+    let viewModel: LoginViewModel
+    
     var cancellables = Set<AnyCancellable>()
     
     private let backgroundImage = UIImageView().then {
-        $0.image = PurithmAsset.Assets.loginBackground2.image
+        $0.image = LoginAsset.Assets.loginBackground2.image
         $0.contentMode = .scaleAspectFill
     }
     
     private let logoImage = UIImageView().then {
-        $0.image = PurithmAsset.Assets.loginLogo.image
+        $0.image = LoginAsset.Assets.loginLogo.image
         $0.contentMode = .scaleAspectFit
     }
     
     private let logoLabel = UILabel().then {
         $0.text = "감성사진을 위한 필터 커머스, 퓨리즘"
         $0.font = .systemFont(ofSize: 17, weight: .semibold)
-        $0.textColor = PurithmAsset.Assets.purple500.color
+        $0.textColor = LoginAsset.Assets.purple500.color
     }
     
     private let appleLoginButton = UIButton().then {
-        $0.setImage(PurithmAsset.Assets.appleidButton.image, for: .normal)
+        $0.setImage(LoginAsset.Assets.appleidButton.image, for: .normal)
         $0.imageView?.contentMode = .scaleAspectFit
         $0.contentHorizontalAlignment = .fill // 버튼의 수평 방향으로 이미지를 채움
         $0.contentVerticalAlignment = .fill // 버튼의 수직 방향으로 이미지를 채움
     }
     
     private let kakaoLoginButton = UIButton().then {
-        $0.setImage(PurithmAsset.Assets.kakaoLoginButton.image, for: .normal)
+        $0.setImage(LoginAsset.Assets.kakaoLoginButton.image, for: .normal)
         $0.imageView?.contentMode = .scaleAspectFit
     }
     
-    override func viewDidLoad() {
+    init(viewModel: LoginViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    public override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         
         setupSubviews()
         setupConstraints()
         bindAction()
+        bindViewModel()
+    }
+    
+    private func bindViewModel() {
+        let input = LoginViewModel.Input(
+            kakaoLoginButtonTapEvent: kakaoLoginButton.tapPublisher
+        )
+        
+        viewModel.transform(
+            from: input
+        )
     }
     
     private func setupSubviews() {
@@ -91,26 +116,40 @@ final class LoginViewController: UIViewController {
     }
     
     private func bindAction() {
-        kakaoLoginButton.tapPublisher
+        appleLoginButton.tapPublisher
             .sink { [weak self] _ in
                 guard let self else { return }
                 
-                AuthManager.shared.loginWithKakao()
-                    .sink { completion in
-                        switch completion {
-                        case .finished:
-                            print("::: complete")
-                        case .failure(let error):
-                            print("::: login failed > \(error)")
-                        }
-                    } receiveValue: { _ in
-                        //TODO: 로그인 성공 > 메인화면(or 약관 화면으로 이동)
-                        print("::: 메인화면으로 이동")
-                        let vc = TermsAndConditionsViewController()
-                        self.navigationController?.pushViewController(vc, animated: true)
-                    }
-                    .store(in: &cancellables)
+                let appleIDProvider = ASAuthorizationAppleIDProvider()
+                let request = appleIDProvider.createRequest()
+                request.requestedScopes = [.fullName, .email]
+                
+                let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+                authorizationController.delegate = self
+                authorizationController.presentationContextProvider = self
+                authorizationController.performRequests()
             }
             .store(in: &cancellables)
+    }
+
+}
+
+
+extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        self.view.window!
+    }
+    
+    public func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+            let idTokenData = appleIDCredential.identityToken
+            let authorizationCode = appleIDCredential.authorizationCode
+            
+            let idTokenString = String(data: idTokenData!, encoding: .utf8)
+            let authorizationCodeString = String(data: authorizationCode!, encoding: .utf8)
+            
+            print("::: idToken > \(idTokenString)")
+            print("::: idToken > \(authorizationCodeString)")
+        }
     }
 }

@@ -10,22 +10,30 @@ import KakaoSDKCommon
 import KakaoSDKAuth
 import AuthenticationServices
 
+import Login
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-
+    var appCoordinator: AppCoordinator?
+    
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        //TODO: PurithmAuth Module로 옮겨야할듯
         KakaoSDK.initSDK(appKey: "0d6fbb90fdd3615fa419c28d59c290b7")
+        
+        let navigationController = UINavigationController()
         
         let window = UIWindow(frame: UIScreen.main.bounds)
         self.window = window
-        
-        self.window?.rootViewController = UINavigationController(rootViewController: LoginViewController())
+        self.window?.rootViewController = navigationController
         self.window?.makeKeyAndVisible()
-//        sleep(2)
+        
+        self.appCoordinator = DefaultAppCoordinator(navigationController)
+        self.appCoordinator?.start()
+        
         return true
     }
     

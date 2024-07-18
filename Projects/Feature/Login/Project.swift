@@ -13,6 +13,7 @@ let project = Project.makeFeatureModule(
     dependencies: [
         .core(.auth),
         .core(.common),
+        .core(.listKit),
         .thirdParty(.snapKit),
         .thirdParty(.then),
         .thirdParty(.combineCocoa),

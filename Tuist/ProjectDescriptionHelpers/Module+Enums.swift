@@ -25,6 +25,7 @@ public enum Module {
         case auth = "PurithmAuth"
         case uiKit = "UIKit"
         case common = "CommonKit"
+        case listKit = "ListKit"
     }
     
     public enum ThirdParty: String {

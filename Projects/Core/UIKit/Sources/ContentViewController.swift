@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ContentViewController<ContentView: UIView>: UIViewController {
+open class ContentViewController<ContentView: UIView>: UIViewController {
     public typealias ContentViewType = ContentView
     
     public init() {

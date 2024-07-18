@@ -9,7 +9,7 @@ import UIKit
 import Combine
 import CombineCocoa
 
-class ViewController<ContentView: UIView>: ContentViewController<ContentView> {
+open class ViewController<ContentView: UIView>: ContentViewController<ContentView> {
     public override init() {
         super.init()
     }

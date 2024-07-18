@@ -66,8 +66,12 @@ extension Project {
                     product: .framework,
                     bundleID: "\(bundleID).\(name).feature",
                     infoPlist: .default,
+                    hasResource: true,
                     dependencies: dependencies
                 )
+            ],
+            resourceSynthesizers: [
+                .assets()
             ]
         )
     }

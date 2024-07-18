@@ -11,8 +11,8 @@ import ProjectDescriptionHelpers
 let project = Project.makeMainApp(
     appName: "Purithm",
     dependencies: [
-        .core(.auth),
         .core(.network),
+        .feature(.login),
         .thirdParty(.snapKit),
         .thirdParty(.then),
         .thirdParty(.combineCocoa),

@@ -23,6 +23,8 @@ public enum Module {
         case network = "Network"
         case keychain = "Keychain"
         case auth = "PurithmAuth"
+        case uiKit = "UIKit"
+        case common = "CommonKit"
     }
     
     public enum ThirdParty: String {

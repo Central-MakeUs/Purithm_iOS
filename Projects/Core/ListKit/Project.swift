@@ -8,5 +8,12 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeCoreModule(.listKit)
+let project = Project.makeCoreModule(
+    .listKit,
+    dependencies: [
+        .thirdParty(.rxSwift),
+        .thirdParty(.rxSwiftExt),
+        .thirdParty(.combineCocoa)
+    ]
+)
 

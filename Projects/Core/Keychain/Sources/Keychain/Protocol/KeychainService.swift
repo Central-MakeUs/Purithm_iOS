@@ -23,13 +23,13 @@ public protocol KeychainService {
     var service: String { get } // App Bundle ID
     var account: String { get } // User ID
     
-    func retrieve() throws -> KeychainData?
+    func retrieve() throws -> KeychainData
     func save(with data: KeychainData) throws
     func delete() throws
 }
 
 extension KeychainService {
-    public func retrieve() throws -> KeychainData? {
+    public func retrieve() throws -> KeychainData {
         // 1. service, account 정보 설정
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,

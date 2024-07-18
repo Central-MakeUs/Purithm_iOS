@@ -8,27 +8,21 @@
 import UIKit
 import SnapKit
 import Then
+import CoreUIKit
+import CoreListKit
 
 import Combine
 import CombineCocoa
 
-final class TermsAndConditionsViewController: UIViewController {
+final class TermsAndConditionsViewController: ViewController<TermsAndConditionsView> {
     let viewModel: TermsAndConditionsViewModel
     private var cancellables = Set<AnyCancellable>()
     
-    private let label = UILabel().then {
-        $0.text = "이용약관"
-    }
-    
-    private let button = UIButton().then {
-        $0.setTitle("누르면 동의", for: .normal)
-        $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .systemBlue
-    }
+    private lazy var adapter = CollectionViewAdapter(with: contentView.collectionView)
     
     init(viewModel: TermsAndConditionsViewModel) {
         self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
     
     required init?(coder: NSCoder) {
@@ -39,32 +33,32 @@ final class TermsAndConditionsViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         
-        navigationItem.hidesBackButton = true
-        
-        setupSubviews()
-        setupConstraints()
+        bindViewModel()
+        bindAdapter()
         bindAction()
     }
- 
-    private func setupSubviews() {
-        view.addSubview(label)
-        view.addSubview(button)
+    
+    private func bindAdapter() {
+        adapter.didSelectItemPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] itemModel in
+                
+            }
+            .store(in: &cancellables)
     }
+    
+    private func bindViewModel() {
+        let output = viewModel.transform()
         
-    private func setupConstraints() {
-        label.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        
-        button.snp.makeConstraints { make in
-            make.top.equalTo(label.snp.bottom)
-            make.width.equalTo(120)
-            make.height.equalTo(42)
-        }
+        output.sectionItems
+            .sink { [weak self] sections in
+                _ = self?.adapter.receive(sections)
+            }
+            .store(in: &cancellables)
     }
     
     private func bindAction() {
-        button.tapPublisher
+        contentView.agreeButton.tapPublisher
             .sink { [weak self] _ in
                 self?.viewModel.testFinish()
             }

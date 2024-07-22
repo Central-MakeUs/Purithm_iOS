@@ -39,14 +39,12 @@ public final class LoginViewController: UIViewController {
     }
     
     private let appleLoginButton = UIButton().then {
-        $0.setImage(.appleLoginButton, for: .normal)
+        $0.setBackgroundImage(.appleLoginButton, for: .normal)
         $0.imageView?.contentMode = .scaleAspectFit
-        $0.contentHorizontalAlignment = .fill // 버튼의 수평 방향으로 이미지를 채움
-        $0.contentVerticalAlignment = .fill // 버튼의 수직 방향으로 이미지를 채움
     }
     
     private let kakaoLoginButton = UIButton().then {
-        $0.setImage(.kakaoLoginButton, for: .normal)
+        $0.setBackgroundImage(.kakaoLoginButton, for: .normal)
         $0.imageView?.contentMode = .scaleAspectFit
     }
     
@@ -105,14 +103,14 @@ public final class LoginViewController: UIViewController {
         
         appleLoginButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.height.equalTo(64)
+            make.height.equalTo(48)
             make.bottom.equalTo(kakaoLoginButton.snp.top).offset(-16)
         }
         
         kakaoLoginButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(32)
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.height.equalTo(64)
+            make.height.equalTo(48)
         }
     }
     

@@ -13,6 +13,7 @@ import Then
 import CombineCocoa
 
 import CorePurithmAuth
+import CoreCommonKit
 
 import AuthenticationServices
 
@@ -22,30 +23,30 @@ public final class LoginViewController: UIViewController {
     var cancellables = Set<AnyCancellable>()
     
     private let backgroundImage = UIImageView().then {
-        $0.image = LoginAsset.Assets.loginBackground2.image
+        $0.image = .bgLg
         $0.contentMode = .scaleAspectFill
     }
     
     private let logoImage = UIImageView().then {
-        $0.image = LoginAsset.Assets.loginLogo.image
+        $0.image = .logoType3D
         $0.contentMode = .scaleAspectFit
     }
     
     private let logoLabel = UILabel().then {
         $0.text = "감성사진을 위한 필터 커머스, 퓨리즘"
         $0.font = .systemFont(ofSize: 17, weight: .semibold)
-        $0.textColor = LoginAsset.Assets.purple500.color
+        $0.textColor = .blue400
     }
     
     private let appleLoginButton = UIButton().then {
-        $0.setImage(LoginAsset.Assets.appleidButton.image, for: .normal)
+        $0.setImage(.appleLoginButton, for: .normal)
         $0.imageView?.contentMode = .scaleAspectFit
         $0.contentHorizontalAlignment = .fill // 버튼의 수평 방향으로 이미지를 채움
         $0.contentVerticalAlignment = .fill // 버튼의 수직 방향으로 이미지를 채움
     }
     
     private let kakaoLoginButton = UIButton().then {
-        $0.setImage(LoginAsset.Assets.kakaoLoginButton.image, for: .normal)
+        $0.setImage(.kakaoLoginButton, for: .normal)
         $0.imageView?.contentMode = .scaleAspectFit
     }
     

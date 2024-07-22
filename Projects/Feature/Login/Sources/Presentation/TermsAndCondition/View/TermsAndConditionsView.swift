@@ -10,13 +10,17 @@ import SnapKit
 import Then
 
 import CoreUIKit
+import CoreCommonKit
 
 final class TermsAndConditionsView: BaseView {
-    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
+        $0.backgroundColor = .clear
+    }
+    
     let agreeButton = UIButton().then {
         $0.setTitle("가입 완료", for: .normal)
         $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .systemBlue
+        $0.backgroundColor = .blue400
     }
     
     override func setupSubviews() {

@@ -9,7 +9,7 @@ import Foundation
 import CoreListKit
 
 final class TermsAndConditionsViewSectionConverter {
-    func createSections(notice: String, items: [String]) -> [SectionModelType] {
+    func createSections(notice: String, items: [ConsentItem]) -> [SectionModelType] {
         [
             createNoticeSection(with: notice),
             createAgreementItemsSection(with: items)
@@ -21,7 +21,7 @@ final class TermsAndConditionsViewSectionConverter {
 extension TermsAndConditionsViewSectionConverter {
     private func createNoticeSection(with notice: String) -> [SectionModelType] {
         let noticeComponent = TermsNoticeComponent(
-            identifier: UUID().uuidString,
+            identifier: notice, //TODO: 바꿔야함!! 이것도 모델로 만들어여함!!
             notice: notice
         )
         
@@ -46,11 +46,10 @@ extension TermsAndConditionsViewSectionConverter {
 
 //MARK: AgreementItems
 extension TermsAndConditionsViewSectionConverter {
-    private func createAgreementItemsSection(with items: [String]) -> [SectionModelType] {
-        let itemComponents = [
-            ItemComponent(identifier: UUID().uuidString),
-            ItemComponent(identifier: UUID().uuidString)
-        ]
+    private func createAgreementItemsSection(with items: [ConsentItem]) -> [SectionModelType] {
+        let itemComponents = items.map { item in
+            ItemComponent(identifier: item.identifier, type: item.type, isSelected: item.isSelected)
+        }
         
         let section = SectionModel(
             identifier: "agreement_section",

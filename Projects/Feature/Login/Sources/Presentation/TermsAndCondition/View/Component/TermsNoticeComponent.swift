@@ -10,6 +10,7 @@ import Combine
 
 import CoreUIKit
 import CoreListKit
+import CoreCommonKit
 
 struct TermsNoticeComponent: Component {
     var identifier: String
@@ -37,7 +38,7 @@ final class TermsNoticeView: BaseView {
     let noticeLabel = UILabel().then {
         $0.numberOfLines = 0
         $0.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        $0.textColor = LoginAsset.Assets.gray300.color
+        $0.textColor = .gray300
     }
     
     override func setupSubviews() {

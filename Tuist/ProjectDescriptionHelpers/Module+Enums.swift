@@ -5,7 +5,7 @@
 //  Created by 이숭인 on 7/8/24.
 //
 
-import Foundation
+import ProjectDescription
 
 public enum Module {
     public enum Feature: String, CaseIterable {
@@ -26,6 +26,43 @@ public enum Module {
         case uiKit = "UIKit"
         case common = "CommonKit"
         case listKit = "ListKit"
+        
+        
+        func makeInfoPlist() -> InfoPlist {
+            switch self {
+            case .auth:
+                return makeAuthModuleInfoPlist()
+            case .common:
+                return makeCommonModuleInfoPlist()
+            default:
+                return InfoPlist.default
+            }
+        }
+        private func makeAuthModuleInfoPlist() -> InfoPlist {
+            //TODO: 아래 kakao url scheme 정보는 별도로 관리할 예정
+            let infoPlist: [String: Plist.Value] = [
+                "LSApplicationQueriesSchemes": [ "kakaokompassauth" ],
+                "CFBundleURLTypes": [
+                    [
+                        "CFBundleURLSchemes": [ "kakao0d6fbb90fdd3615fa419c28d59c290b7" ]
+                    ]
+                ]
+            ]
+            
+            return InfoPlist.extendingDefault(with: infoPlist)
+        }
+        
+        private func makeCommonModuleInfoPlist() -> InfoPlist {
+            let infoPlist: InfoPlist = .extendingDefault(with: [
+                "UIAppFonts": [
+                    "Pretendard-Medium.otf",
+                    "Pretendard-SemiBold.otf",
+                    "EBGaramond-Medium.ttf",
+                    "EBGaramond-SemiBold.ttf"
+                ]])
+            
+            return infoPlist
+        }
     }
     
     public enum ThirdParty: String {

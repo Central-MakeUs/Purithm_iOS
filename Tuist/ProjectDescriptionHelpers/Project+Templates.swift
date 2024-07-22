@@ -44,7 +44,8 @@ extension Project {
                 )
             ],
             resourceSynthesizers: [
-                .assets()
+                .custom(name: "Assets", parser: .assets, extensions: ["xcassets"]),
+                .fonts()
             ]
         )
     }
@@ -71,7 +72,8 @@ extension Project {
                 )
             ],
             resourceSynthesizers: [
-                .assets()
+                .custom(name: "Assets", parser: .assets, extensions: ["xcassets"]),
+                .fonts()
             ]
         )
     }
@@ -94,7 +96,8 @@ extension Project {
                 )
             ],
             resourceSynthesizers: [
-                .assets()
+                .assets(),
+                .fonts()
             ]
         )
     }
@@ -115,9 +118,14 @@ extension Project {
                     name: "Core\(name)",
                     product: .framework,
                     bundleID: "\(bundleID).\(name).core",
-                    infoPlist: target == .auth ? makeAuthModuleInfoPlist() : .default,
+                    infoPlist: target.makeInfoPlist(),
+                    hasResource: target == .common ? true : false,
                     dependencies: dependencies
                 ),
+            ],
+            resourceSynthesizers: [
+                .custom(name: "Assets", parser: .assets, extensions: ["xcassets"]),
+                .custom(name: "Fonts", parser: .fonts, extensions: ["otf", "ttf"])
             ]
         )
     }

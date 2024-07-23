@@ -25,7 +25,6 @@ public enum Module {
         case auth = "PurithmAuth"
         case uiKit = "UIKit"
         case common = "CommonKit"
-        case listKit = "ListKit"
         
         
         func makeInfoPlist() -> InfoPlist {

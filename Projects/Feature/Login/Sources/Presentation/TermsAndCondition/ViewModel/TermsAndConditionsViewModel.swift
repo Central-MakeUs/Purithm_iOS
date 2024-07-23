@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 import CombineExt
-import CoreListKit
+import CoreUIKit
 
 /// 동의항목
 enum ConsentItemType: String, CaseIterable {

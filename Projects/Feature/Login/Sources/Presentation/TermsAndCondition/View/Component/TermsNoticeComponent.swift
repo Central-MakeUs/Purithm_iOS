@@ -9,7 +9,6 @@ import UIKit
 import Combine
 
 import CoreUIKit
-import CoreListKit
 import CoreCommonKit
 
 struct TermsNoticeComponent: Component {

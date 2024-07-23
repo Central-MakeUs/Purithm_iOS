@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import CoreListKit
+import CoreUIKit
 
 final class TermsAndConditionsViewSectionConverter {
     func createSections(notice: String, items: [ConsentItem]) -> [SectionModelType] {

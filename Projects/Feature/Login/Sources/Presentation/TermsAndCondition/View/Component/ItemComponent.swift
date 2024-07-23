@@ -8,7 +8,6 @@
 import UIKit
 import Combine
 import CoreUIKit
-import CoreListKit
 import CoreCommonKit
 
 struct ItemComponent: Component {

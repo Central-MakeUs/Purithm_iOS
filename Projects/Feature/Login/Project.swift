@@ -14,7 +14,6 @@ let project = Project.makeFeatureModule(
         .core(.auth),
         .core(.common),
         .core(.uiKit),
-        .core(.listKit),
         .thirdParty(.snapKit),
         .thirdParty(.then),
         .thirdParty(.combineCocoa),

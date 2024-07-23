@@ -1,6 +1,5 @@
 //
 //  CompositionalLayoutModel.swift
-//  CoreListKit
 //
 //  Created by 이숭인 on 7/19/24.
 //

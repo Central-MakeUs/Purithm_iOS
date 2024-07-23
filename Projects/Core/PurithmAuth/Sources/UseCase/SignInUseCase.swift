@@ -27,15 +27,16 @@ public final class SignInUseCase {
 //MARK: - Login validate check
 extension SignInUseCase {
     public func isAlreadyLoggedIn() -> Bool {
-        do {
-            let purithmToken = try repository.retriveAuthToken()
-            //TODO: 토큰 검증 및 refresh 작업 후 재 저장
-            print("::: retrive token > \(purithmToken)")
-            return true
-        } catch {
-            print("::: failed retrive token")
-            return false
-        }
+        return false
+//        do {
+//            let purithmToken = try repository.retriveAuthToken()
+//            //TODO: 토큰 검증 및 refresh 작업 후 재 저장
+//            print("::: retrive token > \(purithmToken)")
+//            return true
+//        } catch {
+//            print("::: failed retrive token")
+//            return false
+//        }
     }
 }
 

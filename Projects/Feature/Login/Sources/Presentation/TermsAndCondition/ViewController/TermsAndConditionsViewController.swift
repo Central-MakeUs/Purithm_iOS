@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 import Then
 import CoreUIKit
-import CoreListKit
 import CoreCommonKit
 
 import Combine

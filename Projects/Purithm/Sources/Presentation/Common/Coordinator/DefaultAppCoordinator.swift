@@ -25,7 +25,7 @@ final class DefaultAppCoordinator: AppCoordinator {
     }
     
     func showLoginFlow() {
-        let loginCoordinator = DefaultLoginCoordinator(self.navigationController)
+        let loginCoordinator = LoginCoordinator(self.navigationController)
         loginCoordinator.finishDelegate = self
         loginCoordinator.start()
         
@@ -33,9 +33,11 @@ final class DefaultAppCoordinator: AppCoordinator {
     }
     
     func showTabBarFlow() {
-        let mainVC = UIViewController()
-        mainVC.view.backgroundColor = .cyan
-        self.navigationController.viewControllers = [mainVC]
+        let homeCoordinator = DefaultTabBarCoordinator(self.navigationController)
+        homeCoordinator.finishDelegate = self
+        homeCoordinator.start()
+        
+        childCoordinators.append(homeCoordinator)
     }
 }
 

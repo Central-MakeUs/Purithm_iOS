@@ -13,6 +13,7 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import RxKakaoSDKUser
 
+//TODO: 1. 토큰 검증, 2. 동의항목 저장 추가 필요
 public final class SignInUseCase {
     private let disposeBag = DisposeBag()
 

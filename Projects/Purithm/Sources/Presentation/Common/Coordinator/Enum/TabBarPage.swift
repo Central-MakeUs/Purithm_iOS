@@ -5,7 +5,8 @@
 //  Created by 이숭인 on 7/17/24.
 //
 
-import Foundation
+import UIKit
+import CoreCommonKit
 
 enum TabBarPage: String, CaseIterable {
     case home, author, collector, mypage
@@ -29,7 +30,16 @@ enum TabBarPage: String, CaseIterable {
         }
     }
     
-    func tabIconName() -> String {
-        return self.rawValue
+    func tabIcon() -> UIImage {
+        switch self {
+        case .home:
+            return .icHome
+        case .author:
+            return .icArtistOutline
+        case .collector:
+            return .icCollector
+        case .mypage:
+            return .icProfile
+        }
     }
 }

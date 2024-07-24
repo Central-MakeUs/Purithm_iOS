@@ -18,7 +18,8 @@ let project = Project.makeFeatureModule(
         .thirdParty(.then),
         .thirdParty(.combineCocoa),
         .thirdParty(.combineExt),
-        .thirdParty(.rxSwift)
+        .thirdParty(.rxSwift),
+        .thirdParty(.rxCocoa)
     ]
 )
 

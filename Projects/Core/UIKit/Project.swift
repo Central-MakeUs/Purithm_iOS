@@ -12,6 +12,7 @@ let project = Project.makeCoreModule(
     .uiKit,
     dependencies: [
         .thirdParty(.combineCocoa),
-        .thirdParty(.rxSwift)
+        .thirdParty(.rxSwift),
+        .thirdParty(.rxCocoa)
     ]
 )

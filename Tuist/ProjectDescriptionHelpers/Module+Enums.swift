@@ -72,6 +72,7 @@ public enum Module {
         case combineExt = "CombineExt"
         case combineCocoa = "CombineCocoa"
         case rxSwift = "RxSwift"
+        case rxCocoa = "RxCocoa"
         case rxSwiftExt = "RxSwiftExt"
         
         case rxKakaoSDK = "RxKakaoSDK"

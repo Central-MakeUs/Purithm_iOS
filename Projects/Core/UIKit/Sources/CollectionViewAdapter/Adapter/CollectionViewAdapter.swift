@@ -135,7 +135,7 @@ extension CollectionViewAdapter {
             snapshot.appendItems(listItems, toSection: sectionItem)
         }
         
-        self.dataSource.apply(snapshot, animatingDifferences: true)
+        self.dataSource.apply(snapshot, animatingDifferences: false)
     }
     
     private func bindDelegateEvent() {

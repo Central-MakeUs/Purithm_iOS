@@ -7,6 +7,7 @@
 
 import CoreCommonKit
 
-public protocol LoginCoordinator: Coordinator {
+public protocol LoginCoordinatorable: Coordinator {
+    func pushLoginViewController()
     func pushTermsViewController()
 }

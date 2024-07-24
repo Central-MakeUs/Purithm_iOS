@@ -9,11 +9,13 @@ import UIKit
 import CoreCommonKit
 import CorePurithmAuth
 
-public final class DefaultLoginCoordinator: LoginCoordinator {
+public final class LoginCoordinator: LoginCoordinatorable {
     public var finishDelegate: CoordinatorFinishDelegate?
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
     public var type: CoordinatorType { .login }
+    
+    private let signInUseCase = SignInUseCase(repository: AuthRepository())
     
     public init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -21,25 +23,30 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
     }
     
     public func start() {
-        let useCase = SignInUseCase(repository: AuthRepository())
-        
-        if useCase.isAlreadyLoggedIn() {
+        if signInUseCase.isAlreadyLoggedIn() {
             finishDelegate?.coordinatorDidFinish(childCoordinator: self)
         } else {
-            let loginViewModel = LoginViewModel(
-                coordinator: self,
-                useCase: useCase
-            )
+            let onboardingViewModel = OnboardingViewModel(coordinator: self)
+            let onboardingViewController = OnboardingPageViewController(viewModel: onboardingViewModel)
             
-            let loginViewController = LoginViewController(viewModel: loginViewModel)
-            self.navigationController.viewControllers = [loginViewController]
-
+            self.navigationController.viewControllers = [onboardingViewController]
         }
     }
     
     public func finish() {
         self.finishDelegate?.coordinatorDidFinish(childCoordinator: self)
     }
+    
+    public func pushLoginViewController() {
+        let loginViewModel = LoginViewModel(
+            coordinator: self,
+            useCase: signInUseCase
+        )
+        
+        let loginViewController = LoginViewController(viewModel: loginViewModel)
+        self.navigationController.pushViewController(loginViewController, animated: true)
+    }
+    
     
     public func pushTermsViewController() {
         let viewModel = TermsAndConditionsViewModel(coordinator: self)
@@ -48,7 +55,3 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
         self.navigationController.pushViewController(termsAndConditionsVC, animated: true)
     }
 }
-
-
-//2. 실제 뷰 그려보자 로그인 플로우만
-//3. 테스트플라이트 검토해보자

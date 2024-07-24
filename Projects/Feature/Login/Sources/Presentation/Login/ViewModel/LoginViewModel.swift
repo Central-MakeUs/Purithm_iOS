@@ -21,12 +21,12 @@ extension LoginViewModel {
 }
 
 final class LoginViewModel {
-    weak var coordinator: LoginCoordinator?
+    weak var coordinator: LoginCoordinatorable?
     var cancellables = Set<AnyCancellable>()
     
     private let signInUseCase: SignInUseCase
     
-    init(coordinator: LoginCoordinator, useCase: SignInUseCase) {
+    init(coordinator: LoginCoordinatorable, useCase: SignInUseCase) {
         self.coordinator = coordinator
         self.signInUseCase = useCase
     }

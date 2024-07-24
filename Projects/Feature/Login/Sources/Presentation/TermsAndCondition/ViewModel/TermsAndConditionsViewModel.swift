@@ -37,7 +37,7 @@ extension TermsAndConditionsViewModel {
 }
 
 final class TermsAndConditionsViewModel {
-    weak var coordinator: LoginCoordinator?
+    weak var coordinator: LoginCoordinatorable?
     private let converter = TermsAndConditionsViewSectionConverter()
     var cancellables = Set<AnyCancellable>()
     
@@ -45,7 +45,7 @@ final class TermsAndConditionsViewModel {
         ConsentItem(identifier: UUID().uuidString, type: type, isSelected: false)
     }
     
-    init(coordinator: LoginCoordinator) {
+    init(coordinator: LoginCoordinatorable) {
         self.coordinator = coordinator
         
     }

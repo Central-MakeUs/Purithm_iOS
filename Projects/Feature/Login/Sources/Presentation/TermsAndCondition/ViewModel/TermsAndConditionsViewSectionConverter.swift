@@ -12,6 +12,7 @@ final class TermsAndConditionsViewSectionConverter {
     func createSections(notice: String, items: [ConsentItem]) -> [SectionModelType] {
         [
             createNoticeSection(with: notice),
+            createEmptySpacingSection(),
             createAgreementItemsSection(with: items)
         ].flatMap { $0 }
     }
@@ -48,7 +49,7 @@ extension TermsAndConditionsViewSectionConverter {
 extension TermsAndConditionsViewSectionConverter {
     private func createAgreementItemsSection(with items: [ConsentItem]) -> [SectionModelType] {
         let itemComponents = items.map { item in
-            ItemComponent(identifier: item.identifier, type: item.type, isSelected: item.isSelected)
+            TermsAndConditionItemComponent(identifier: item.identifier, type: item.type, isSelected: item.isSelected)
         }
         
         let section = SectionModel(
@@ -67,5 +68,33 @@ extension TermsAndConditionsViewSectionConverter {
             groupStrategy: .group(widthDimension: .fractionalWidth(1.0),
                                   heightDimension: .estimated(20)),
             scrollBehavior: .none)
+    }
+}
+
+// MARK: - EmptySpacing
+extension TermsAndConditionsViewSectionConverter {
+    private func createEmptySpacingSection() -> [SectionModelType] {
+        let emptySpacingComponent = EmptySpacingComponent(
+            identifier: "empty_spacing",
+            height: 40
+        )
+        
+        let section = SectionModel(
+            identifier: "empty_spacing_section_one",
+            collectionLayout: createEmptySpacingCollectionLayout(),
+            itemModels: [emptySpacingComponent]
+        )
+        
+        return [section]
+    }
+    
+    private func createEmptySpacingCollectionLayout() -> CompositionalLayoutModelType {
+        CompositionalLayoutModel(
+            itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                heightDimension: .absolute(40)),
+            groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                 heightDimension: .absolute(40)),
+            scrollBehavior: .none
+        )
     }
 }

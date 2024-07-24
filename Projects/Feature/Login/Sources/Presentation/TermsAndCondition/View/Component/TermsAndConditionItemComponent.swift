@@ -10,7 +10,11 @@ import Combine
 import CoreUIKit
 import CoreCommonKit
 
-struct ItemComponent: Component {
+struct TermsAndConditionItemAction: ActionEventItem {
+    let identifier: String
+}
+
+struct TermsAndConditionItemComponent: Component {
     var identifier: String
     let consentType: ConsentItemType
     let isSelected: Bool
@@ -27,7 +31,7 @@ struct ItemComponent: Component {
     }
 }
 
-extension ItemComponent {
+extension TermsAndConditionItemComponent {
     typealias ContentType = ItemView
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
@@ -37,18 +41,26 @@ extension ItemComponent {
             title: context.consentType.rawValue,
             isSelected: context.isSelected
         )
+        
+        content.rightButton.tapPublisher
+            .sink { [weak content] _ in
+                content?.actionEventEmitter.send(TermsAndConditionItemAction(identifier: context.identifier))
+            }
+            .store(in: &cancellable)
     }
 }
 
-final class ItemView: BaseView {
+final class ItemView: BaseView, ActionEventEmitable {
+    var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
+    
     let iconImageView = UIImageView()
-    let titleLabel = UILabel().then {
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-        $0.textColor = .gray500
+    let titleLabel = UILabel(typography: Constants.noticeTypo)
+    let rightButton = UIButton().then {
+        $0.setImage(.icArrowRight.withTintColor(.gray300), for: .normal)
     }
     
     override func setupSubviews() {
-        [iconImageView, titleLabel].forEach {
+        [iconImageView, titleLabel, rightButton].forEach {
             addSubview($0)
         }
     }
@@ -65,6 +77,12 @@ final class ItemView: BaseView {
             make.trailing.equalToSuperview()
             make.verticalEdges.equalToSuperview()
         }
+        
+        rightButton.snp.makeConstraints { make in
+            make.verticalEdges.equalToSuperview().inset(8)
+            make.trailing.equalToSuperview()
+            make.size.equalTo(24)
+        }
     }
     
     func configure(title: String, isSelected: Bool) {
@@ -73,3 +91,8 @@ final class ItemView: BaseView {
     }
 }
 
+extension ItemView {
+    enum Constants {
+        static let noticeTypo = Typography(size: .size16, weight: .medium, color: .gray500, applyLineHeight: true)
+    }
+}

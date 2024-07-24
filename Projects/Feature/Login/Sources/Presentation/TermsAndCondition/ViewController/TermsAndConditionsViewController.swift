@@ -8,6 +8,8 @@
 import UIKit
 import SnapKit
 import Then
+import RxSwift
+import RxCocoa
 import CoreUIKit
 import CoreCommonKit
 
@@ -29,42 +31,25 @@ final class TermsAndConditionsViewController: ViewController<TermsAndConditionsV
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: false)
-        navigationItem.title = "이용약관"
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .gray100
         
         bindViewModel()
-        bindAdapter()
-        bindAction()
-    }
-    
-    private func bindAdapter() {
-//        adapter.didSelectItemPublisher
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] itemModel in
-//                //TODO: isSelected Upadate
-//                itemModel.identifier
-//            }
-//            .store(in: &cancellables)
+        
+        initNavigationBar(with: .page, hideShadow: true)
+        initNavigationTitleView(with: .page, title: "이용약관")
     }
     
     private func bindViewModel() {
         let input = TermsAndConditionsViewModel.Input(
-            termsButtonDidTapEvent: adapter.didSelectItemPublisher
+            viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
+            termsItemDidTapEvent: adapter.didSelectItemPublisher,
+            navigateTermsOfServiceEvent: adapter.actionEventPublisher,
+            endOfAgreeEvent: contentView.agreeButton.tapPublisher
         )
+        
         
         let output = viewModel.transform(input: input)
         
@@ -73,15 +58,31 @@ final class TermsAndConditionsViewController: ViewController<TermsAndConditionsV
                 _ = self?.adapter.receive(sections)
             }
             .store(in: &cancellables)
-    }
-    
-    private func bindAction() {
-        contentView.agreeButton.tapPublisher
-            .sink { [weak self] _ in
-                self?.viewModel.testFinish()
+        
+        output.canProceed
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] canProceed in
+                self?.contentView.updateButtonState(with: canProceed)
             }
             .store(in: &cancellables)
     }
 }
 
-
+extension TermsAndConditionsViewController: NavigationBarApplicable {
+    public func handleNavigationButtonAction(with identifier: String) {
+        switch identifier {
+        case "back":
+            break
+        default:
+            break
+        }
+    }
+    
+    public var leftButtonItems: [NavigationBarButtonItemType] {
+        return [.backImage(
+            identifier: "back",
+            image: .icArrowLeft,
+            color: .gray500
+        )]
+    }
+}

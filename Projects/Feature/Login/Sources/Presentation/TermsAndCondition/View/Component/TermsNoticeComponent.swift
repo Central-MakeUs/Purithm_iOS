@@ -34,14 +34,13 @@ extension TermsNoticeComponent {
 }
 
 final class TermsNoticeView: BaseView {
-    let noticeLabel = UILabel().then {
+    let noticeLabel = UILabel(typography: Constants.noticeTypo).then {
         $0.numberOfLines = 0
-        $0.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        $0.textColor = .gray300
     }
     
     override func setupSubviews() {
         self.backgroundColor = .white
+        self.layer.cornerRadius = 12
         
         addSubview(noticeLabel)
     }
@@ -54,5 +53,11 @@ final class TermsNoticeView: BaseView {
     
     func configure(notice: String) {
         noticeLabel.text = notice
+    }
+}
+
+extension TermsNoticeView {
+    enum Constants {
+        static let noticeTypo = Typography(size: .size14, weight: .medium, color: .gray300, applyLineHeight: true)
     }
 }

@@ -12,15 +12,23 @@ import Then
 import CoreUIKit
 import CoreCommonKit
 
+extension TermsAndConditionsView {
+    enum Constants {
+        static let agreeButtonTypo = Typography(size: .size16, weight: .semibold, color: .white, applyLineHeight: true)
+    }
+}
+
 final class TermsAndConditionsView: BaseView {
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.backgroundColor = .clear
     }
     
-    let agreeButton = UIButton().then {
+    let agreeButton = UIButton(typography: Constants.agreeButtonTypo, type: .custom).then {
         $0.setTitle("가입 완료", for: .normal)
-        $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .blue400
+        $0.setBackgroundColor(.gray200, for: .disabled)
+        $0.setBackgroundColor(.blue400, for: .normal)
+        $0.isEnabled = false
+        $0.round(with: 12)
     }
     
     override func setupSubviews() {
@@ -41,5 +49,9 @@ final class TermsAndConditionsView: BaseView {
             make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(16)
         }
+    }
+    
+    func updateButtonState(with isEnabled: Bool) {
+        agreeButton.isEnabled = isEnabled
     }
 }

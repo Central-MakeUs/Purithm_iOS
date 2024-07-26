@@ -16,6 +16,12 @@ import CoreCommonKit
 import Combine
 import CombineCocoa
 
+extension TermsAndConditionsViewController {
+    enum Constants {
+        static let leftBackBarButtonIdentifier = "left_back_bar_button"
+    }
+}
+
 final class TermsAndConditionsViewController: ViewController<TermsAndConditionsView> {
     let viewModel: TermsAndConditionsViewModel
     private var cancellables = Set<AnyCancellable>()
@@ -71,16 +77,40 @@ final class TermsAndConditionsViewController: ViewController<TermsAndConditionsV
 extension TermsAndConditionsViewController: NavigationBarApplicable {
     public func handleNavigationButtonAction(with identifier: String) {
         switch identifier {
-        case "back":
-            break
+        case Constants.leftBackBarButtonIdentifier:
+            //TODO: Alert 띄우기
+            let alert = PurithmAlert(
+                with: .withTwoButton(
+                    title: "인터넷 연결을 확인해주세요.",
+                    conformTitle: "중단하기",
+                    cancelTitle: "취소"
+                )
+            )
+            
+            alert.conformTapEventPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    alert.hide()
+                    self?.closeViewController(animated: true)
+                }
+                .store(in: &cancellables)
+            
+            alert.cancelTapEventPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { _ in
+                    alert.hide()
+                }
+                .store(in: &cancellables)
+            
+            alert.show(animated: false)
         default:
             break
         }
     }
     
     public var leftButtonItems: [NavigationBarButtonItemType] {
-        return [.backImage(
-            identifier: "back",
+        return [.image(
+            identifier: Constants.leftBackBarButtonIdentifier,
             image: .icArrowLeft,
             color: .gray500
         )]

@@ -102,7 +102,7 @@ extension NavigationBarApplicable {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard self?.presentedViewController == nil else { return }
-                self?.navigationController?.isNavigationBarHidden = isHidden
+                self?.navigationController?.isNavigationBarHidden = true
             })
             .disposed(by: rx.disposeBag)
     }

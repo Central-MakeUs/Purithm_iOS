@@ -45,11 +45,14 @@ final class DefaultTabBarCoordinator: TabBarCoordinator {
 
 extension DefaultTabBarCoordinator {
     private func configureTabBarItem(of page: TabBarPage) -> UITabBarItem {
-        return UITabBarItem(
+        let tabbarItem = UITabBarItem(
             title: nil,
             image: page.tabIcon(),
             tag: page.pageOrderNumber()
         )
+        tabbarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
+        
+        return tabbarItem
     }
     
     private func createTabNavigationController(of page: TabBarPage) -> UINavigationController {
@@ -64,8 +67,8 @@ extension DefaultTabBarCoordinator {
     private func configureTabBarController(with tabViewControllers: [UIViewController]) {
         self.tabBarController.setViewControllers(tabViewControllers, animated: true)
         self.tabBarController.selectedIndex = TabBarPage.home.pageOrderNumber()
-        self.tabBarController.view.backgroundColor = .systemBackground
-        self.tabBarController.tabBar.backgroundColor = .systemBackground
+        self.tabBarController.view.backgroundColor = .white
+        self.tabBarController.tabBar.backgroundColor = .white
         self.tabBarController.tabBar.tintColor = .blue400
         
         self.navigationController.pushViewController(self.tabBarController, animated: true)
@@ -74,6 +77,7 @@ extension DefaultTabBarCoordinator {
     private func startTabCoordinator(of page: TabBarPage, to tabNavigationController: UINavigationController) {
         switch page {
         case .home:
+            // TODO: 각 피처별 코디네이터 할당 필요함.
             let homeVC = UIViewController()
             homeVC.view.backgroundColor = .yellow
             tabNavigationController.viewControllers = [homeVC]

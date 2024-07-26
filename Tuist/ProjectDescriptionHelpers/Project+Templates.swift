@@ -27,6 +27,7 @@ extension Project {
                     //TODO: infoPlist 별도 파일로 분리하여 작업
                     infoPlist: .extendingDefault(
                         with: [
+                            "CFBundleIconName": "AppIcon",
                             "UILaunchStoryboardName": "LaunchScreen.storyboard",
                             "NSCameraUsageDescription": "이 앱은 카메라를 사용합니다.",
                             "NSPhotoLibraryUsageDescription": "이 앱은 사진 앨범에 접근합니다."

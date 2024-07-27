@@ -34,13 +34,14 @@ public final class LoginView: BaseView {
     
     let appleLoginButton = UIButton().then {
         $0.setBackgroundImage(.appleLoginButton, for: .normal)
-        $0.imageView?.contentMode = .scaleAspectFit
+        $0.imageView?.contentMode = .scaleAspectFill
     }
     
     let kakaoLoginButton = UIButton().then {
         $0.setBackgroundImage(.kakaoLoginButton, for: .normal)
-        $0.imageView?.contentMode = .scaleAspectFit
+        $0.imageView?.contentMode = .scaleAspectFill
     }
+    
     
     public override func setupSubviews() {
         [backgroundImage, logoImage, logoLabel, appleLoginButton, kakaoLoginButton].forEach {

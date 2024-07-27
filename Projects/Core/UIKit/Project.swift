@@ -11,8 +11,11 @@ import ProjectDescriptionHelpers
 let project = Project.makeCoreModule(
     .uiKit,
     dependencies: [
+        .core(.common),
+        .thirdParty(.snapKit),
+        .thirdParty(.then),
         .thirdParty(.combineCocoa),
         .thirdParty(.rxSwift),
-        .thirdParty(.rxCocoa)
+        .thirdParty(.rxCocoa),
     ]
 )

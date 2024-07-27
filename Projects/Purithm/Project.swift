@@ -17,7 +17,8 @@ let project = Project.makeMainApp(
         .thirdParty(.then),
         .thirdParty(.combineCocoa),
         .thirdParty(.combineExt),
-        .thirdParty(.rxSwift)
+        .thirdParty(.rxSwift),
+        .thirdParty(.rxCocoa)
     ]
 )
 

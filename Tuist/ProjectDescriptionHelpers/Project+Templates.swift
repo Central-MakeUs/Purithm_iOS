@@ -27,6 +27,7 @@ extension Project {
                     //TODO: infoPlist 별도 파일로 분리하여 작업
                     infoPlist: .extendingDefault(
                         with: [
+                            "CFBundleIconName": "AppIcon",
                             "UILaunchStoryboardName": "LaunchScreen.storyboard",
                             "NSCameraUsageDescription": "이 앱은 카메라를 사용합니다.",
                             "NSPhotoLibraryUsageDescription": "이 앱은 사진 앨범에 접근합니다."
@@ -44,7 +45,8 @@ extension Project {
                 )
             ],
             resourceSynthesizers: [
-                .assets()
+                .custom(name: "Assets", parser: .assets, extensions: ["xcassets"]),
+                .fonts()
             ]
         )
     }
@@ -71,7 +73,8 @@ extension Project {
                 )
             ],
             resourceSynthesizers: [
-                .assets()
+                .custom(name: "Assets", parser: .assets, extensions: ["xcassets"]),
+                .fonts()
             ]
         )
     }
@@ -94,7 +97,8 @@ extension Project {
                 )
             ],
             resourceSynthesizers: [
-                .assets()
+                .assets(),
+                .fonts()
             ]
         )
     }
@@ -115,9 +119,14 @@ extension Project {
                     name: "Core\(name)",
                     product: .framework,
                     bundleID: "\(bundleID).\(name).core",
-                    infoPlist: target == .auth ? makeAuthModuleInfoPlist() : .default,
+                    infoPlist: target.makeInfoPlist(),
+                    hasResource: target == .common ? true : false,
                     dependencies: dependencies
                 ),
+            ],
+            resourceSynthesizers: [
+                .custom(name: "Assets", parser: .assets, extensions: ["xcassets"]),
+                .custom(name: "Fonts", parser: .fonts, extensions: ["otf", "ttf"])
             ]
         )
     }

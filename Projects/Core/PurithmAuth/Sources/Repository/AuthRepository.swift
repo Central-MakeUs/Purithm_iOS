@@ -15,10 +15,9 @@ public final class AuthRepository {
     
     public init() { }
     
-    public func saveAuthToken(accessToken: String, refreshToken: String) throws {
+    public func saveAuthToken(accessToken: String) throws {
         try KeychainManager.shared.saveAuthToken(
-            accessToken: accessToken,
-            refreshToken: refreshToken
+            accessToken: accessToken
         )
     }
     

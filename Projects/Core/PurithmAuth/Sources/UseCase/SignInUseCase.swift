@@ -13,6 +13,10 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import RxKakaoSDKUser
 
+import Moya
+import CombineMoya
+import Foundation
+
 //TODO: 1. 토큰 검증, 2. 동의항목 저장 추가 필요
 public final class SignInUseCase {
     private let disposeBag = DisposeBag()
@@ -27,17 +31,40 @@ public final class SignInUseCase {
 
 //MARK: - Login validate check
 extension SignInUseCase {
-    public func isAlreadyLoggedIn() -> Bool {
-        return true
-//        do {
-//            let purithmToken = try repository.retriveAuthToken()
-//            //TODO: 토큰 검증 및 refresh 작업 후 재 저장
-//            print("::: retrive token > \(purithmToken)")
-//            return true
-//        } catch {
-//            print("::: failed retrive token")
-//            return false
-//        }
+    public func isAlreadyLoggedIn() -> AnyPublisher<Void, Error> {
+        do {
+            //TODO: provider는 주입받는 형식으로 해야함.
+            let purithmToken = try repository.retriveAuthToken()
+            let provider = MoyaProvider<AuthAPI>()
+            
+            return Future { [weak self] promise in
+                guard let self else { return }
+                provider.requestPublisher(.validateToken(serviceToken: purithmToken.accessToken))
+                    .tryMap { response in
+                        return try response.map(ResponseWrapper<EmptyResponseType>.self)
+                    }
+                    .sink { completion in
+                        switch completion {
+                        case .finished:
+                            return promise(.success(Void()))
+                        case .failure(let error):
+                            return promise(.failure(error))
+                        }
+                    } receiveValue: { aa in
+                        print("::: code > \(aa.code)")
+                        print("::: message > \(aa.message)")
+                        //TODO: 토큰 검증 및 refresh 작업 후 재 저장
+                        print("::: retrive token > \(purithmToken)")
+                    }
+                    .store(in: &self.cancellables)
+            }
+            .eraseToAnyPublisher()
+        } catch {
+            print("::: failed retrive token")
+            return Just(Void())
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        }
     }
 }
 
@@ -53,14 +80,14 @@ extension SignInUseCase {
                 using: isKakaoTalkLoginAvailable ? UserApi.shared.rx.loginWithKakaoTalk() : UserApi.shared.rx.loginWithKakaoAccount(),
                 errorType: isKakaoTalkLoginAvailable ? .KakaoTalkLoginFailed : .KakaoAccountLoginFailed
             )
-            .flatMap { kakaoAuthentication -> Observable<PurithmTokenResponse> in
+            .flatMap { kakaoAuthentication -> Observable<String> in
+                print("kakao accesstoken > \(kakaoAuthentication.accessToken)")
                 return self.loginToPurithmServiceForKakao(with: kakaoAuthentication)
             }
             .subscribe(onNext: { purithmToken in
                 do {
                     try self.repository.saveAuthToken(
-                        accessToken: purithmToken.accessToken,
-                        refreshToken: purithmToken.refreshToken
+                        accessToken: purithmToken
                     )
                     promise(.success(Void()))
                 } catch {
@@ -133,22 +160,31 @@ extension SignInUseCase {
     }
     
     // TODO: 실제 카카오 토큰 정보를 Purithm 서버로 넘기기 + 서버 response interface 맞춰서 response type 설정하기
-    private func loginToPurithmServiceForKakao(with parameter: KakaoLoginRequest) -> Observable<PurithmTokenResponse> {
+    private func loginToPurithmServiceForKakao(with parameter: KakaoLoginRequest) -> Observable<String> {
         //TODO: Return 타입 정의 필요 + 해당 위치에서 받아온 값 Keychain 에 저장
-        let mockJson = """
-                        {
-                            "code": 200,
-                            "timestamp": "timestamp",
-                            "data": {
-                                "name": "name",
-                                "accessToken": "accessToken",
-                                "refreshToken": "refreshToken"
-                            },
-                            "message": "message"
-                        }
-                        """
+        let provider = MoyaProvider<AuthAPI>()
         
-        return KakaoLoginRequestBuilder().mockRequest(from: mockJson).asObservable()
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            provider.requestPublisher(.kakaoSignIn(kakaoAccessToken: parameter.accessToken))
+                .tryMap { response -> ResponseWrapper<String> in
+                    return try response.map(ResponseWrapper<String>.self)
+                }
+                .sink { completion in
+                    switch completion {
+                    case .finished:
+                        print("굳")
+                    case .failure(let error):
+                        return promise(.failure(error))
+                    }
+                } receiveValue: { response in
+                    return promise(.success(response.data ?? ""))
+                }
+                .store(in: &self.cancellables)
+        }
+        .eraseToAnyPublisher()
+        .asObservable()
     }
 }
 
@@ -168,8 +204,7 @@ extension SignInUseCase {
                 .sink { response in
                     do {
                         try self.repository.saveAuthToken(
-                            accessToken: response.accessToken,
-                            refreshToken: response.refreshToken
+                            accessToken: response.accessToken
                         )
                         promise(.success(Void()))
                     } catch {

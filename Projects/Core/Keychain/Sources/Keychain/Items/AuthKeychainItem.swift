@@ -20,6 +20,5 @@ public struct AuthKeychainItem: KeychainService {
 }
 
 public struct PurithmAuthToken: Codable {
-    let accessToken: String
-    let refreshToken: String
+    public let accessToken: String
 }

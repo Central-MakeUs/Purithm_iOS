@@ -19,10 +19,9 @@ public final class KeychainManager {
 }
 
 extension KeychainManager: AuthKeychainManageable {
-    public func saveAuthToken(accessToken: String, refreshToken: String) throws {
+    public func saveAuthToken(accessToken: String) throws {
         let authToken = PurithmAuthToken(
-            accessToken: accessToken,
-            refreshToken: refreshToken
+            accessToken: accessToken
         )
         
         try authKeychainItem.save(with: authToken)

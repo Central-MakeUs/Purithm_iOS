@@ -14,4 +14,9 @@ public extension UIControl {
         controlEventPublisher(for: .touchUpInside)
             .eraseToAnyPublisher()
     }
+    
+    var pressed: AnyPublisher<Void, Never> {
+        controlEventPublisher(for: .touchDown)
+            .eraseToAnyPublisher()
+    }
 }

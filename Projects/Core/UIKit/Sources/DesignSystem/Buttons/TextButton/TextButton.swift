@@ -82,11 +82,10 @@ extension TextButton {
 extension TextButton {
     private var typography: Typography {
         switch size {
-        case .xlarge: return Typography(size: .size18, weight: .semibold, color: fontColor, applyLineHeight: false)
         case .large: return Typography(size: .size16, weight: .semibold, color: fontColor, applyLineHeight: false)
         case .medium: return Typography(size: .size16, weight: .semibold, color: fontColor, applyLineHeight: false)
-        case .small: return Typography(size: .size14, weight: .semibold, color: fontColor, applyLineHeight: false)
-        case .xsmall: return Typography(size: .size12, weight: .semibold, color: fontColor, applyLineHeight: false)
+        case .small: return Typography(size: .size16, weight: .semibold, color: fontColor, applyLineHeight: false)
+        case .xsmall: return Typography(size: .size14, weight: .semibold, color: fontColor, applyLineHeight: false)
         }
     }
 }

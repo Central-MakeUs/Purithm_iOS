@@ -8,6 +8,8 @@
 import UIKit
 import CoreCommonKit
 
+import Filter
+
 final class DefaultTabBarCoordinator: TabBarCoordinator {
     weak var finishDelegate: CoordinatorFinishDelegate?
     var navigationController: UINavigationController
@@ -78,9 +80,9 @@ extension DefaultTabBarCoordinator {
         switch page {
         case .home:
             // TODO: 각 피처별 코디네이터 할당 필요함.
-            let homeVC = UIViewController()
-            homeVC.view.backgroundColor = .yellow
-            tabNavigationController.viewControllers = [homeVC]
+            let filtersCoordinator = FiltersCoordinator(tabNavigationController)
+            self.childCoordinators.append(filtersCoordinator)
+            filtersCoordinator.start()
         case .author:
             let authorVC = UIViewController()
             authorVC.view.backgroundColor = .green
@@ -95,4 +97,8 @@ extension DefaultTabBarCoordinator {
             tabNavigationController.viewControllers = [mypageVC]
         }
     }
+}
+
+extension DefaultTabBarCoordinator: CoordinatorFinishDelegate {
+    func coordinatorDidFinish(childCoordinator: Coordinator) { }
 }

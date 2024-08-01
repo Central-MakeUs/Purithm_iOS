@@ -51,6 +51,7 @@ extension DefaultAppCoordinator: CoordinatorFinishDelegate {
         
         switch childCoordinator.type {
         case .tab:
+            self.navigationController.setNavigationBarHidden(true, animated: false)
             self.showLoginFlow()
         case .login:
             self.showTabBarFlow()

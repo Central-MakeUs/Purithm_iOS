@@ -13,6 +13,9 @@ public struct CompositionalLayoutModel: CompositionalLayoutModelType {
     public var headerStrategy: SizeStrategy?
     public var footerStrategy: SizeStrategy?
     
+    public var isHorizontalGroup: Bool
+    
+    public var itemSpacing: CGFloat
     public var groupSpacing: CGFloat
     public var sectionInset: NSDirectionalEdgeInsets
     
@@ -22,6 +25,8 @@ public struct CompositionalLayoutModel: CompositionalLayoutModelType {
                 groupStrategy: SizeStrategy,
                 headerStrategy: SizeStrategy? = nil,
                 footerStrategy: SizeStrategy? = nil,
+                isHorizontalGroup: Bool = false,
+                itemSpacing: CGFloat = 0,
                 groupSpacing: CGFloat = 0,
                 sectionInset: NSDirectionalEdgeInsets = .init(vertical: 0, horizontal: 0),
                 scrollBehavior: UICollectionLayoutSectionOrthogonalScrollingBehavior) {
@@ -29,6 +34,8 @@ public struct CompositionalLayoutModel: CompositionalLayoutModelType {
         self.groupStrategy = groupStrategy
         self.headerStrategy = headerStrategy
         self.footerStrategy = footerStrategy
+        self.isHorizontalGroup = isHorizontalGroup
+        self.itemSpacing = itemSpacing
         self.groupSpacing = groupSpacing
         self.sectionInset = sectionInset
         self.scrollBehavior = scrollBehavior

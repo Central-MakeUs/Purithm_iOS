@@ -9,6 +9,7 @@ import UIKit
 import KakaoSDKCommon
 import KakaoSDKAuth
 import AuthenticationServices
+import CoreUIKit
 
 import Login
 
@@ -23,6 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         //TODO: PurithmAuth Module로 옮겨야할듯
         KakaoSDK.initSDK(appKey: "0d6fbb90fdd3615fa419c28d59c290b7")
+        UICollectionReusableView.swizzlePrepareForReuse()
         
         let navigationController = UINavigationController()
         

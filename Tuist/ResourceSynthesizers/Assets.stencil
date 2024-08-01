@@ -304,6 +304,26 @@ public extension UIColor {
 {% for catalog in catalogs %}
     {% call colorBlock catalog.assets %}
 {% endfor %}
+
+ static func blueGradient(frame: CGRect) -> CAGradientLayer {
+        let colors = [blueGradientStart, blueGradientEnd]
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = colors.map { $0.cgColor }
+        gradientLayer.frame = frame
+        gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.0)
+        gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.0)
+        return gradientLayer
+    }
+
+   static func purpleGradient(frame: CGRect) -> CAGradientLayer {
+           let colors = [purpleGradientStart, purpleGradientEnd]
+           let gradientLayer = CAGradientLayer()
+           gradientLayer.colors = colors.map { $0.cgColor }
+           gradientLayer.frame = frame
+           gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.0)
+           gradientLayer.endPoint = CGPoint(x: 0.0, y: 1.0)
+           return gradientLayer
+   }
 }
 
 public extension UIImage {

@@ -13,6 +13,7 @@ let project = Project.makeMainApp(
     dependencies: [
         .core(.network),
         .feature(.login),
+        .feature(.filter),
         .thirdParty(.snapKit),
         .thirdParty(.then),
         .thirdParty(.combineCocoa),

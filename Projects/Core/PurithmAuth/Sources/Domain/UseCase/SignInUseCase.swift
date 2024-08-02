@@ -12,57 +12,72 @@ import RxKakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
 import RxKakaoSDKUser
+import CoreNetwork
 
 import Moya
 import CombineMoya
 import Foundation
 
-//TODO: 1. 토큰 검증, 2. 동의항목 저장 추가 필요
 public final class SignInUseCase {
     private let disposeBag = DisposeBag()
-
-    private let repository: AuthRepository
     private var cancellables = Set<AnyCancellable>()
     
-    public init(repository: AuthRepository) {
+    private let repository: AuthRepository
+    private let authService: PurithmAuthServiceManageable
+    
+    public init(repository: AuthRepository, authService: PurithmAuthServiceManageable) {
         self.repository = repository
+        self.authService = authService
     }
 }
 
 //MARK: - Login validate check
 extension SignInUseCase {
     public func isAlreadyLoggedIn() -> AnyPublisher<Void, Error> {
+        // only test
+//        return Fail(outputType: Void.self, failure: NetworkError.invalidToken)
+//            .eraseToAnyPublisher()
         do {
-            //TODO: provider는 주입받는 형식으로 해야함.
             let purithmToken = try repository.retriveAuthToken()
-            let provider = MoyaProvider<AuthAPI>()
             
             return Future { [weak self] promise in
                 guard let self else { return }
-                provider.requestPublisher(.validateToken(serviceToken: purithmToken.accessToken))
-                    .tryMap { response in
-                        return try response.map(ResponseWrapper<EmptyResponseType>.self)
-                    }
-                    .sink { completion in
-                        switch completion {
-                        case .finished:
+                let publisher = authService.requestTokenValidate(with: purithmToken.accessToken)
+                    .share()
+                    .materialize()
+                    
+                publisher.values()
+                    .sink { response in
+                        let errorType = NetworkError(rawValue: response.code) ?? .invalidErrorType
+                        
+                        switch errorType {
+                        case .success, .successUserSignIn:
+                            print("::: retrived purithm token > \(purithmToken)")
                             return promise(.success(Void()))
-                        case .failure(let error):
-                            return promise(.failure(error))
+                        case .termsOfServiceRequired:
+                            // 에러 방출 후, 이용약관으로 이동
+                            return promise(.failure(PurithmAuthError.termsOfServiceRequired))
+                        case .invalidToken, .resourceNotFound:
+                            // 에러 방출 후, 로그인 화면으로 이동
+                            return promise(.failure(PurithmAuthError.invalidToken))
+                        case .invalidErrorType:
+                            // 잘못된 서버 응답 코드
+                            return promise(.failure(PurithmAuthError.invalidErrorType))
+                        default: break
                         }
-                    } receiveValue: { aa in
-                        print("::: code > \(aa.code)")
-                        print("::: message > \(aa.message)")
-                        //TODO: 토큰 검증 및 refresh 작업 후 재 저장
-                        print("::: retrive token > \(purithmToken)")
                     }
-                    .store(in: &self.cancellables)
+                    .store(in: &cancellables)
+                
+                publisher.failures()
+                    .sink { error in
+                        return promise(.failure(error))
+                    }
+                    .store(in: &cancellables)
             }
             .eraseToAnyPublisher()
         } catch {
             print("::: failed retrive token")
-            return Just(Void())
-                .setFailureType(to: Error.self)
+            return Fail(outputType: Void.self, failure: PurithmAuthError.invalidErrorType)
                 .eraseToAnyPublisher()
         }
     }
@@ -101,7 +116,7 @@ extension SignInUseCase {
         .eraseToAnyPublisher()
     }
     
-    private func kakaoLogin(using loginObservable: Observable<OAuthToken>, errorType: AuthError) -> Observable<KakaoLoginRequest> {
+    private func kakaoLogin(using loginObservable: Observable<OAuthToken>, errorType: AuthError) -> Observable<KakaoSignInRequestDTO> {
         let loginObservable = Observable<OAuthToken>.create { observer in
             let loginObserver = loginObservable.asObservable()
                 .catch { error in
@@ -147,11 +162,8 @@ extension SignInUseCase {
                 }
             }
             .map { (oauthToken, user) in
-                
-                let response = KakaoLoginRequest(
-                    userName: user.kakaoAccount?.profile?.nickname ?? "",
-                    accessToken: oauthToken.accessToken,
-                    refreshToken: oauthToken.refreshToken
+                let response = KakaoSignInRequestDTO(
+                    accessToken: oauthToken.accessToken
                 )
                 print("::: kakao login response")
                 return response
@@ -159,29 +171,25 @@ extension SignInUseCase {
             .asObservable()
     }
     
-    // TODO: 실제 카카오 토큰 정보를 Purithm 서버로 넘기기 + 서버 response interface 맞춰서 response type 설정하기
-    private func loginToPurithmServiceForKakao(with parameter: KakaoLoginRequest) -> Observable<String> {
-        //TODO: Return 타입 정의 필요 + 해당 위치에서 받아온 값 Keychain 에 저장
-        let provider = MoyaProvider<AuthAPI>()
-        
-        return Future { [weak self] promise in
+    private func loginToPurithmServiceForKakao(with parameter: KakaoSignInRequestDTO) -> Observable<String> {
+        return Future<String, Error> { [weak self] promise in
             guard let self else { return }
+            let publisher = authService.requestKakaoSignIn(with: parameter.accessToken)
+                .share()
+                .materialize()
             
-            provider.requestPublisher(.kakaoSignIn(kakaoAccessToken: parameter.accessToken))
-                .tryMap { response -> ResponseWrapper<String> in
-                    return try response.map(ResponseWrapper<String>.self)
-                }
-                .sink { completion in
-                    switch completion {
-                    case .finished:
-                        print("굳")
-                    case .failure(let error):
-                        return promise(.failure(error))
-                    }
-                } receiveValue: { response in
+            publisher.values()
+                .sink { response in
+                    print("::: Kakao Login Success. ")
                     return promise(.success(response.data ?? ""))
                 }
-                .store(in: &self.cancellables)
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
         }
         .eraseToAnyPublisher()
         .asObservable()
@@ -191,20 +199,25 @@ extension SignInUseCase {
 // MARK: - Apple Login
 extension SignInUseCase {
     public func loginWithApple(with idToken: String, name: String) -> AnyPublisher<Void, Error> {
-        let appleAuth = AppleLoginRequest(userName: name, idToken: idToken)
+        let appleAuth = AppleSignInRequestDTO(userName: name)
         
         return Future { [weak self] promise in
             guard let self else {
                 promise(.failure(AuthError.referenceInvalidError))
                 return
             }
-            let publisher = loginToPurithmServiceForApple(with: appleAuth).share().materialize()
-                
+            let publisher = loginToPurithmServiceForApple(
+                with: appleAuth,
+                idToken: idToken
+            )
+                .share()
+                .materialize()
+            
             publisher.values()
                 .sink { response in
                     do {
                         try self.repository.saveAuthToken(
-                            accessToken: response.accessToken
+                            accessToken: response
                         )
                         promise(.success(Void()))
                     } catch {
@@ -222,21 +235,74 @@ extension SignInUseCase {
         .eraseToAnyPublisher()
     }
     
-    private func loginToPurithmServiceForApple(with parameter: AppleLoginRequest) -> AnyPublisher<PurithmTokenResponse, Error> {
-        let mockJson = """
-                        {
-                            "code": 200,
-                            "timestamp": "timestamp",
-                            "data": {
-                                "name": "name",
-                                "accessToken": "accessToken",
-                                "refreshToken": "refreshToken"
-                            },
-                            "message": "message"
+    private func loginToPurithmServiceForApple(with parameter: AppleSignInRequestDTO, idToken: String) -> AnyPublisher<String, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            let appleRequestModel = AppleSignInRequestDTO(userName: parameter.userName)
+            let publisher = authService.requestAppleSignIn(
+                with: parameter.toDictionary(),
+                token: idToken
+            )
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    print("::: Apple Login Success. ")
+                    return promise(.success(response.data ?? ""))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+//MARK: - Conform Terms
+extension SignInUseCase {
+    public func conformTerms() -> AnyPublisher<Void, Error> {
+        do {
+            let purithmToken = try repository.retriveAuthToken()
+            
+            return Future { [weak self] promise in
+                guard let self else { return }
+                let publisher = authService.requestTermsConform(with: purithmToken.accessToken)
+                    .share()
+                    .materialize()
+                
+                publisher.values()
+                    .sink { response in
+                        let errorType = NetworkError(rawValue: response.code) ?? .invalidErrorType
+                        
+                        switch errorType {
+                        case .success, .successUserSignIn:
+                            return promise(.success(Void()))
+                        case .invalidToken, .resourceNotFound:
+                            return promise(.failure(PurithmAuthError.invalidToken))
+                        case .invalidErrorType:
+                            return promise(.failure(PurithmAuthError.invalidErrorType))
+                        default:
+                            return promise(.failure(errorType))
                         }
-                        """
-        
-        return AppleLoginRequestBuilder().mockRequest(from: mockJson)
+                    }
+                    .store(in: &cancellables)
+                
+                publisher.failures()
+                    .sink { error in
+                        return promise(.failure(error))
+                    }
+                    .store(in: &cancellables)
+            }
+            .eraseToAnyPublisher()
+        } catch {
+            return Fail(outputType: Void.self, failure: PurithmAuthError.invalidErrorType)
+                .eraseToAnyPublisher()
+        }
     }
 }
 

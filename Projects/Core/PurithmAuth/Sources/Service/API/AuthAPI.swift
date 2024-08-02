@@ -18,8 +18,9 @@ public struct EmptyResponseType: Decodable { }
 
 enum AuthAPI {
     case validateToken(serviceToken: String)
-    case appleSignIn(parameter: AppleSignInRequestModel, token: String)
+    case appleSignIn(parameter: [String: Any], token: String)
     case kakaoSignIn(kakaoAccessToken: String)
+    case conformTerms(serviceToken: String)
 }
 
 extension AuthAPI: TargetType {
@@ -39,6 +40,8 @@ extension AuthAPI: TargetType {
             return "/auth/apple"
         case .kakaoSignIn:
             return "/auth/kakao"
+        case .conformTerms:
+            return "/api/users/terms"
         }
     }
     
@@ -48,6 +51,8 @@ extension AuthAPI: TargetType {
             return .get
         case .appleSignIn, .kakaoSignIn:
             return .get
+        case .conformTerms:
+            return .post
         }
     }
     
@@ -57,8 +62,10 @@ extension AuthAPI: TargetType {
             return .requestPlain
         case .kakaoSignIn:
             return .requestPlain
-        case .appleSignIn(let requestModel, _):
-            return .requestJSONEncodable(requestModel)
+        case .appleSignIn(let parameter, _):
+            return .requestParameters(parameters: parameter, encoding: URLEncoding.queryString)
+        case .conformTerms:
+            return .requestPlain
         }
     }
     
@@ -74,9 +81,14 @@ extension AuthAPI: TargetType {
                 "Authorization": "Bearer \(kakaoAccessToken)",
                 "Content-type": "application/json"
             ]
-        case .appleSignIn(let parameter, let identifierToken):
+        case .appleSignIn(_, let identifierToken):
             return [
                 "Authorization": "Bearer \(identifierToken)",
+                "Content-type": "application/json"
+            ]
+        case .conformTerms(let serviceToken):
+            return [
+                "Authorization": "Bearer \(serviceToken)",
                 "Content-type": "application/json"
             ]
         }

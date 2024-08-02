@@ -15,6 +15,8 @@ public protocol CompositionalLayoutModelType {
     var headerStrategy: SizeStrategy? { get }
     var footerStrategy: SizeStrategy? { get }
     
+    var isHorizontalGroup: Bool { get }
+    var itemSpacing: CGFloat { get }
     var groupSpacing: CGFloat { get }
     var sectionInset: NSDirectionalEdgeInsets { get set }
     

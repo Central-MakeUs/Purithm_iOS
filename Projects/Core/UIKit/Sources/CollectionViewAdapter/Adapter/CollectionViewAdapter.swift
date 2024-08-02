@@ -37,8 +37,6 @@ public final class CollectionViewAdapter: NSObject {
     public init(with collectionView: UICollectionView) {
         super.init()
         
-        UICollectionReusableView.swizzlePrepareForReuse()
-        
         self.collectionView = collectionView
         self.collectionView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
@@ -54,7 +52,11 @@ extension CollectionViewAdapter {
     private func setupCollectionDataSource() {
         guard let collectionView = collectionView else { return }
         
-        dataSource = UICollectionViewDiffableDataSource<SectionItem, ListItem>(collectionView: collectionView) { (collectionView, indexPath, dj) -> UICollectionViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<SectionItem, ListItem>(collectionView: collectionView) { [weak self] (collectionView, indexPath, dj) -> UICollectionViewCell? in
+            guard let self else {
+                return nil
+            }
+            
             guard let itemModel = self.itemModel(at: indexPath) else {
                 return nil
             }
@@ -70,7 +72,11 @@ extension CollectionViewAdapter {
             return cell
         }
         
-        dataSource.supplementaryViewProvider = { (view, kind, indexPath) -> UICollectionReusableView? in
+        dataSource.supplementaryViewProvider = { [weak self] (view, kind, indexPath) -> UICollectionReusableView? in
+            guard let self else {
+                return nil
+            }
+            
             guard let itemModel = self.headerFooterOfItemModel(at: indexPath, kind: kind) else {
                 return nil
             }
@@ -150,12 +156,12 @@ extension CollectionViewAdapter {
             .store(in: &cancellables)
     }
     
-    private func cancelForPrepareForReuse(with view: UICollectionReusableView, cancellables: [AnyCancellable]) {
+    private func cancelForPrepareForReuse(with view: UICollectionReusableView, cellCancellables: [AnyCancellable]) {
         view.prepareForReuseSubject
             .first()
-            .sink(receiveValue: {_ in
-                cancellables.forEach { $0.cancel() }
-            }).store(in: &self.cancellables)
+            .sink(receiveValue: { _ in
+                cellCancellables.forEach { $0.cancel() }
+            }).store(in: &cancellables)
     }
 }
 
@@ -171,9 +177,8 @@ extension CollectionViewAdapter {
         actionEventCancellables
             .store(in: &cancellables)
         
-        cancelForPrepareForReuse(with: view, cancellables: [actionEventCancellables])
+        cancelForPrepareForReuse(with: view, cellCancellables: [actionEventCancellables])
     }
-    
     
     private func bindItemModelIfNeeded(to cell: UICollectionReusableView, with itemModel: ItemModelType) {
         guard let cell = cell as? ItemModelBindableProtocol else { return }
@@ -251,8 +256,8 @@ extension CollectionViewAdapter {
         // group
         let groupSize = NSCollectionLayoutSize(widthDimension: layoutModel.groupStrategy.value.widthDimension,
                                                heightDimension: layoutModel.groupStrategy.value.heightDimension)
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize,
-                                                     subitems: [item])
+        let group = layoutModel.isHorizontalGroup ? NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,subitems: [item]) : NSCollectionLayoutGroup.vertical(layoutSize: groupSize,subitems: [item])
+        group.interItemSpacing = .fixed(layoutModel.itemSpacing)
         
         // section
         let section = NSCollectionLayoutSection(group: group)

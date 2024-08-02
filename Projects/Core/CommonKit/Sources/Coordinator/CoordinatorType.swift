@@ -9,7 +9,5 @@ import Foundation
 
 public enum CoordinatorType {
     case app, login, tab
-    case home, record, mate, mypage
-    case setting, running
-    case signUp, addMate
+    case filters
 }

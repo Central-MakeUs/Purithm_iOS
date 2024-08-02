@@ -93,7 +93,12 @@ public final class PlainButton: PurithmCommonButton {
     public var hasShadow: Bool = false {
         didSet {
             updateShadow()
-            updateDefaultBackgroundColor()
+        }
+    }
+    
+    public var hasContentShdaow: Bool = false {
+        didSet {
+            updateContentShadow()
         }
     }
 
@@ -134,11 +139,7 @@ public final class PlainButton: PurithmCommonButton {
     public override func setup() {
         super.setup()
         
-        layer.borderWidth = 1
-        layer.shadowColor = UIColor.black.withAlphaComponent(0.12).cgColor
-        layer.shadowOffset = CGSize(width: 0, height: 4)
-        layer.shadowRadius = 3.0
-        
+        setupShadow()
         setupStackView()
         updateState()
         updateText()
@@ -146,6 +147,7 @@ public final class PlainButton: PurithmCommonButton {
         updateAdditionalImage()
         updateShape()
         updateShadow()
+        updateContentShadow()
         updateDefaultBackgroundColor()
     }
     
@@ -193,6 +195,17 @@ public final class PlainButton: PurithmCommonButton {
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layoutMargins = size.layoutMargin
         stackView.spacing = size.spacing
+    }
+    
+    private func setupShadow() {
+        layer.borderWidth = 1
+        layer.shadowColor = UIColor.black.withAlphaComponent(0.25).cgColor
+        layer.shadowOffset = CGSize(width: 2, height: 2)
+        layer.shadowRadius = 3.0
+        
+        additionalImageView.layer.shadowOffset = CGSize(width: 2, height: 2)
+        titleLabel.layer.shadowOffset = CGSize(width: 2, height: 2)
+        imageView.layer.shadowOffset = CGSize(width: 2, height: 2)
     }
 }
 
@@ -250,6 +263,14 @@ extension PlainButton {
     private func updateShadow() {
         layer.shadowOpacity = hasShadow ? 1.0 : 0.0
     }
+    
+    private func updateContentShadow() {
+        if hasContentShdaow {
+            titleLabel.layer.shadowOpacity = 0.5
+            imageView.layer.shadowOpacity = 0.5
+            additionalImageView.layer.shadowOpacity = 0.5
+        }
+    }
 
     private func updateStretch() {
         stackView.snp.remakeConstraints { make in
@@ -276,11 +297,10 @@ extension PlainButton {
 extension PlainButton {
     private var typography: Typography {
         switch size {
-        case .xlarge: return Typography(size: .size18, weight: .semibold, color: fontColor, applyLineHeight: false)
         case .large: return Typography(size: .size16, weight: .semibold, color: fontColor, applyLineHeight: false)
         case .medium: return Typography(size: .size16, weight: .semibold, color: fontColor, applyLineHeight: false)
-        case .small: return Typography(size: .size14, weight: .semibold, color: fontColor, applyLineHeight: false)
-        case .xsmall: return Typography(size: .size12, weight: .semibold, color: fontColor, applyLineHeight: false)
+        case .small: return Typography(size: .size16, weight: .semibold, color: fontColor, applyLineHeight: false)
+        case .xsmall: return Typography(size: .size14, weight: .semibold, color: fontColor, applyLineHeight: false)
         }
     }
 }
@@ -289,11 +309,10 @@ extension PlainButton {
 extension PlainButton {
     private var imageSize: CGFloat {
         switch size {
-        case .xlarge: return 24
-        case .large: return 18
-        case .medium: return 18
-        case .small: return 16
-        case .xsmall: return 14
+        case .large: return 20
+        case .medium: return 20
+        case .small: return 20
+        case .xsmall: return 16
         }
     }
 }

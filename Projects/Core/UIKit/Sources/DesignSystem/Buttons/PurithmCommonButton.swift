@@ -15,6 +15,7 @@ extension PurithmCommonButton {
         case `default`
         case primary
         case secondary
+        case option
     }
 }
 
@@ -30,24 +31,23 @@ extension PurithmCommonButton {
 //MARK: Size
 extension PurithmCommonButton {
     public enum Size: CGFloat {
-        case xlarge = 52
-        case large = 44
-        case medium = 40
-        case small = 36
-        case xsmall = 28
+        case large = 56
+        case medium = 44
+        case small = 40
+        case xsmall = 32
         
         /// Button 의 Conents와 버튼 사이의 Margin
         var layoutMargin: UIEdgeInsets {
             switch self {
-            case .xlarge: return UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-            case .large, .medium, .small: return UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+            case .large: return UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+            case .medium, .small: return UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
             case .xsmall: return UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
             }
         }
         
         var spacing: CGFloat {
             switch self {
-            case .xlarge: return 8
+            case .large: return 8
             default: return 4
             }
         }

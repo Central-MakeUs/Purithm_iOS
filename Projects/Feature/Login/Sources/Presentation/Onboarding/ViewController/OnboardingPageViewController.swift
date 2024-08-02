@@ -22,7 +22,7 @@ public final class OnboardingPageViewController: UIPageViewController {
     
     private let pageControl = UIPageControl()
     
-    let button = PlainButton(type: .filled, variant: .default, size: .xlarge, theme: .default).then {
+    let button = PlainButton(type: .filled, variant: .default, size: .large, theme: .default).then {
         $0.text = "로그인"
     }
     private let onboardingPages: [OnboardingViewController] = {

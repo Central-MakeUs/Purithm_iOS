@@ -30,6 +30,8 @@ public struct PlainButtonDefaultTheme: PlainButtonThemeType {
         case (.filled, .secondary, .default): return .white
         case (.filled, .secondary, .pressed): return .gray200
         case (.filled, .secondary, .disabled): return .gray200
+        case (_, .option, .default): return .white020
+        case (_, .option, _): return .black040
         case (.transparent, _, .default): return .blue040
         case (.transparent, _, .pressed): return .blue050
         case (.transparent, _, .disabled): return .black040

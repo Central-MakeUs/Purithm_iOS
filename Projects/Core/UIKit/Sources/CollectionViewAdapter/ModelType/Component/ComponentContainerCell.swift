@@ -11,7 +11,7 @@ import SnapKit
 import Then
 
 public class ComponentContainerCell<Wrapped: Component>: ItemModelBindable {
-    private var content: Wrapped.Content? // view
+    private weak var content: Wrapped.Content? // view
     private var context: Wrapped? // component
     private var cancellable = Set<AnyCancellable>()
     

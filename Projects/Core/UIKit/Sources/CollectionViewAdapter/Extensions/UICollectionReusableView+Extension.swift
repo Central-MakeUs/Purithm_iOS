@@ -26,7 +26,7 @@ extension UICollectionReusableView {
         swizzled_prepareForReuse()
     }
     
-    static func swizzlePrepareForReuse() {
+    public static func swizzlePrepareForReuse() {
         let originalSelector = #selector(UICollectionReusableView.prepareForReuse)
         let swizzledSelector = #selector(UICollectionReusableView.swizzled_prepareForReuse)
         

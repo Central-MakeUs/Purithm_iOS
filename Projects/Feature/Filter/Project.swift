@@ -11,9 +11,14 @@ import ProjectDescriptionHelpers
 let project = Project.makeFeatureModule(
     .filter,
     dependencies: [
+        .core(.common),
+        .core(.uiKit),
+        .thirdParty(.snapKit),
+        .thirdParty(.then),
         .thirdParty(.rxSwift),
         .thirdParty(.combineExt),
-        .thirdParty(.combineCocoa)
+        .thirdParty(.combineCocoa),
+        .thirdParty(.kingfisher)
     ]
 )
 

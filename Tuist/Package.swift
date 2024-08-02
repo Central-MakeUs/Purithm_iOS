@@ -25,6 +25,7 @@ let package = Package(
         .package(url: "https://github.com/CombineCommunity/CombineCocoa.git", exact: "0.4.1"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", exact: "6.7.0"),
         .package(url: "https://github.com/RxSwiftCommunity/RxSwiftExt.git", exact: "6.2.1"),
-        .package(url: "https://github.com/kakao/kakao-ios-sdk-rx", .upToNextMajor(from: "2.0.0"))
+        .package(url: "https://github.com/kakao/kakao-ios-sdk-rx", .upToNextMajor(from: "2.0.0")),
+        .package(url: "https://github.com/onevcat/Kingfisher.git", exact: "7.11.0"),
     ]
 )

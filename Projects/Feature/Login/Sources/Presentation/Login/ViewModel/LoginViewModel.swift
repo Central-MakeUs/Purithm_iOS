@@ -53,4 +53,20 @@ final class LoginViewModel {
             }
             .store(in: &cancellables)
     }
+    
+    func loginWithApple(with idToken: String, name: String) {
+        signInUseCase.loginWithApple(with: idToken, name: name)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    print("::: apple login completed.")
+                case .failure(let error):
+                    print("::: apple login failed. > \(error)")
+                }
+            } receiveValue: { [weak self]_ in
+                self?.coordinator?.pushTermsViewController()
+            }
+            .store(in: &cancellables)
+    }
 }
+

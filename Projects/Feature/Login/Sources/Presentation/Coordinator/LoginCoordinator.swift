@@ -8,6 +8,9 @@
 import UIKit
 import CoreCommonKit
 import CorePurithmAuth
+import Combine
+import CoreNetwork
+import Moya
 
 public final class LoginCoordinator: LoginCoordinatorable {
     public var finishDelegate: CoordinatorFinishDelegate?
@@ -15,7 +18,12 @@ public final class LoginCoordinator: LoginCoordinatorable {
     public var childCoordinators: [Coordinator] = []
     public var type: CoordinatorType { .login }
     
-    private let signInUseCase = SignInUseCase(repository: AuthRepository())
+    private var cancellables = Set<AnyCancellable>()
+    
+    private let signInUseCase = SignInUseCase(
+        repository: AuthRepository(),
+        authService: PurithmAuthService()
+    )
     
     public init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -23,14 +31,40 @@ public final class LoginCoordinator: LoginCoordinatorable {
     }
     
     public func start() {
-        if signInUseCase.isAlreadyLoggedIn() {
-            finishDelegate?.coordinatorDidFinish(childCoordinator: self)
-        } else {
-            let onboardingViewModel = OnboardingViewModel(coordinator: self)
-            let onboardingViewController = OnboardingPageViewController(viewModel: onboardingViewModel)
-            
-            self.navigationController.viewControllers = [onboardingViewController]
-        }
+        signInUseCase.isAlreadyLoggedIn()
+            .sink { [weak self] completion in
+                guard let self else { return }
+                
+                switch completion {
+                case .finished:
+                    self.finishDelegate?.coordinatorDidFinish(childCoordinator: self)
+                case .failure(let error):
+                    switch error {
+                    case let error as PurithmAuthError:
+                        switch error {
+                        case .termsOfServiceRequired:
+                            self.pushTermsViewController()
+                        case .invalidToken, .invalidErrorType:
+                            self.pushOnboardingViewController()
+                        default:
+                            break
+                        }
+                    default:
+                        print(" invalid error Type > \(error) ")
+                        self.pushOnboardingViewController()
+                    }
+                }
+            } receiveValue: { _ in
+                
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func pushOnboardingViewController() {
+        let onboardingViewModel = OnboardingViewModel(coordinator: self)
+        let onboardingViewController = OnboardingPageViewController(viewModel: onboardingViewModel)
+        
+        self.navigationController.viewControllers = [onboardingViewController]
     }
     
     public func finish() {
@@ -49,7 +83,10 @@ public final class LoginCoordinator: LoginCoordinatorable {
     
     
     public func pushTermsViewController() {
-        let viewModel = TermsAndConditionsViewModel(coordinator: self)
+        let viewModel = TermsAndConditionsViewModel(
+            coordinator: self,
+            useCase: signInUseCase
+        )
         let termsAndConditionsVC = TermsAndConditionsViewController(viewModel: viewModel)
         
         self.navigationController.pushViewController(termsAndConditionsVC, animated: true)

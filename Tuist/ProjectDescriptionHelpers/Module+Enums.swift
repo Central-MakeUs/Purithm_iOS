@@ -76,5 +76,7 @@ public enum Module {
         case rxSwiftExt = "RxSwiftExt"
         case rxKakaoSDK = "RxKakaoSDK"
         case kingfisher = "Kingfisher"
+        case moya = "Moya"
+        case combineMoya = "CombineMoya"
     }
 }

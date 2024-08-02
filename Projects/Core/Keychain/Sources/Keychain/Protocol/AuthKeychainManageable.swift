@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol AuthKeychainManageable {
-    func saveAuthToken(accessToken: String, refreshToken: String) throws
+    func saveAuthToken(accessToken: String) throws
     func deleteAuthToken() throws
     func retriveAuthToken() throws -> PurithmAuthToken
 }

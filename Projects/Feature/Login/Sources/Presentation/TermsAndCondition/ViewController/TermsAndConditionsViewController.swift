@@ -24,7 +24,7 @@ extension TermsAndConditionsViewController {
 
 final class TermsAndConditionsViewController: ViewController<TermsAndConditionsView> {
     let viewModel: TermsAndConditionsViewModel
-    private var cancellables = Set<AnyCancellable>()
+    var cancellables = Set<AnyCancellable>()
     
     private lazy var adapter = CollectionViewAdapter(with: contentView.collectionView)
     
@@ -43,6 +43,7 @@ final class TermsAndConditionsViewController: ViewController<TermsAndConditionsV
         view.backgroundColor = .gray100
         
         bindViewModel()
+        bindErrorHandler()
         
         initNavigationBar(with: .page, hideShadow: true)
         initNavigationTitleView(with: .page, title: "이용약관")
@@ -81,7 +82,7 @@ extension TermsAndConditionsViewController: NavigationBarApplicable {
             //TODO: Alert 띄우기
             let alert = PurithmAlert(
                 with: .withTwoButton(
-                    title: "인터넷 연결을 확인해주세요.",
+                    title: "정말 가입을 중단할까요?",
                     conformTitle: "중단하기",
                     cancelTitle: "취소"
                 )
@@ -114,5 +115,11 @@ extension TermsAndConditionsViewController: NavigationBarApplicable {
             image: .icArrowLeft,
             color: .gray500
         )]
+    }
+}
+
+extension TermsAndConditionsViewController: PurithmErrorHandlerable {
+    var errorPublisher: AnyPublisher<Error, Never> {
+        viewModel.errorPublisher
     }
 }

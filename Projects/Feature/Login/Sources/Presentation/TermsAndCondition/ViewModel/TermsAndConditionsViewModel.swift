@@ -10,6 +10,7 @@ import Combine
 import CombineExt
 import CoreUIKit
 import UIKit
+import CorePurithmAuth
 
 /// 동의항목
 enum ConsentItemType: String, CaseIterable {
@@ -40,13 +41,20 @@ final class TermsAndConditionsViewModel {
     weak var coordinator: LoginCoordinatorable?
     private let converter = TermsAndConditionsViewSectionConverter()
     var cancellables = Set<AnyCancellable>()
+    private weak var useCase: SignInUseCase?
+    
+    private let errorSubject = PassthroughSubject<Error, Never>()
+    var errorPublisher: AnyPublisher<Error, Never> {
+        errorSubject.eraseToAnyPublisher()
+    }
     
     var consentItems: [ConsentItem] = ConsentItemType.allCases.map { type in
         ConsentItem(identifier: UUID().uuidString, type: type, isSelected: false)
     }
     
-    init(coordinator: LoginCoordinatorable) {
+    init(coordinator: LoginCoordinatorable, useCase: SignInUseCase) {
         self.coordinator = coordinator
+        self.useCase = useCase
         
     }
     
@@ -109,7 +117,7 @@ extension TermsAndConditionsViewModel {
             .receive(on: DispatchQueue.main)
             .sink { actionItem in
                 switch actionItem {
-                case let action as TermsAndConditionItemAction:
+                case _ as TermsAndConditionItemAction:
                     //TODO: 이용약관 페이지로 이동
                     print("//TODO: 이용약관 페이지로 이동")
                     if let url = URL(string: "https://www.naver.com") {
@@ -128,7 +136,20 @@ extension TermsAndConditionsViewModel {
     private func handleEndOfAgreeEvent(input: Input) {
         input.endOfAgreeEvent
             .sink { [weak self] _ in
-                self?.coordinator?.finish()
+                guard let self else { return }
+                let publisher = self.useCase?.conformTerms().share().materialize()
+                
+                publisher?.values()
+                    .sink { _ in
+                        self.coordinator?.finish()
+                    }
+                    .store(in: &cancellables)
+                
+                publisher?.failures()
+                    .sink { error in
+                        self.errorSubject.send(error)
+                    }
+                    .store(in: &cancellables)
             }
             .store(in: &cancellables)
     }

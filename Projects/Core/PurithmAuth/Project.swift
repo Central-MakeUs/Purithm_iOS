@@ -15,7 +15,9 @@ let project = Project.makeCoreModule(
         .core(.keychain),
         .thirdParty(.combineExt),
         .thirdParty(.rxSwift),
-        .thirdParty(.rxKakaoSDK)
+        .thirdParty(.rxKakaoSDK),
+        .thirdParty(.moya),
+        .thirdParty(.combineMoya)
     ]
 )
 

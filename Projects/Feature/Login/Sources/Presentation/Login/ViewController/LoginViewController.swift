@@ -78,13 +78,24 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
             let idTokenData = appleIDCredential.identityToken
-            let authorizationCode = appleIDCredential.authorizationCode
-            
             let idTokenString = String(data: idTokenData!, encoding: .utf8)
-            let authorizationCodeString = String(data: authorizationCode!, encoding: .utf8)
             
+            // 사용자의 이름 불러오기
+            let fullName = appleIDCredential.fullName
+            
+            // 이름을 String으로 변환
+            let givenName = fullName?.givenName ?? ""
+            let familyName = fullName?.familyName ?? ""
+            let middleName = fullName?.middleName ?? ""
+            
+            let userName = [givenName, middleName, familyName].joined(separator: " ").trimmingCharacters(in: .whitespaces)
+            
+            viewModel.loginWithApple(
+                with: idTokenString ?? "",
+                name: userName
+            )
             print("::: idToken > \(idTokenString)")
-            print("::: idToken > \(authorizationCodeString)")
+            print("::: userName > \(userName)")
         }
     }
 }

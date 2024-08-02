@@ -40,24 +40,32 @@ final class FilterChipView: BaseView {
         $0.axis = .horizontal
         $0.spacing = 8
     }
+    
     let selectedImageView = UIImageView().then {
         $0.backgroundColor = .cyan
         $0.layer.cornerRadius = 28 / 2
     }
     let titleLabel = UILabel()
     
+    let gradientContainer = UIView()
     var blueGradientLayer: CAGradientLayer = UIColor.blueGradient(frame: .zero).then {
         $0.cornerRadius = 18
     }
     
     override func setupSubviews() {
         self.layer.cornerRadius = 18
+        self.clipsToBounds = true
+        gradientContainer.layer.insertSublayer(blueGradientLayer, at: 0)
         
-        addSubview(container)
+        [container, gradientContainer].forEach {
+            addSubview($0)
+        }
         
         [selectedImageView, titleLabel].forEach {
             container.addArrangedSubview($0)
         }
+        
+        self.sendSubviewToBack(gradientContainer)
     }
     
     override func layoutSubviews() {
@@ -71,6 +79,10 @@ final class FilterChipView: BaseView {
             make.verticalEdges.equalToSuperview()
             make.leading.equalToSuperview().inset(12)
             make.trailing.equalToSuperview().inset(12)
+        }
+        
+        gradientContainer.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
 
         self.snp.makeConstraints { make in
@@ -86,14 +98,7 @@ final class FilterChipView: BaseView {
         
 //        selectedImageView.isHidden = !isSelected
         selectedImageView.isHidden = true
-        
-        if isSelected {
-            self.layer.insertSublayer(blueGradientLayer, at: 0)
-            self.backgroundColor = .clear
-        } else {
-            blueGradientLayer.removeFromSuperlayer()
-            self.backgroundColor = .white
-        }   
+        gradientContainer.isHidden = !isSelected   
     }
 }
 

@@ -24,7 +24,7 @@ public final class PurithmAlertView: BaseView {
         $0.layer.cornerRadius = 12
         $0.clipsToBounds = true
     }
-    private let alertLabel = UILabel(typography: Constants.alertLabelTypo).then {
+    private let alertLabel = PurithmLabel(typography: Constants.alertLabelTypo).then {
         $0.numberOfLines = 0
     }
     private let buttonStackView = UIStackView().then {

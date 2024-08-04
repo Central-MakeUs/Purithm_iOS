@@ -8,13 +8,13 @@
 
 import UIKit
 import CoreCommonKit
-//import ResourceKit
 
 public struct Typography {
     let size: Size
     let weight: UIFont.Weight
     let alignment: NSTextAlignment
     let color: UIColor
+    private var language: Language = .korean
     let applyLineHeight: Bool
 
     public init(size: Typography.Size,
@@ -51,17 +51,44 @@ public struct Typography {
             .foregroundColor: color
         ]
     }
+    
+    public mutating func updateFontTypeForLanguage(for text: String?) {
+        guard let text = text else { return }
+        let isKorean = text.range(of: "\\p{Hangul}", options: .regularExpression) != nil
+        let isEnglish = text.range(of: "\\p{Latin}", options: .regularExpression) != nil
+        
+        if isEnglish {
+            language = .english
+        } else {
+            language = .korean
+        }
+    }
 }
 
 extension Typography {
     public var font: UIFont {
         switch weight {
         case .semibold:
-            return .Pretendard.semiBold.font(size: size.rawValue)
+            switch language {
+            case .korean:
+                return .Pretendard.semiBold.font(size: size.rawValue)
+            case .english:
+                return .EBGaramond.semiBold.font(size: size.rawValue)
+            }
         case .medium:
-            return .Pretendard.medium.font(size: size.rawValue)
+            switch language {
+            case .korean:
+                return .Pretendard.medium.font(size: size.rawValue)
+            case .english:
+                return .EBGaramond.medium.font(size: size.rawValue)
+            }
         default:
-            return .Pretendard.medium.font(size: size.rawValue)
+            switch language {
+            case .korean:
+                return .Pretendard.medium.font(size: size.rawValue)
+            case .english:
+                return .EBGaramond.medium.font(size: size.rawValue)
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ public final class LoginView: BaseView {
         $0.contentMode = .scaleAspectFit
     }
     
-    let logoLabel = UILabel(typography: Constants.logoTypo).then {
+    let logoLabel = PurithmLabel(typography: Constants.logoTypo).then {
         $0.text = "감성사진을 위한 필터 커머스, 퓨리즘"
     }
     

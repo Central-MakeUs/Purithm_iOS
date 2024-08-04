@@ -17,7 +17,7 @@ final class FilterDetailHeaderView: BaseView {
     let backButton = UIButton().then {
         $0.setImage(.icArrowLeft, for: .normal)
     }
-    let detailTitleLabel = UILabel(typography: Constants.titleTypo)
+    let detailTitleLabel = PurithmLabel(typography: Constants.titleTypo)
     
     let likeContainer = UIStackView().then {
         $0.axis = .vertical
@@ -27,7 +27,7 @@ final class FilterDetailHeaderView: BaseView {
         $0.setImage(.icLikeUnpressed.withTintColor(.gray300), for: .normal)
         $0.setImage(.icLikePressed.withTintColor(.blue400), for: .selected)
     }
-    let likeCountLabel = UILabel(typography: Constants.likeCountTypo)
+    let likeCountLabel = PurithmLabel(typography: Constants.likeCountTypo)
     
     override func setup() {
         super.setup()

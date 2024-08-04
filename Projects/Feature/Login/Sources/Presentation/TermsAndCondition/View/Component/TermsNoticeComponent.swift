@@ -34,7 +34,7 @@ extension TermsNoticeComponent {
 }
 
 final class TermsNoticeView: BaseView {
-    let noticeLabel = UILabel(typography: Constants.noticeTypo).then {
+    let noticeLabel = PurithmLabel(typography: Constants.noticeTypo).then {
         $0.numberOfLines = 0
     }
     

@@ -54,7 +54,7 @@ final class ItemView: BaseView, ActionEventEmitable {
     var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
     
     let iconImageView = UIImageView()
-    let titleLabel = UILabel(typography: Constants.noticeTypo)
+    let titleLabel = PurithmLabel(typography: Constants.noticeTypo)
     let rightButton = UIButton().then {
         $0.setImage(.icArrowRight.withTintColor(.gray300), for: .normal)
     }

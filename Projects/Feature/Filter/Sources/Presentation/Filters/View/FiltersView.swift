@@ -20,7 +20,7 @@ public final class FiltersView: BaseView {
     let headerContainer = UIView().then {
         $0.backgroundColor = .gray100
     }
-    let headerTitleLabel = UILabel(typography: Constants.titleTypo).then {
+    let headerTitleLabel = PurithmLabel(typography: Constants.titleTypo).then {
         $0.text = "Filters"
     }
     let headerLikeButton = UIButton().then {

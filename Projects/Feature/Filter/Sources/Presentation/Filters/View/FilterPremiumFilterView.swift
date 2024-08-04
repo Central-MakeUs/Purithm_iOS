@@ -17,12 +17,12 @@ final class FilterPremiumFilterView: BaseView {
     let premiumImageView = UIImageView().then {
         $0.backgroundColor = .clear
     }
-    let premiumLabel = UILabel(typography: Constants.premiumLabelTypo)
+    let premiumLabel = PurithmLabel(typography: Constants.premiumLabelTypo)
     
     let stampContainer = UIView().then {
         $0.layer.cornerRadius = 28 / 2
     }
-    let stampLabel = UILabel(typography: Constants.stampLabelTypo)
+    let stampLabel = PurithmLabel(typography: Constants.stampLabelTypo)
     
     override func setup() {
         super.setup()

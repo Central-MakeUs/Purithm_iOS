@@ -41,6 +41,11 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
         self.navigationController.pushViewController(filterDetailViewController, animated: true)
     }
     
+    public func pushFilterDescription(with filterID: String) {
+        let filterDescriptionViewController = FilterDescriptionViewController()
+        self.navigationController.pushViewController(filterDescriptionViewController, animated: true)
+    }
+    
     public func popViewController() {
         self.navigationController.popViewController(animated: true)
     }

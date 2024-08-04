@@ -106,11 +106,18 @@ extension FilterDetailViewModel {
     
     private func handleOptionTapEvent(input: Input, output: Output) {
         input.filterMoreOptionEvent
-            .sink { optionType in
+            .sink { [weak self] optionType in
                 guard let optionType else {
                     print(" optionType is nil. ")
                     return
                 }
+                switch optionType {
+                case .satisfaction:
+                    break
+                case .introduction:
+                    self?.coordinator?.pushFilterDescription(with: "filterID")
+                }
+                
                 //TODO: Type에 따라 화면 전환
                 print("//TODO: Type에 따라 화면 전환 > \(optionType)")
             }

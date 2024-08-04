@@ -14,8 +14,9 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
     public var childCoordinators: [Coordinator] = []
     public var type: CoordinatorType { .filters }
     
-    //TODO: user case 추가
-//    private let signInUseCase = SignInUseCase(repository: AuthRepository())
+    private let filtersUseCase = FiltersUseCase(
+        authService: FiltersService()
+    )
     
     public init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -42,7 +43,11 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
     }
     
     public func pushFilterDescription(with filterID: String) {
-        let filterDescriptionViewController = FilterDescriptionViewController()
+        let viewModel = FilterDescriptionViewModel(
+            filterID: filterID,
+            useCase: filtersUseCase
+        )
+        let filterDescriptionViewController = FilterDescriptionViewController(viewModel: viewModel)
         self.navigationController.pushViewController(filterDescriptionViewController, animated: true)
     }
     

@@ -13,7 +13,7 @@ import CorePurithmAuth
 import CoreUIKit
 
 extension PurithmErrorHandlerable {
-    func bindErrorHandler() {
+    public func bindErrorHandler() {
         errorPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
@@ -22,7 +22,7 @@ extension PurithmErrorHandlerable {
             .store(in: &cancellables)
     }
     
-    func presentErrorPopup(with error: Error) {
+    public func presentErrorPopup(with error: Error) {
         inputAccessoryView?.resignFirstResponder()
         view.endEditing(true)
         var title: String

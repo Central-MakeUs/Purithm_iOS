@@ -23,18 +23,18 @@ public final class PurithmAuthService: PurithmAuthServiceManageable {
             .eraseToAnyPublisher()
     }
     
-    public func requestKakaoSignIn(with accessToken: String) -> AnyPublisher<ResponseWrapper<String>, Error> {
+    public func requestKakaoSignIn(with accessToken: String) -> AnyPublisher<ResponseWrapper<PurithmTokenResponseDTO>, Error> {
         provider.requestPublisher(.kakaoSignIn(kakaoAccessToken: accessToken))
             .tryMap { response in
-                return try response.map(ResponseWrapper<String>.self)
+                return try response.map(ResponseWrapper<PurithmTokenResponseDTO>.self)
             }
             .eraseToAnyPublisher()
     }
     
-    public func requestAppleSignIn(with parameter: [String: Any], token: String) -> AnyPublisher<ResponseWrapper<String>, Error> {
+    public func requestAppleSignIn(with parameter: [String: Any], token: String) -> AnyPublisher<ResponseWrapper<PurithmTokenResponseDTO>, Error> {
         provider.requestPublisher(.appleSignIn(parameter: parameter, token: token))
             .tryMap { response in
-                return try response.map(ResponseWrapper<String>.self)
+                return try response.map(ResponseWrapper<PurithmTokenResponseDTO>.self)
             }
             .eraseToAnyPublisher()
     }

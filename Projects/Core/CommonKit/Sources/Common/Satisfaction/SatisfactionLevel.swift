@@ -1,6 +1,6 @@
 //
 //  SatisfactionLevel.swift
-//  Filter
+//  CoreCommonKit
 //
 //  Created by 이숭인 on 8/5/24.
 //
@@ -8,14 +8,14 @@
 import UIKit
 import CoreCommonKit
 
-enum SatisfactionLevel: Int {
+public enum SatisfactionLevel: Int {
     case veryHigh = 100
     case high = 80
     case mediumHigh = 60
     case medium = 40
     case low = 20
     
-    var color: UIColor {
+    public var color: UIColor {
         switch self {
         case .veryHigh:
             return .purple500
@@ -30,7 +30,18 @@ enum SatisfactionLevel: Int {
         }
     }
     
-    var circleBackgroundImage: UIImage {
+    public var starImage: UIImage {
+        switch self {
+        case .veryHigh, .high:
+            return .icStarHigh
+        case .mediumHigh:
+            return .icStarMedium
+        case .medium, .low:
+            return .icStarLow
+        }
+    }
+    
+    public var circleBackgroundImage: UIImage {
         switch self {
         case .veryHigh:
             return ._101
@@ -42,6 +53,21 @@ enum SatisfactionLevel: Int {
             return ._104
         case .low:
             return ._105
+        }
+    }
+    
+    public var backgroundStarImage: UIImage {
+        switch self {
+        case .veryHigh:
+            return .bgReview100
+        case .high:
+            return .bgReview80
+        case .mediumHigh:
+            return .bgReview60
+        case .medium:
+            return .bgReview40
+        case .low:
+            return .bgReview20
         }
     }
 }

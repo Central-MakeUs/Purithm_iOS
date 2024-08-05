@@ -103,7 +103,7 @@ final class FilterReviewItemView: BaseView {
         dateLabel.text = model.date
         
         //TODO: Rate에 따라 이미지, 컬러가 달라짐
-        rateImageView.image = .icStarHigh.withTintColor(model.satisfactionLevel.color)
+        rateImageView.image = model.satisfactionLevel.starImage .withTintColor(model.satisfactionLevel.color)
         rateLabel.text = "\(model.satisfactionLevel.rawValue) %"
         rateLabel.textColor = model.satisfactionLevel.color
         

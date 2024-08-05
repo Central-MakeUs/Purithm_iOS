@@ -8,6 +8,7 @@
 import UIKit
 import CoreUIKit
 import Combine
+import CoreCommonKit
 
 struct FilterReviewSatiscationComponent: Component {
     var identifier: String
@@ -31,6 +32,8 @@ final class FilterReviewSatiscationView: BaseView {
         $0.layer.cornerRadius = 140 / 2
         $0.clipsToBounds = true
     }
+    let backgroundStarImageView = UIImageView()
+    
     let backgroundView = UIImageView()
     let titleLabel = PurithmLabel(typography: Constants.titleTypo).then {
         $0.text = "필터 만족도"
@@ -44,6 +47,7 @@ final class FilterReviewSatiscationView: BaseView {
     }
     
     override func setupSubviews() {
+        addSubview(backgroundStarImageView)
         addSubview(container)
         
         [backgroundView, titleLabel, satisfactionLabel].forEach {
@@ -54,6 +58,10 @@ final class FilterReviewSatiscationView: BaseView {
     override func setupConstraints() {
         self.snp.makeConstraints { make in
             make.height.equalTo(200)
+        }
+        
+        backgroundStarImageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
         
         container.snp.makeConstraints { make in
@@ -79,6 +87,7 @@ final class FilterReviewSatiscationView: BaseView {
     func configure(with level: SatisfactionLevel) {
         satisfactionLabel.text = "\(level.rawValue) %"
         backgroundView.image = level.circleBackgroundImage
+        backgroundStarImageView.image = level.backgroundStarImage
     }
 }
 

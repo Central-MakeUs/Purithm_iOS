@@ -9,6 +9,7 @@ import Foundation
 import CoreUIKit
 import Combine
 import CombineExt
+import CoreCommonKit
 
 extension FilterReviewsViewModel {
     struct Input {
@@ -29,6 +30,8 @@ final class FilterReviewsViewModel {
     private var cancellables = Set<AnyCancellable>()
     
     private let converter = FilterReviewsSectionConverter()
+    
+    private var reviewTotalCount = 100
     private var satisfactionModel = FilterSatisfactionModel(
         identifier: UUID().uuidString,
         satisfactionLevel: .veryHigh
@@ -101,7 +104,8 @@ final class FilterReviewsViewModel {
         
         let sections = converter.createSections(
             satisfaction: satisfactionModel,
-            reviews: reviews
+            reviews: reviews,
+            reviewCount: reviewTotalCount
         )
         
         output.sectionsSubject.send(sections)

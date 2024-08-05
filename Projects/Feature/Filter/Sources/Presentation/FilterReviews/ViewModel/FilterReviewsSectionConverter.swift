@@ -10,10 +10,10 @@ import CoreUIKit
 import Combine
 
 final class FilterReviewsSectionConverter {
-    func createSections(satisfaction: FilterSatisfactionModel, reviews: [FilterReviewItemModel]) -> [SectionModelType] {
+    func createSections(satisfaction: FilterSatisfactionModel, reviews: [FilterReviewItemModel], reviewCount: Int) -> [SectionModelType] {
         [
             createSatisfactionSections(with: satisfaction),
-            createReviewsSections(with: reviews)
+            createReviewsSections(with: reviews, reviewCount: reviewCount)
         ]
         .flatMap { $0 }
     }
@@ -49,7 +49,7 @@ extension FilterReviewsSectionConverter {
 
 //MARK: - Reviews
 extension FilterReviewsSectionConverter {
-    private func createReviewsSections(with reviews: [FilterReviewItemModel]) -> [SectionModelType] {
+    private func createReviewsSections(with reviews: [FilterReviewItemModel], reviewCount: Int) -> [SectionModelType] {
         let reviewComponents = reviews.map { review in
             FilterReviewItemComponent(
                 identifier: review.identifier,
@@ -57,9 +57,15 @@ extension FilterReviewsSectionConverter {
             )
         }
         
+        let headerComponent = FilterReviewItemHeaderComponent(
+            identifier: "review_item_header",
+            reviewCount: reviewCount
+        )
+        
         let section = SectionModel(
             identifier: "review_section",
             collectionLayout: createReviewsSectionCollectionLayout(),
+            header: headerComponent,
             itemModels: reviewComponents
         )
         
@@ -72,6 +78,8 @@ extension FilterReviewsSectionConverter {
                                 heightDimension: .estimated(200)),
             groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
                                  heightDimension: .estimated(200)),
+            headerStrategy: .header(widthDimension: .fractionalWidth(1.0),
+                                    heightDimension: .absolute(60)),
             isHorizontalGroup: true,
             itemSpacing: 12,
             groupSpacing: 30,

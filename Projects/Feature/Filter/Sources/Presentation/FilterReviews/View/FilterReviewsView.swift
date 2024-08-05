@@ -18,6 +18,10 @@ final class FilterReviewsView: BaseView {
         $0.text = "후기 남기고 스탬프 받기"
     }
     
+    let bottomGradientView = PurithmGradientView().then {
+        $0.colorType = .white
+    }
+    
     override func setup() {
         super.setup()
         
@@ -25,7 +29,7 @@ final class FilterReviewsView: BaseView {
     }
     
     override func setupSubviews() {
-        [collectionView, conformButton].forEach {
+        [collectionView, bottomGradientView, conformButton].forEach {
             addSubview($0)
         }
     }
@@ -38,6 +42,12 @@ final class FilterReviewsView: BaseView {
         conformButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.equalTo(safeAreaLayoutGuide)
+        }
+        
+        bottomGradientView.snp.makeConstraints { make in
+            make.height.equalTo(120)
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalToSuperview()
         }
     }
 }

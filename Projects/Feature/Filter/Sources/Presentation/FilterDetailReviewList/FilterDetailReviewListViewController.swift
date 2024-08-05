@@ -11,6 +11,8 @@ import Combine
 
 final class FilterDetailReviewListViewController: ViewController<FilterDetailReviewListView> {
     private let viewModel: FilterDetailReviewListViewModel
+    private lazy var adapter = CollectionViewAdapter(with: contentView.collectionView)
+    var cancellables = Set<AnyCancellable>()
     
     init(viewModel: FilterDetailReviewListViewModel) {
         self.viewModel = viewModel
@@ -26,6 +28,20 @@ final class FilterDetailReviewListViewController: ViewController<FilterDetailRev
         
         initNavigationBar(with: .page, hideShadow: true)
         initNavigationTitleView(with: .page)
+        
+        bindViewModel()
+    }
+    
+    private func bindViewModel() {
+        let input = FilterDetailReviewListViewModel.Input()
+        
+        let output = viewModel.transform(intput: input)
+        
+        output.sections
+            .sink { [weak self] sections in
+                _ = self?.adapter.receive(sections)
+            }
+            .store(in: &cancellables)
     }
 }
 

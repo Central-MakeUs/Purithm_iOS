@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreCommonKit
 
 struct FilterSatisfactionModel {
     let identifier: String

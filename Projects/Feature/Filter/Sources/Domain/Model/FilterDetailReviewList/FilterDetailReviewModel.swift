@@ -1,5 +1,5 @@
 //
-//  FilterReviewItemModel.swift
+//  FilterDetailReviewModel.swift
 //  Filter
 //
 //  Created by 이숭인 on 8/5/24.
@@ -8,10 +8,12 @@
 import Foundation
 import CoreCommonKit
 
-struct FilterReviewItemModel {
+struct FilterDetailReviewModel {
     let identifier: String
-    let thumbnailImageURLString: String
+    let imageURLStrings: [String]
     let author: String
-    let date: String
+    let authorProfileURL: String
     let satisfactionLevel: SatisfactionLevel
+    let content: String
 }
+

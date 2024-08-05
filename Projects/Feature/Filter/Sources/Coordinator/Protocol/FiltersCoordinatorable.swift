@@ -9,6 +9,7 @@ import Foundation
 import CoreCommonKit
 
 public protocol FiltersCoordinatorable: Coordinator {
+    func pushFilterReviewDetailList()
     func pushFilterReviews(with filterID: String)
     func pushFilterDescription(with filterID: String)
     func pushFilterDetail(with filterID: String)

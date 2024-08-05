@@ -56,8 +56,9 @@ public struct Typography {
         guard let text = text else { return }
         let isKorean = text.range(of: "\\p{Hangul}", options: .regularExpression) != nil
         let isEnglish = text.range(of: "\\p{Latin}", options: .regularExpression) != nil
+        let containsNumber = text.range(of: "\\d", options: .regularExpression) != nil
         
-        if isEnglish {
+        if isEnglish || containsNumber {
             language = .english
         } else {
             language = .korean

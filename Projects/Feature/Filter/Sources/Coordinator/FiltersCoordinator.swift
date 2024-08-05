@@ -51,6 +51,16 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
         self.navigationController.pushViewController(filterDescriptionViewController, animated: true)
     }
     
+    public func pushFilterReviews(with filterID: String) {
+        let viewModel = FilterReviewsViewModel(
+            with: filterID,
+            usecase: filtersUseCase,
+            coordinator: self
+        )
+        let reviewsViewController = FilterReviewsViewController(viewModel: viewModel)
+        self.navigationController.pushViewController(reviewsViewController, animated: true)
+    }
+    
     public func popViewController() {
         self.navigationController.popViewController(animated: true)
     }

@@ -111,15 +111,15 @@ extension FilterDetailViewModel {
                     print(" optionType is nil. ")
                     return
                 }
+                
+                //TODO: filterID주입해줘야함!!
                 switch optionType {
                 case .satisfaction:
+                    self?.coordinator?.pushFilterReviews(with: "filterID")
                     break
                 case .introduction:
                     self?.coordinator?.pushFilterDescription(with: "filterID")
                 }
-                
-                //TODO: Type에 따라 화면 전환
-                print("//TODO: Type에 따라 화면 전환 > \(optionType)")
             }
             .store(in: &cancellabels)
     }

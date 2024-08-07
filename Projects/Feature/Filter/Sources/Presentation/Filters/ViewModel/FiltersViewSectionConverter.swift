@@ -10,7 +10,7 @@ import CoreUIKit
 
 final class FiltersViewSectionConverter {
     func createSections(chips: [FilterChipModel],
-                        orderOption: FilterOrderOptionType,
+                        orderOption: FilterOrderOptionModel?,
                         filters: [FilterItemModel]) -> [SectionModelType] {
         [
             createChipSection(with: chips),
@@ -51,10 +51,14 @@ extension FiltersViewSectionConverter {
 
 //MARK: - Order Option Section
 extension FiltersViewSectionConverter {
-    private func createOrderOptionSection(with option: FilterOrderOptionType) -> [SectionModelType] {
+    private func createOrderOptionSection(with option: FilterOrderOptionModel?) -> [SectionModelType] {
+        guard let option = option else {
+            return []
+        }
+        
         let optionComponent = FilterOrderOptionComponent(
             identifier: option.identifier,
-            optionTitle: option.title
+            optionTitle: option.option.title
         )
         
         let section = SectionModel(

@@ -43,15 +43,55 @@ public final class FiltersViewController: ViewController<FiltersView> {
         let input = FiltersViewModel.Input(
             viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
             chipDidTapEvent: adapter.didSelectItemPublisher,
-            orderOptionTapEvent: adapter.actionEventPublisher
+            adapterItemTapEvent: adapter.actionEventPublisher
         )
+        
+        adapter.actionEventPublisher
+            .sink { [weak self] actionItem in
+                if let _ = actionItem as? FilterOrderOptionAction {
+                    self?.presentMenuBottomSheet()
+                }
+            }
+            .store(in: &cancellables)
+        
         let output = viewModel.transform(input: input)
         
-        output.sectionItems
+        output.sections
             .receive(on: DispatchQueue.main)
             .sink { [weak self] sections in
                 _ = self?.adapter.receive(sections)
             }
             .store(in: &cancellables)
     }
+    
+    private func presentMenuBottomSheet() {
+        let bottomSheetVC = PurithmMenuBottomSheet()
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return bottomSheetVC.preferredContentSize.height
+            })]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16.0
+        }
+        
+        
+        bottomSheetVC.menus = viewModel.orderOptions.map { option in
+            PurithmMenuModel(
+                identifier: option.identifier,
+                title: option.option.title,
+                isSelected: option.isSelected
+            )
+        }
+        
+        bottomSheetVC.menuTapEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] identifier in
+                self?.viewModel.toggleSelectedOrderOption(target: identifier)
+                
+            }
+            .store(in: &self.cancellables)
+        
+        self.present(bottomSheetVC, animated: true, completion: nil)
+    }
 }
+

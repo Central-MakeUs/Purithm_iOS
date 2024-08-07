@@ -35,6 +35,15 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
         self.finishDelegate?.coordinatorDidFinish(childCoordinator: self)
     }
     
+    public func pushFilterOptionDetail(with filterID: String) {
+        let viewModel = FilterOptionDetailViewModel(
+            coordinator: self,
+            filtersUsecase: filtersUseCase
+        )
+        let optionDetailViewController = FilterOptionDetailViewController(viewModel: viewModel)
+        self.navigationController.pushViewController(optionDetailViewController, animated: false)
+    }
+    
     public func pushFilterDetail(with filterID: String) {
         let viewModel = FilterDetailViewModel(with: filterID, coordinator: self)
         let filterDetailViewController = FilterDetailViewController(viewModel: viewModel)
@@ -70,7 +79,7 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
         self.navigationController.pushViewController(detailReviewListViewController, animated: true)
     }
     
-    public func popViewController() {
-        self.navigationController.popViewController(animated: true)
+    public func popViewController(animated: Bool = true) {
+        self.navigationController.popViewController(animated: animated)
     }
 }

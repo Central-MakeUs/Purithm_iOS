@@ -16,6 +16,7 @@ public final class FiltersViewController: ViewController<FiltersView> {
     
     let viewModel: FiltersViewModel
     private lazy var adapter = CollectionViewAdapter(with: contentView.filterCollectionView)
+    private lazy var chipAdapter = CollectionViewAdapter(with: contentView.chipCollectionView)
     
     public init(viewModel: FiltersViewModel) {
         self.viewModel = viewModel
@@ -43,7 +44,7 @@ public final class FiltersViewController: ViewController<FiltersView> {
     private func bindViewModel() {
         let input = FiltersViewModel.Input(
             viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
-            chipDidTapEvent: adapter.didSelectItemPublisher,
+            chipDidTapEvent: chipAdapter.didSelectItemPublisher,
             adapterItemTapEvent: adapter.actionEventPublisher
         )
         
@@ -53,6 +54,13 @@ public final class FiltersViewController: ViewController<FiltersView> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] sections in
                 _ = self?.adapter.receive(sections)
+            }
+            .store(in: &cancellables)
+        
+        output.chipSections
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] sections in
+                _ = self?.chipAdapter.receive(sections)
             }
             .store(in: &cancellables)
         

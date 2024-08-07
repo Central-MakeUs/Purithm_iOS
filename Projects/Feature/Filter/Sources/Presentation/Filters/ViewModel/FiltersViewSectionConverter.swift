@@ -8,20 +8,16 @@
 import Combine
 import CoreUIKit
 
-final class FiltersViewSectionConverter {
-    func createSections(chips: [FilterChipModel],
-                        orderOption: FilterOrderOptionModel?,
-                        filters: [FilterItemModel]) -> [SectionModelType] {
+final class FiltersChipSectionConverter {
+    func createSections(chips: [FilterChipModel]) -> [SectionModelType] {
         [
-            createChipSection(with: chips),
-            createOrderOptionSection(with: orderOption),
-            createFilterItemSection(with: filters)
-        ].flatMap { $0 }
+            createChipSection(with: chips)
+        ]
+        .flatMap { $0 }
     }
 }
 
-//MARK: - Chip Section
-extension FiltersViewSectionConverter {
+extension FiltersChipSectionConverter {
     private func createChipSection(with chips: [FilterChipModel]) -> [SectionModelType] {
         let chipComponent = chips.map { chip in
             FilterChipComponent(identifier: chip.identifier, item: chip)
@@ -46,6 +42,16 @@ extension FiltersViewSectionConverter {
             sectionInset: .with(top: 0, leading: 10, bottom: 0, trailing: 10),
             scrollBehavior: .continuous
          )
+    }
+}
+
+final class FiltersViewSectionConverter {
+    func createSections(orderOption: FilterOrderOptionModel?,
+                        filters: [FilterItemModel]) -> [SectionModelType] {
+        [
+            createOrderOptionSection(with: orderOption),
+            createFilterItemSection(with: filters)
+        ].flatMap { $0 }
     }
 }
 

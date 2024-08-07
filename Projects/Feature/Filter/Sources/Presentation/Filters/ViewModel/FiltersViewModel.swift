@@ -21,6 +21,11 @@ extension FiltersViewModel {
         var sections: AnyPublisher<[SectionModelType], Never> {
             sectionItems.compactMap { $0 }.eraseToAnyPublisher()
         }
+        fileprivate let chipSectionItems = CurrentValueSubject<[SectionModelType], Never>([])
+        var chipSections: AnyPublisher<[SectionModelType], Never> {
+            chipSectionItems.compactMap { $0 }.eraseToAnyPublisher()
+        }
+        
         fileprivate let presentOrderOptionBottomSheetEventSubject = PassthroughSubject<Void, Never>()
         var presentOrderOptionBottomSheetEvent: AnyPublisher<Void, Never> {
             presentOrderOptionBottomSheetEventSubject.eraseToAnyPublisher()
@@ -37,6 +42,7 @@ public final class FiltersViewModel {
     
     weak var coordinator: FiltersCoordinatorable?
     private let sectionConverter = FiltersViewSectionConverter()
+    private let chipSectionConverter = FiltersChipSectionConverter()
     
     private var chipModels = CurrentValueSubject<[FilterChipModel], Never>([])
     private var orderOptionModels = CurrentValueSubject<[FilterOrderOptionModel], Never>([])
@@ -166,16 +172,10 @@ public final class FiltersViewModel {
         chipModels
             .compactMap { $0 }
             .sink { [weak self] chips in
-                guard let self,
-                      let selectedOrderOption = self.selectedOrderOption else { return }
+                guard let self else { return }
                 
-                let sections = self.sectionConverter.createSections(
-                    chips: chips,
-                    orderOption: selectedOrderOption,
-                    filters: self.filters.value
-                )
-                
-                output.sectionItems.send(sections)
+                let sections = self.chipSectionConverter.createSections(chips: chips)
+                output.chipSectionItems.send(sections)
             }
             .store(in: &cancellabels)
         
@@ -185,7 +185,6 @@ public final class FiltersViewModel {
                 guard let self,
                       let selectedOrderOption = self.selectedOrderOption else { return }
                 let sections = self.sectionConverter.createSections(
-                    chips: self.chipModels.value,
                     orderOption: selectedOrderOption,
                     filters: self.filters.value
                 )
@@ -201,7 +200,6 @@ public final class FiltersViewModel {
                       let selectedOrderOption = self.selectedOrderOption else { return }
                 
                 let sections = self.sectionConverter.createSections(
-                    chips: self.chipModels.value,
                     orderOption: selectedOrderOption,
                     filters: filters
                 )

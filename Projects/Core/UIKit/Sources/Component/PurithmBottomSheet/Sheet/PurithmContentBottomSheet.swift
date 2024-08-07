@@ -1,21 +1,17 @@
 //
-//  PurithmMenuBottomSheet.swift
+//  PurithmContentBottomSheet.swift
 //  CoreUIKit
 //
-//  Created by 이숭인 on 8/6/24.
+//  Created by 이숭인 on 8/7/24.
 //
+
 
 import UIKit
 import Combine
 
-public final class PurithmMenuBottomSheet: ViewController<PurithmMenuBottomSheetView> {
+public final class PurithmContentBottomSheet: ViewController<PurithmContentBottomSheetView> {
     var cancellables = Set<AnyCancellable>()
-    public var menuTapEvent: AnyPublisher<String, Never> {
-        contentView.menuTapEvent
-    }
-    
-    /// 메뉴를 입력합니다.
-    public var menus: [PurithmMenuModel]?
+    public var contentModel: PurithmContentModel?
     
     override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -26,20 +22,32 @@ public final class PurithmMenuBottomSheet: ViewController<PurithmMenuBottomSheet
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        guard let menus = menus else { return }
-        contentView.configure(with: menus)
+        guard let contentModel = contentModel else {
+            dismiss(animated: true)
+            return
+        }
+        
         bindAction()
+        contentView.configure(
+            with: contentModel.contentType,
+            title: contentModel.title,
+            description: contentModel.description)
+        
+        updateViewConstraints()
     }
     
     private func bindAction() {
-        contentView.menuTapEvent
+        contentView.conformTapEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.dismiss(animated: true)
             }
             .store(in: &cancellables)
     }
-    
+}
+
+//MARK: - Calculate content size
+extension PurithmContentBottomSheet {
     private func calculateContentSize() {
         var verticalSafeAreaInset: CGFloat = 0
         if let window = UIApplication.shared.connectedScenes
@@ -51,7 +59,7 @@ public final class PurithmMenuBottomSheet: ViewController<PurithmMenuBottomSheet
         }
         
         let maxHeight = UIScreen.main.bounds.height - verticalSafeAreaInset - 44
-        let fittingSize = contentView.container.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        let fittingSize = contentView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
         let contentVerticalSafeAreaHeight = contentView.safeAreaInsets.top + contentView.safeAreaInsets.bottom
         
         let contentHeight = fittingSize - contentVerticalSafeAreaHeight

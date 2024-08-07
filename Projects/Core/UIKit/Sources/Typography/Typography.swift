@@ -69,6 +69,13 @@ public struct Typography {
 extension Typography {
     public var font: UIFont {
         switch weight {
+        case .bold:
+            switch language {
+            case .korean:
+                return .Pretendard.bold.font(size: size.rawValue)
+            case .english:
+                return .EBGaramond.semiBold.font(size: size.rawValue)
+            }
         case .semibold:
             switch language {
             case .korean:

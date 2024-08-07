@@ -6,9 +6,8 @@
 //
 
 import UIKit
-import CoreCommonKit
 
-public enum SatisfactionLevel: Int {
+public enum SatisfactionLevel: Int, CaseIterable {
     case veryHigh = 100
     case high = 80
     case mediumHigh = 60

@@ -1,39 +1,38 @@
 //
-//  FilterDetailHeaderView.swift
-//  Filter
+//  PurithmHeaderView.swift
+//  CoreUIKit
 //
-//  Created by 이숭인 on 7/30/24.
+//  Created by 이숭인 on 8/6/24.
 //
 
 import UIKit
-import CoreUIKit
 import CoreCommonKit
 import Combine
+import SnapKit
+import Then
 
-final class FilterDetailHeaderView: BaseView {
+public final class PurithmHeaderView: BaseView {
     var cancellables = Set<AnyCancellable>()
     
     let headerContainer = UIView()
-    let backButton = UIButton().then {
-        $0.setImage(.icArrowLeft, for: .normal)
-    }
+    public let backButton = UIButton()
     let detailTitleLabel = PurithmLabel(typography: Constants.titleTypo)
     
     let likeContainer = UIStackView().then {
         $0.axis = .vertical
         $0.distribution = .fillProportionally
     }
-    let likeButton = UIButton().then {
+    public let likeButton = UIButton().then {
         $0.setImage(.icLikeUnpressed.withTintColor(.gray300), for: .normal)
         $0.setImage(.icLikePressed.withTintColor(.blue400), for: .selected)
     }
     let likeCountLabel = PurithmLabel(typography: Constants.likeCountTypo)
     
-    override func setup() {
+    public override func setup() {
         super.setup()
     }
     
-    override func setupSubviews() {
+    public override func setupSubviews() {
         addSubview(headerContainer)
         
         [backButton, detailTitleLabel, likeContainer].forEach {
@@ -45,7 +44,7 @@ final class FilterDetailHeaderView: BaseView {
         }
     }
     
-    override func setupConstraints() {
+    public override func setupConstraints() {
         headerContainer.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview()
             make.horizontalEdges.equalToSuperview().inset(20)
@@ -73,15 +72,26 @@ final class FilterDetailHeaderView: BaseView {
         }
     }
     
-    func configure(title: String, likeCount: Int, isLike: Bool) {
-        detailTitleLabel.text = title
-        likeCountLabel.text = "\(likeCount)"
-        
-        likeButton.isSelected = isLike
+    public func configure(with headerType: PurithmHeaderType) {
+        switch headerType {
+        case .back(let title, let likeCount, let isLike):
+            backButton.setImage(.icArrowLeft, for: .normal)
+            detailTitleLabel.text = title
+            likeButton.isSelected = isLike
+            likeCountLabel.isHidden = false
+            if likeCount > .zero {
+                likeCountLabel.text = "\(likeCount)"
+            }
+        case .close(let title, let isLike):
+            backButton.setImage(.icCancel, for: .normal)
+            detailTitleLabel.text = title
+            likeButton.isSelected = isLike
+            likeCountLabel.isHidden = true
+        }
     }
 }
 
-extension FilterDetailHeaderView {
+extension PurithmHeaderView {
     private enum Constants {
         static let titleTypo = Typography(size: .size32, weight: .medium, color: .gray500, applyLineHeight: true)
         static let likeCountTypo = Typography(size: .size12, weight: .medium, alignment: .center, color: .gray300, applyLineHeight: true)

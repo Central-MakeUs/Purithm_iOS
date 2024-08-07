@@ -14,7 +14,7 @@ final class FilterDetailView: BaseView {
     
     //MARK: View
     let container = UIView()
-    let headerView = FilterDetailHeaderView()
+    let headerView = PurithmHeaderView()
     var optionViews: [FilterMoreOptionView] = {
         FilterDetailOptionType.allCases.map { type in
             let optionView = FilterMoreOptionView()
@@ -121,7 +121,7 @@ final class FilterDetailView: BaseView {
         }
     }
     
-    func configure(title: String, likeCount: Int, isLike: Bool) {
-        headerView.configure(title: title, likeCount: likeCount, isLike: isLike)
+    func configure(with headerType: PurithmHeaderType) {
+        headerView.configure(with: headerType)
     }
 }

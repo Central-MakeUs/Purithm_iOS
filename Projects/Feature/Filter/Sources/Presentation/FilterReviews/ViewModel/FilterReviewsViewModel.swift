@@ -25,7 +25,7 @@ extension FilterReviewsViewModel {
 }
 
 final class FilterReviewsViewModel {
-    weak var coordinator: FiltersCoordinatorable?
+    weak var coordinator: FilterDetailCoordinatorable?
     weak var filtersUsecase: FiltersUseCase?
     private var cancellables = Set<AnyCancellable>()
     
@@ -95,7 +95,7 @@ final class FilterReviewsViewModel {
         )
     ]
     
-    init(with filterID: String, usecase: FiltersUseCase, coordinator: FiltersCoordinatorable) {
+    init(with filterID: String, usecase: FiltersUseCase, coordinator: FilterDetailCoordinatorable) {
         self.coordinator = coordinator
     }
     

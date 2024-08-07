@@ -79,11 +79,11 @@ extension DefaultTabBarCoordinator {
     private func startTabCoordinator(of page: TabBarPage, to tabNavigationController: UINavigationController) {
         switch page {
         case .home:
-            // TODO: 각 피처별 코디네이터 할당 필요함.
             let filtersCoordinator = FiltersCoordinator(tabNavigationController)
             self.childCoordinators.append(filtersCoordinator)
             filtersCoordinator.start()
         case .author:
+            // TODO: 각 피처별 코디네이터 할당 필요함.
             let authorVC = UIViewController()
             authorVC.view.backgroundColor = .green
             tabNavigationController.viewControllers = [authorVC]

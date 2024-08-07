@@ -36,12 +36,6 @@ final class FilterDetailViewController: ViewController<FilterDetailView> {
         
         contentView.configure(with: .back(title: "Blueming", likeCount: 12, isLike: true))
         bindViewModel()
-        
-        contentView.backButtonTapEvent
-            .sink { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
-            }
-            .store(in: &cancellables)
     }
     
     private func bindViewModel() {

@@ -27,7 +27,8 @@ extension FilterDetailViewModel {
 
 final class FilterDetailViewModel {
     private var cancellabels = Set<AnyCancellable>()
-    weak var coordinator: FiltersCoordinatorable?
+    weak var coordinator: FilterDetailCoordinatorable?
+    
     private let converter = FilterDetailSectionConverter()
     
     private var filterDetail = CurrentValueSubject<FilterDetailModel?, Never>(nil)
@@ -35,7 +36,7 @@ final class FilterDetailViewModel {
         filterDetail.value
     }
     
-    init(with filterID: String, coordinator: FiltersCoordinatorable) {
+    init(with filterID: String, coordinator: FilterDetailCoordinatorable) {
         //TODO: ID 를 기반으로 filter 상세 정보 불러와야함
         self.coordinator = coordinator
     }
@@ -96,6 +97,8 @@ extension FilterDetailViewModel {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.coordinator?.popViewController(animated: true)
+                self?.coordinator?.finish()
+                
             }
             .store(in: &cancellabels)
     }

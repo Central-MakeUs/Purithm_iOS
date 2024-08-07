@@ -24,7 +24,7 @@ extension FilterOptionDetailViewModel {
 }
 
 final class FilterOptionDetailViewModel {
-    weak var coordinator: FiltersCoordinatorable?
+    weak var coordinator: FilterDetailCoordinator?
     weak var filtersUsecase: FiltersUseCase?
     private let converter = FilterOptionDetailSectionConverter()
     
@@ -40,7 +40,7 @@ final class FilterOptionDetailViewModel {
     }
     
     
-    init(coordinator: FiltersCoordinatorable, filtersUsecase: FiltersUseCase) {
+    init(coordinator: FilterDetailCoordinator, filtersUsecase: FiltersUseCase) {
         self.coordinator = coordinator
         self.filtersUsecase = filtersUsecase
     }

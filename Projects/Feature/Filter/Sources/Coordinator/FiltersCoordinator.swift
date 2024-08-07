@@ -31,55 +31,16 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
         self.navigationController.viewControllers = [filtersViewController]
     }
     
-    public func finish() {
-        self.finishDelegate?.coordinatorDidFinish(childCoordinator: self)
-    }
-    
-    public func pushFilterOptionDetail(with filterID: String) {
-        let viewModel = FilterOptionDetailViewModel(
-            coordinator: self,
-            filtersUsecase: filtersUseCase
-        )
-        let optionDetailViewController = FilterOptionDetailViewController(viewModel: viewModel)
-        self.navigationController.pushViewController(optionDetailViewController, animated: false)
-    }
-    
     public func pushFilterDetail(with filterID: String) {
-        let viewModel = FilterDetailViewModel(with: filterID, coordinator: self)
-        let filterDetailViewController = FilterDetailViewController(viewModel: viewModel)
-        filterDetailViewController.hidesBottomBarWhenPushed = true
-        self.navigationController.pushViewController(filterDetailViewController, animated: true)
+        let filterDetailCoordinator = FilterDetailCoordinator(self.navigationController)
+        filterDetailCoordinator.finishDelegate = self
+        self.childCoordinators.append(filterDetailCoordinator)
+        filterDetailCoordinator.start()
     }
-    
-    public func pushFilterDescription(with filterID: String) {
-        let viewModel = FilterDescriptionViewModel(
-            filterID: filterID,
-            useCase: filtersUseCase
-        )
-        let filterDescriptionViewController = FilterDescriptionViewController(viewModel: viewModel)
-        self.navigationController.pushViewController(filterDescriptionViewController, animated: true)
-    }
-    
-    public func pushFilterReviews(with filterID: String) {
-        let viewModel = FilterReviewsViewModel(
-            with: filterID,
-            usecase: filtersUseCase,
-            coordinator: self
-        )
-        let reviewsViewController = FilterReviewsViewController(viewModel: viewModel)
-        self.navigationController.pushViewController(reviewsViewController, animated: true)
-    }
-    
-    public func pushFilterReviewDetailList() {
-        let viewModel = FilterDetailReviewListViewModel(
-            usecase: filtersUseCase,
-            coordinator: self
-        )
-        let detailReviewListViewController = FilterDetailReviewListViewController(viewModel: viewModel)
-        self.navigationController.pushViewController(detailReviewListViewController, animated: true)
-    }
-    
-    public func popViewController(animated: Bool = true) {
-        self.navigationController.popViewController(animated: animated)
+}
+
+extension FiltersCoordinator: CoordinatorFinishDelegate {
+    public func coordinatorDidFinish(childCoordinator: Coordinator) {
+        self.childCoordinators = self.childCoordinators.filter({ $0.type != childCoordinator.type })
     }
 }

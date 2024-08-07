@@ -38,6 +38,8 @@ extension FilterChipComponent {
 final class FilterChipView: BaseView {
     let container = UIStackView().then {
         $0.axis = .horizontal
+        $0.distribution = .fillProportionally
+        $0.alignment = .center
         $0.spacing = 8
     }
     
@@ -47,41 +49,37 @@ final class FilterChipView: BaseView {
     }
     let titleLabel = UILabel()
     
-    let gradientContainer = UIView()
-    var blueGradientLayer: CAGradientLayer = UIColor.blueGradient(frame: .zero).then {
-        $0.cornerRadius = 18
+    let blueGradientView = PurithmGradientView().then {
+        $0.colorType = .blue(direction: .trailing)
+        $0.layer.cornerRadius = 18
+        $0.clipsToBounds = true
     }
     
     override func setupSubviews() {
         self.layer.cornerRadius = 18
         self.clipsToBounds = true
-        gradientContainer.layer.insertSublayer(blueGradientLayer, at: 0)
         
-        [container, gradientContainer].forEach {
+        [blueGradientView, container].forEach {
             addSubview($0)
         }
         
         [selectedImageView, titleLabel].forEach {
             container.addArrangedSubview($0)
         }
-        
-        self.sendSubviewToBack(gradientContainer)
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        blueGradientLayer.frame = self.bounds
     }
     
     override func setupConstraints() {
         container.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview()
-            make.leading.equalToSuperview().inset(12)
+            make.leading.equalToSuperview().inset(4)
             make.trailing.equalToSuperview().inset(12)
         }
         
-        gradientContainer.snp.makeConstraints { make in
+        selectedImageView.snp.makeConstraints { make in
+            make.size.equalTo(28)
+        }
+        
+        blueGradientView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
@@ -96,9 +94,12 @@ final class FilterChipView: BaseView {
         titleLabel.applyTypography(with: typo)
         titleLabel.text = title
         
-//        selectedImageView.isHidden = !isSelected
-        selectedImageView.isHidden = true
-        gradientContainer.isHidden = !isSelected   
+        selectedImageView.isHidden = !isSelected
+        blueGradientView.isHidden = !isSelected
+        
+        container.snp.updateConstraints { make in
+            make.leading.equalToSuperview().inset(isSelected ? 4 : 12)
+        }
     }
 }
 

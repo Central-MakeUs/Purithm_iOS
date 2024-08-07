@@ -34,8 +34,8 @@ public final class PurithmGradientView: BaseView {
         case .blue(let direction):
             gradientLayer = makeGradientLayer(
                 frame: .zero,
-                startColor: .whiteGradientStart,
-                endColor: .whiteGradientEnd,
+                startColor: .blueGradientStart,
+                endColor: .blueGradientEnd,
                 direction: direction
             )
         case .purple(let direction):

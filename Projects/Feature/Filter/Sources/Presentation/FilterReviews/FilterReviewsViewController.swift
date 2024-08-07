@@ -59,7 +59,7 @@ extension FilterReviewsViewController: NavigationBarApplicable {
     func handleNavigationButtonAction(with identifier: String) {
         switch identifier {
         case Constants.questionImageIdentifier:
-            print("::: 만족도 안내 바텀시트 올려야함")
+            presentContentBottomSheet()
         default:
             break
         }
@@ -83,5 +83,27 @@ extension FilterReviewsViewController: NavigationBarApplicable {
                 color: .gray500
             )
         ]
+    }
+}
+
+//MARK: - Present Bottom Sheet
+extension FilterReviewsViewController {
+    private func presentContentBottomSheet() {
+        let bottomSheetVC = PurithmContentBottomSheet()
+        bottomSheetVC.contentModel = PurithmContentModel(
+            contentType: .satisfaction,
+            title: "필터 만족도",
+            description: "퓨어지수는 퓨리즘만의 별점 시스템입니다. 구매 만족도가 높을수록 100%에 가까워요."
+        )
+        
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return bottomSheetVC.preferredContentSize.height
+            })]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16.0
+        }
+        
+        self.present(bottomSheetVC, animated: true, completion: nil)
     }
 }

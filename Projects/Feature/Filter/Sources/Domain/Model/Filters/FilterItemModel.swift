@@ -15,6 +15,7 @@ public struct FilterItemModel {
     let author: String
     var isLike: Bool
     var likeCount: Int
+    let canAccess: Bool
 }
 
 public enum PlanType {

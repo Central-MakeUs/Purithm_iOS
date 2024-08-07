@@ -21,6 +21,14 @@ extension FiltersViewModel {
         var sections: AnyPublisher<[SectionModelType], Never> {
             sectionItems.compactMap { $0 }.eraseToAnyPublisher()
         }
+        fileprivate let presentOrderOptionBottomSheetEventSubject = PassthroughSubject<Void, Never>()
+        var presentOrderOptionBottomSheetEvent: AnyPublisher<Void, Never> {
+            presentOrderOptionBottomSheetEventSubject.eraseToAnyPublisher()
+        }
+        fileprivate let presentFilterRockBottomSheetSubject = PassthroughSubject<Void, Never>()
+        var presentFilterRockBottomSheetEvent: AnyPublisher<Void, Never> {
+            presentFilterRockBottomSheetSubject.eraseToAnyPublisher()
+        }
     }
 }
 
@@ -39,6 +47,10 @@ public final class FiltersViewModel {
     var orderOptions: [FilterOrderOptionModel] {
         orderOptionModels.value
     }
+    fileprivate let errorSubject = PassthroughSubject<Error, Never>()
+    var errorPublisher: AnyPublisher<Error, Never> {
+        errorSubject.eraseToAnyPublisher()
+    }
     
     // only test
     private var filters = CurrentValueSubject<[FilterItemModel], Never>([
@@ -49,7 +61,8 @@ public final class FiltersViewModel {
             filterTitle: "Rainbow",
             author: "Made by Ehwa",
             isLike: true,
-            likeCount: 12
+            likeCount: 12,
+            canAccess: false
         ),
         FilterItemModel(
             identifier: UUID().uuidString,
@@ -58,7 +71,8 @@ public final class FiltersViewModel {
             filterTitle: "Blueming",
             author: "Made by Ehwa",
             isLike: false,
-            likeCount: 12
+            likeCount: 12,
+            canAccess: false
         ),
         FilterItemModel(
             identifier: UUID().uuidString,
@@ -67,7 +81,8 @@ public final class FiltersViewModel {
             filterTitle: "title",
             author: "author",
             isLike: false,
-            likeCount: 12
+            likeCount: 12,
+            canAccess: true
         ),
         FilterItemModel(
             identifier: UUID().uuidString,
@@ -76,7 +91,8 @@ public final class FiltersViewModel {
             filterTitle: "title",
             author: "author",
             isLike: false,
-            likeCount: 12
+            likeCount: 12,
+            canAccess: true
         ),
         FilterItemModel(
             identifier: UUID().uuidString,
@@ -85,7 +101,8 @@ public final class FiltersViewModel {
             filterTitle: "title",
             author: "author",
             isLike: false,
-            likeCount: 12
+            likeCount: 12,
+            canAccess: true
         ),
         FilterItemModel(
             identifier: UUID().uuidString,
@@ -94,7 +111,8 @@ public final class FiltersViewModel {
             filterTitle: "title",
             author: "author",
             isLike: false,
-            likeCount: 12
+            likeCount: 12,
+            canAccess: true
         ),
         FilterItemModel(
             identifier: UUID().uuidString,
@@ -103,7 +121,8 @@ public final class FiltersViewModel {
             filterTitle: "title",
             author: "author",
             isLike: false,
-            likeCount: 12
+            likeCount: 12,
+            canAccess: true
         ),
         FilterItemModel(
             identifier: UUID().uuidString,
@@ -112,7 +131,8 @@ public final class FiltersViewModel {
             filterTitle: "title",
             author: "author",
             isLike: false,
-            likeCount: 12
+            likeCount: 12,
+            canAccess: true
         ),
         FilterItemModel(
             identifier: UUID().uuidString,
@@ -121,7 +141,8 @@ public final class FiltersViewModel {
             filterTitle: "title",
             author: "author",
             isLike: false,
-            likeCount: 12
+            likeCount: 12,
+            canAccess: true
         ),
     ])
     
@@ -268,15 +289,23 @@ extension FiltersViewModel {
                 
                 switch actionItem {
                 case _ as FilterOrderOptionAction:
-                    break // 별도의 이벤트를 받아 따로 처리함
+                    output.presentOrderOptionBottomSheetEventSubject.send(Void())
                 case let action as FilterLikeAction:
                     if let targetIndex = self.filters.value.firstIndex(where: { $0.identifier == action.identifier }) {
                         self.filters.value[targetIndex].isLike.toggle()
                     }
                 case let action as FilterDidTapAction:
-                    //TODO: 프리미엄 필터인 경우, 바텀시트를 띄우는 분기처리 로직 추가 필요
-                    DispatchQueue.main.async {
-                        self.coordinator?.pushFilterDetail(with: action.identifier)
+                    if let targetIndex = self.filters.value.firstIndex(where: { $0.identifier == action.identifier }) {
+                        if self.filters.value[targetIndex].canAccess {
+                            DispatchQueue.main.async {
+                                self.coordinator?.pushFilterDetail(with: action.identifier)
+                            }
+                        } else {
+                            output.presentFilterRockBottomSheetSubject.send(Void())
+                        }
+                    } else {
+                        let emptyError = NSError(domain: "잘못된 ID 값 입니다.\nID: \(action.identifier)", code: 0, userInfo: nil)
+                        self.errorSubject.send(emptyError)
                     }
                 default:
                     print("invalid action type > \(actionItem)")

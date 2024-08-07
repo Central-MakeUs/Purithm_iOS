@@ -12,7 +12,7 @@ import CoreCommonKit
 import Combine
 
 public final class FiltersViewController: ViewController<FiltersView> {
-    var cancellables = Set<AnyCancellable>()
+    public var cancellables = Set<AnyCancellable>()
     
     let viewModel: FiltersViewModel
     private lazy var adapter = CollectionViewAdapter(with: contentView.filterCollectionView)
@@ -37,6 +37,7 @@ public final class FiltersViewController: ViewController<FiltersView> {
         self.extendedLayoutIncludesOpaqueBars = false
         
         bindViewModel()
+        bindErrorHandler()
     }
     
     private func bindViewModel() {
@@ -46,14 +47,6 @@ public final class FiltersViewController: ViewController<FiltersView> {
             adapterItemTapEvent: adapter.actionEventPublisher
         )
         
-        adapter.actionEventPublisher
-            .sink { [weak self] actionItem in
-                if let _ = actionItem as? FilterOrderOptionAction {
-                    self?.presentMenuBottomSheet()
-                }
-            }
-            .store(in: &cancellables)
-        
         let output = viewModel.transform(input: input)
         
         output.sections
@@ -62,6 +55,39 @@ public final class FiltersViewController: ViewController<FiltersView> {
                 _ = self?.adapter.receive(sections)
             }
             .store(in: &cancellables)
+        
+        output.presentOrderOptionBottomSheetEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.presentMenuBottomSheet()
+            }
+            .store(in: &cancellables)
+        
+        output.presentFilterRockBottomSheetEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.presentContentBottomSheet()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func presentContentBottomSheet() {
+        let bottomSheetVC = PurithmContentBottomSheet()
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return bottomSheetVC.preferredContentSize.height
+            })]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16.0
+        }
+        
+        bottomSheetVC.contentModel = PurithmContentModel(
+            contentType: .premiumFilterLock,
+            title: "잠금은 어떻게 푸나요?",
+            description: "필터를 사용해보고 후기를 남기면 스탬프가 찍히고,\n일정 개수를 모으면 프리미엄 필터를 열람할 수 있어요."
+        )
+        
+        self.present(bottomSheetVC, animated: true, completion: nil)
     }
     
     private func presentMenuBottomSheet() {
@@ -94,4 +120,3 @@ public final class FiltersViewController: ViewController<FiltersView> {
         self.present(bottomSheetVC, animated: true, completion: nil)
     }
 }
-

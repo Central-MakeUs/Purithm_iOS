@@ -34,8 +34,11 @@ final class FilterOptionView: BaseView {
         $0.layer.borderWidth = 1
         $0.layer.borderColor = UIColor.white020.cgColor
     }
-    let imageView = UIImageView()
-    let titleLabel = PurithmLabel(typography: Constants.titleTypo)
+    let optionButton = PlainButton(type: .transparent, variant: .option, size: .small).then {
+        $0.shape = .circle
+        $0.hasShadow = true
+        $0.hasContentShdaow = true
+    }
     
     override func setup() {
         super.setup()
@@ -45,8 +48,7 @@ final class FilterOptionView: BaseView {
     override func setupSubviews() {
         addSubview(container)
         
-        container.addSubview(imageView)
-        container.addSubview(titleLabel)
+        container.addSubview(optionButton)
     }
     
     override func setupConstraints() {
@@ -55,22 +57,14 @@ final class FilterOptionView: BaseView {
             make.height.equalTo(40)
         }
         
-        imageView.snp.makeConstraints { make in
-            make.size.equalTo(20)
-            make.leading.equalToSuperview().inset(12)
-            make.verticalEdges.equalToSuperview().inset(10)
-        }
-        
-        titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(imageView.snp.trailing).offset(6)
-            make.verticalEdges.equalToSuperview().inset(10)
-            make.trailing.equalToSuperview().inset(12)
+        optionButton.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
     
     func configure(with optionType: IPhonePhotoFilter, intensity: Int) {
-        imageView.image = optionType.image.withTintColor(.white)
-        titleLabel.text = "\(optionType.rawValue) \(intensity)"
+        optionButton.image = optionType.image
+        optionButton.text = "\(optionType.rawValue) \(intensity)"
     }
 }
 

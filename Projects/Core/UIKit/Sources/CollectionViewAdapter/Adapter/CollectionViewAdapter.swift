@@ -24,6 +24,11 @@ public final class CollectionViewAdapter: NSObject {
         didSelectItemSubject.eraseToAnyPublisher()
     }
     
+    private let didScrollSubject = PassthroughSubject<IndexPath, Never>()
+    public var didScrollPublisher: AnyPublisher<IndexPath, Never> {
+        didScrollSubject.eraseToAnyPublisher()
+    }
+    
     private let actionEventSubject = PassthroughSubject<ActionEventItem, Never>()
     public var actionEventPublisher: AnyPublisher<ActionEventItem, Never> {
         actionEventSubject.eraseToAnyPublisher()
@@ -264,6 +269,11 @@ extension CollectionViewAdapter {
         section.interGroupSpacing = layoutModel.groupSpacing
         section.contentInsets = layoutModel.sectionInset
         section.orthogonalScrollingBehavior = layoutModel.scrollBehavior
+        section.visibleItemsInvalidationHandler = { [weak self] (visibleItems, contentOffset, environment) in
+            for item in visibleItems {
+                self?.didScrollSubject.send(item.indexPath)
+            }
+        }
         
         // header / footer
         if let headerStrategy = layoutModel.headerStrategy {

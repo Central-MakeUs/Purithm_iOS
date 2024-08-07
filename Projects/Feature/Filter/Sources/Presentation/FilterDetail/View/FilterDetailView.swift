@@ -52,12 +52,12 @@ final class FilterDetailView: BaseView {
         bottomView.originalImageButton.tap
     }
     
-    var textHideTapEvent: AnyPublisher<Void, Never> {
-        bottomView.textHideButton.tap
+    var originalPressedEvent: AnyPublisher<Void, Never> {
+        bottomView.originalImageButton.pressed
     }
     
-    var textHidePressedEvent: AnyPublisher<Void, Never> {
-        bottomView.textHideButton.pressed
+    var textHideTapEvent: AnyPublisher<Void, Never> {
+        bottomView.textHideButton.tap
     }
     
     var conformTapEvent: AnyPublisher<Void, Never> {

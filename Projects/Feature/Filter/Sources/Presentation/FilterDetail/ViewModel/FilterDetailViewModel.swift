@@ -15,7 +15,8 @@ extension FilterDetailViewModel {
         let pageBackEvent: AnyPublisher<Void, Never>
         let filterLikeEvent: AnyPublisher<Void, Never>
         let filterMoreOptionEvent: AnyPublisher<FilterDetailOptionType?, Never>
-        let showOriginalEvent: AnyPublisher<Void, Never>
+        let showOriginalTapEvent: AnyPublisher<Void, Never>
+        let showOriginalPressedEvent: AnyPublisher<Void, Never>
         let conformEvent: AnyPublisher<Void, Never>
     }
     
@@ -29,7 +30,10 @@ final class FilterDetailViewModel {
     weak var coordinator: FiltersCoordinatorable?
     private let converter = FilterDetailSectionConverter()
     
-    var filterDetail = CurrentValueSubject<FilterDetailModel?, Never>(nil)
+    private var filterDetail = CurrentValueSubject<FilterDetailModel?, Never>(nil)
+    var filter: FilterDetailModel? {
+        filterDetail.value
+    }
     
     init(with filterID: String, coordinator: FiltersCoordinatorable) {
         //TODO: ID 를 기반으로 filter 상세 정보 불러와야함
@@ -125,9 +129,14 @@ extension FilterDetailViewModel {
     }
     
     private func handleShowOriginalEvent(input: Input, output: Output) {
-        input.showOriginalEvent
+        input.showOriginalTapEvent
             .sink { _ in
                 print("handleShowOriginalEvent")
+            }
+            .store(in: &cancellabels)
+        input.showOriginalPressedEvent
+            .sink { _ in
+                print("showOriginalPressedEvent")
             }
             .store(in: &cancellabels)
     }

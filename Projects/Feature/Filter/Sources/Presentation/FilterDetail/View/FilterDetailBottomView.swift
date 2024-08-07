@@ -28,6 +28,7 @@ final class FilterDetailBottomView: BaseView {
         $0.shape = .circle
         $0.hasShadow = true
         $0.hasContentShdaow = true
+        $0.isSelected = false
     }
     
     let conformButton = PlainButton(type: .transparent, variant: .default, size: .large).then {
@@ -83,14 +84,24 @@ final class FilterDetailBottomView: BaseView {
         }
     }
     
-    func fadeOutAndHide(with duration: TimeInterval) {
+    func showAndHide(with duration: TimeInterval) {
+        textHideButton.isSelected.toggle()
+        
+        if textHideButton.isSelected {
+            fadeOutAndHide(with: duration)
+        } else {
+            fadeInAndShow(with: duration)
+        }
+    }
+    
+    private func fadeOutAndHide(with duration: TimeInterval) {
         UIView.animate(withDuration: duration) {
             self.conformButton.alpha = 0
             self.bottomGradientView.hide()
         }
     }
     
-    func fadeInAndShow(with duration: TimeInterval) {
+    private func fadeInAndShow(with duration: TimeInterval) {
         UIView.animate(withDuration: duration) {
             self.conformButton.alpha = 1
             self.bottomGradientView.show()

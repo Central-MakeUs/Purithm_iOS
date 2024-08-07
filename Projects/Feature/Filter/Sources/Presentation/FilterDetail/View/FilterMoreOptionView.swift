@@ -35,6 +35,7 @@ final class FilterMoreOptionView: BaseView {
         super.setup()
      
         self.addGestureRecognizer(viewTapGesture)
+        self.backgroundColor = .gray100
     }
     
     override func setupSubviews() {

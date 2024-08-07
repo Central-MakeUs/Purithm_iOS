@@ -8,6 +8,7 @@
 import Foundation
 
 public enum PurithmHeaderType {
+    case none(title: String)
     case back(title: String, likeCount: Int, isLike: Bool)
     case close(title: String, isLike: Bool)
 }

@@ -14,11 +14,22 @@ import Then
 public final class PurithmHeaderView: BaseView {
     var cancellables = Set<AnyCancellable>()
     
-    let headerContainer = UIView()
-    public let backButton = UIButton()
-    let detailTitleLabel = PurithmLabel(typography: Constants.titleTypo)
+    let headerContainer = UIView().then {
+        $0.backgroundColor = .gray100
+    }
     
-    let likeContainer = UIStackView().then {
+    let leftContainer = UIStackView().then {
+        $0.axis = .horizontal
+        $0.distribution = .fill
+        $0.alignment = .center
+        $0.spacing = 10
+    }
+    public let leftButton = UIButton()
+    let titleLabel = PurithmLabel(typography: Constants.titleTypo).then {
+        $0.text = "Header"
+    }
+
+    let rightContainer = UIStackView().then {
         $0.axis = .vertical
         $0.distribution = .fillProportionally
     }
@@ -30,63 +41,69 @@ public final class PurithmHeaderView: BaseView {
     
     public override func setup() {
         super.setup()
+        self.backgroundColor = .gray100
     }
     
     public override func setupSubviews() {
         addSubview(headerContainer)
+        headerContainer.addSubview(leftContainer)
+        leftContainer.addArrangedSubview(leftButton)
+        leftContainer.addArrangedSubview(titleLabel)
         
-        [backButton, detailTitleLabel, likeContainer].forEach {
-            headerContainer.addSubview($0)
-        }
+        headerContainer.addSubview(rightContainer)
+        rightContainer.addArrangedSubview(likeButton)
+        rightContainer.addArrangedSubview(likeCountLabel)
         
-        [likeButton, likeCountLabel].forEach {
-            likeContainer.addArrangedSubview($0)
-        }
     }
     
     public override func setupConstraints() {
         headerContainer.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview()
             make.horizontalEdges.equalToSuperview().inset(20)
+            make.height.equalTo(48)
         }
         
-        backButton.snp.makeConstraints { make in
-            make.size.equalTo(24)
+        leftContainer.snp.makeConstraints { make in
+            make.verticalEdges.equalToSuperview()
             make.leading.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.trailing.lessThanOrEqualTo(rightContainer.snp.leading).offset(-12)
         }
         
-        detailTitleLabel.snp.makeConstraints { make in
-            make.verticalEdges.equalToSuperview().inset(10)
-            make.leading.equalTo(backButton.snp.trailing).offset(12)
-            make.trailing.equalTo(likeContainer.snp.leading).offset(-12)
-        }
-        
-        likeButton.snp.makeConstraints { make in
-            make.size.equalTo(24)
-        }
-        
-        likeContainer.snp.makeConstraints { make in
+        rightContainer.snp.makeConstraints { make in
+            make.verticalEdges.equalToSuperview()
             make.trailing.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.leading.lessThanOrEqualTo(leftContainer.snp.trailing).offset(12)
+        }
+        
+        leftButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
         }
     }
     
     public func configure(with headerType: PurithmHeaderType) {
         switch headerType {
+        case .none(let title):
+            leftButton.isHidden = true
+            rightContainer.isHidden = true
+            
+            titleLabel.text = title
         case .back(let title, let likeCount, let isLike):
-            backButton.setImage(.icArrowLeft, for: .normal)
-            detailTitleLabel.text = title
-            likeButton.isSelected = isLike
+            leftButton.isHidden = false
+            rightContainer.isHidden = false
             likeCountLabel.isHidden = false
-            if likeCount > .zero {
-                likeCountLabel.text = "\(likeCount)"
-            }
-        case .close(let title, let isLike):
-            backButton.setImage(.icCancel, for: .normal)
-            detailTitleLabel.text = title
+            
+            titleLabel.text = title
+            leftButton.setImage(.icArrowLeft.withTintColor(.gray500), for: .normal)
+            likeCountLabel.text = "\(likeCount)"
             likeButton.isSelected = isLike
+        case .close(let title, let isLike):
+            leftButton.isHidden = false
+            rightContainer.isHidden = false
             likeCountLabel.isHidden = true
+            
+            titleLabel.text = title
+            leftButton.setImage(.icCancel.withTintColor(.gray500), for: .normal)
+            likeButton.isSelected = isLike
         }
     }
 }

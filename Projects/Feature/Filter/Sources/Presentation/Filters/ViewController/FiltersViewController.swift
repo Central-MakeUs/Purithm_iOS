@@ -39,6 +39,8 @@ public final class FiltersViewController: ViewController<FiltersView> {
         
         bindViewModel()
         bindErrorHandler()
+        
+        contentView.configure(with: .none(title: "Filters"))
     }
     
     private func bindViewModel() {

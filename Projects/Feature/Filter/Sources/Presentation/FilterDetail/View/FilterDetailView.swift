@@ -13,7 +13,9 @@ final class FilterDetailView: BaseView {
     var cancellables = Set<AnyCancellable>()
     
     //MARK: View
-    let container = UIView()
+    let container = UIView().then {
+        $0.backgroundColor = .gray100
+    }
     let headerView = PurithmHeaderView()
     var optionViews: [FilterMoreOptionView] = {
         FilterDetailOptionType.allCases.map { type in
@@ -35,7 +37,7 @@ final class FilterDetailView: BaseView {
     //MARK: Properties
     private let optionTapEventSubject = PassthroughSubject<FilterDetailOptionType?, Never>()
     var backButtonTapEvent: AnyPublisher<Void, Never> {
-        headerView.backButton.tap
+        headerView.leftButton.tap
     }
     var likeButtonTapEvent: AnyPublisher<Void, Never> {
         headerView.likeButton.tap
@@ -64,6 +66,7 @@ final class FilterDetailView: BaseView {
     override func setup() {
         super.setup()
         
+        self.backgroundColor = .gray100
         bindAction()
     }
     

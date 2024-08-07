@@ -17,15 +17,7 @@ extension FiltersView {
 }
 
 public final class FiltersView: BaseView {
-    let headerContainer = UIView().then {
-        $0.backgroundColor = .gray100
-    }
-    let headerTitleLabel = PurithmLabel(typography: Constants.titleTypo).then {
-        $0.text = "Filters"
-    }
-    let headerLikeButton = UIButton().then {
-        $0.setImage(.icLikeUnpressed, for: .normal)
-    }
+    let headerView = PurithmHeaderView()
     
     let filterCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.backgroundColor = .gray100
@@ -51,39 +43,23 @@ public final class FiltersView: BaseView {
     public override func setupSubviews() {
         self.backgroundColor = .gray100
         
-        [headerContainer, chipCollectionView, filterCollectionView].forEach {
+        [headerView, chipCollectionView, filterCollectionView].forEach {
             addSubview($0)
         }
         
         [chipLeftGradientView, chipRightGradientView, filterTopGradientView, filterBottomGradientView].forEach {
             addSubview($0)
         }
-        
-        headerContainer.addSubview(headerTitleLabel)
-        headerContainer.addSubview(headerLikeButton)
     }
     
     public override func setupConstraints() {
-        headerContainer.snp.makeConstraints { make in
+        headerView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
-            make.horizontalEdges.equalToSuperview().inset(20)
-        }
-        
-        //TODO: 이거 헤더뷰로 바꾸자 ㅇㅇ
-        headerTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.verticalEdges.equalToSuperview().inset(10)
-            make.trailing.equalTo(headerLikeButton.snp.leading).offset(8)
-        }
-        
-        headerLikeButton.snp.makeConstraints { make in
-            make.size.equalTo(24)
-            make.trailing.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
         }
         
         chipCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(headerContainer.snp.bottom).offset(10)
+            make.top.equalTo(headerView.snp.bottom).offset(10)
             make.horizontalEdges.equalToSuperview()
             make.height.equalTo(36)
         }
@@ -95,6 +71,10 @@ public final class FiltersView: BaseView {
             make.horizontalEdges.equalToSuperview()
         }
         setupConstraintFilterGradient() // filter gradient
+    }
+    
+    func configure(with type: PurithmHeaderType) {
+        headerView.configure(with: type)
     }
     
     private func setupConstraintChipGradient() {

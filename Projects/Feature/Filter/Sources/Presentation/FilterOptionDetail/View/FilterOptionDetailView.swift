@@ -13,9 +13,7 @@ import Combine
 final class FilterOptionDetailView: BaseView {
     //MARK: UI Components
     let topContainer = UIView()
-    let headerView = PurithmHeaderView().then {
-        $0.backgroundColor = .gray100
-    }
+    let headerView = PurithmHeaderView()
     
     private let helpOptionTapGesture = UITapGestureRecognizer()
     let optionContainer = UIView().then {
@@ -41,7 +39,7 @@ final class FilterOptionDetailView: BaseView {
     
     //MARK: Properties
     var backButtonTapEvent: AnyPublisher<Void, Never> {
-        headerView.backButton.tap
+        headerView.leftButton.tap
     }
     
     var likeButtonTapEvent: AnyPublisher<Void, Never> {

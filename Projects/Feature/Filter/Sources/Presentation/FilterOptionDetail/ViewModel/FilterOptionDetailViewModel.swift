@@ -13,7 +13,6 @@ extension FilterOptionDetailViewModel {
     struct Input {
         let closeButtonTapEvent: AnyPublisher<Void, Never>
         let likeButtonTapEvent: AnyPublisher<Void, Never>
-        let helpOptionTapEvent: AnyPublisher<Void, Never>
     }
     
     struct Output {
@@ -59,12 +58,6 @@ final class FilterOptionDetailViewModel {
         input.likeButtonTapEvent
             .sink { [weak self] _ in
                 print("::: like button")
-            }
-            .store(in: &cancellables)
-        
-        input.helpOptionTapEvent
-            .sink { [weak self] _ in
-                print("::: help option touch")
             }
             .store(in: &cancellables)
         

@@ -37,8 +37,7 @@ final class FilterOptionDetailViewController: ViewController<FilterOptionDetailV
     private func bindViewModel() {
         let input = FilterOptionDetailViewModel.Input(
             closeButtonTapEvent: contentView.backButtonTapEvent,
-            likeButtonTapEvent: contentView.likeButtonTapEvent,
-            helpOptionTapEvent: contentView.helpOptionTapEvent
+            likeButtonTapEvent: contentView.likeButtonTapEvent
         )
         
         let output = viewModel.transform(input: input)
@@ -49,6 +48,27 @@ final class FilterOptionDetailViewController: ViewController<FilterOptionDetailV
             }
             .store(in: &cancellables)
             
+        contentView.helpOptionTapEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.presentScrollableBottomSheet()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+extension FilterOptionDetailViewController {
+    private func presentScrollableBottomSheet() {
+        let bottomSheetVC = PurithmOptionHelpBottomSheet()
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return bottomSheetVC.preferredContentSize.height
+            })]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16.0
+        }
+        
+        self.present(bottomSheetVC, animated: true, completion: nil)
     }
 }
 

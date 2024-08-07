@@ -34,7 +34,7 @@ final class FilterDetailViewController: ViewController<FilterDetailView> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        contentView.configure(title: "BlueMing", likeCount: 12, isLike: true)
+        contentView.configure(with: .back(title: "Blueming", likeCount: 12, isLike: true))
         bindViewModel()
         
         contentView.backButtonTapEvent

@@ -91,7 +91,7 @@ extension FilterDetailViewModel {
         input.pageBackEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController()
+                self?.coordinator?.popViewController(animated: true)
             }
             .store(in: &cancellabels)
     }
@@ -134,8 +134,10 @@ extension FilterDetailViewModel {
     
     private func handleConformEvent(input: Input, output: Output) {
         input.conformEvent
-            .sink { _ in
-                print("handleConformEvent")
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                //TODO: filterID주입해줘야함!!
+                self?.coordinator?.pushFilterOptionDetail(with: "filterID")
             }
             .store(in: &cancellabels)
     }

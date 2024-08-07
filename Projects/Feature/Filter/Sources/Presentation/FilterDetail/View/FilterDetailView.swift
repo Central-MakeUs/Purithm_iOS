@@ -29,6 +29,8 @@ final class FilterDetailView: BaseView {
         $0.spacing = 20
     }
     
+    let pageBadgeView = PurithmPagerBadgeView()
+    
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.isScrollEnabled = false
     }
@@ -71,7 +73,7 @@ final class FilterDetailView: BaseView {
     }
     
     override func setupSubviews() {
-        [container, collectionView, bottomView].forEach {
+        [container, collectionView, bottomView, pageBadgeView].forEach {
             addSubview($0)
         }
         
@@ -102,6 +104,12 @@ final class FilterDetailView: BaseView {
             make.bottom.equalToSuperview().inset(20)
         }
         
+        pageBadgeView.snp.makeConstraints { make in
+            make.top.equalTo(container.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(24)
+        }
+        
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(container.snp.bottom)
             make.horizontalEdges.equalToSuperview()
@@ -126,5 +134,9 @@ final class FilterDetailView: BaseView {
     
     func configure(with headerType: PurithmHeaderType) {
         headerView.configure(with: headerType)
+    }
+    
+    func updatePageBadge(total: Int, current: Int) {
+        pageBadgeView.configure(total: total, current: current)
     }
 }

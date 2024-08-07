@@ -36,17 +36,6 @@ extension FilterChipComponent {
 }
 
 final class FilterChipView: BaseView {
-    let container = UIStackView().then {
-        $0.axis = .horizontal
-        $0.distribution = .fillProportionally
-        $0.alignment = .center
-        $0.spacing = 8
-    }
-    
-    let selectedImageView = UIImageView().then {
-        $0.backgroundColor = .cyan
-        $0.layer.cornerRadius = 28 / 2
-    }
     let titleLabel = UILabel()
     
     let blueGradientView = PurithmGradientView().then {
@@ -59,24 +48,15 @@ final class FilterChipView: BaseView {
         self.layer.cornerRadius = 18
         self.clipsToBounds = true
         
-        [blueGradientView, container].forEach {
+        [blueGradientView, titleLabel].forEach {
             addSubview($0)
-        }
-        
-        [selectedImageView, titleLabel].forEach {
-            container.addArrangedSubview($0)
         }
     }
     
     override func setupConstraints() {
-        container.snp.makeConstraints { make in
+        titleLabel.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview()
-            make.leading.equalToSuperview().inset(4)
-            make.trailing.equalToSuperview().inset(12)
-        }
-        
-        selectedImageView.snp.makeConstraints { make in
-            make.size.equalTo(28)
+            make.horizontalEdges.equalToSuperview().inset(12)
         }
         
         blueGradientView.snp.makeConstraints { make in
@@ -94,12 +74,7 @@ final class FilterChipView: BaseView {
         titleLabel.applyTypography(with: typo)
         titleLabel.text = title
         
-        selectedImageView.isHidden = !isSelected
         blueGradientView.isHidden = !isSelected
-        
-        container.snp.updateConstraints { make in
-            make.leading.equalToSuperview().inset(isSelected ? 4 : 12)
-        }
     }
 }
 

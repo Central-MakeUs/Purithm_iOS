@@ -19,7 +19,7 @@ final class FilterReviewsView: BaseView {
     }
     
     let bottomGradientView = PurithmGradientView().then {
-        $0.colorType = .white
+        $0.colorType = .white(direction: .top)
     }
     
     override func setup() {

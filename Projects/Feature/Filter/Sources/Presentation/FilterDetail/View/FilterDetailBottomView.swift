@@ -35,7 +35,7 @@ final class FilterDetailBottomView: BaseView {
     }
     
     let bottomGradientView = PurithmGradientView().then {
-        $0.colorType = .purple
+        $0.colorType = .purple(direction: .top)
     }
     
     //MARK: Life Cycle

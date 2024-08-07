@@ -31,23 +31,26 @@ public final class PurithmGradientView: BaseView {
     
     private func insertSubLayer(with type: GradientColorType?) {
         switch type {
-        case .blue:
+        case .blue(let direction):
             gradientLayer = makeGradientLayer(
                 frame: .zero,
                 startColor: .whiteGradientStart,
-                endColor: .whiteGradientEnd
+                endColor: .whiteGradientEnd,
+                direction: direction
             )
-        case .purple:
+        case .purple(let direction):
             gradientLayer = makeGradientLayer(
                 frame: .zero,
                 startColor: .purpleGradientStart,
-                endColor: .purpleGradientEnd
+                endColor: .purpleGradientEnd,
+                direction: direction
             )
-        case .white:
+        case .white(let direction):
             gradientLayer = makeGradientLayer(
                 frame: .zero,
                 startColor: .whiteGradientStart,
-                endColor: .whiteGradientEnd
+                endColor: .whiteGradientEnd,
+                direction: direction
             )
         default:
             break
@@ -65,13 +68,27 @@ public final class PurithmGradientView: BaseView {
         self.alpha = 0
     }
     
-    private func makeGradientLayer(frame: CGRect, startColor: UIColor, endColor: UIColor) -> CAGradientLayer {
+    private func makeGradientLayer(frame: CGRect, startColor: UIColor, endColor: UIColor, direction: GradientDirection) -> CAGradientLayer {
         let colors = [startColor, endColor]
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = colors.map { $0.cgColor }
         gradientLayer.frame = frame
-        gradientLayer.startPoint = CGPoint(x: 0.0, y: 1.0)
-        gradientLayer.endPoint = CGPoint(x: 0.0, y: 0.0)
+        
+        switch direction {
+        case .top:
+            gradientLayer.startPoint = CGPoint(x: 0.0, y: 1.0)
+            gradientLayer.endPoint = CGPoint(x: 0.0, y: 0.0)
+        case .leading:
+            gradientLayer.startPoint = CGPoint(x: 1.0, y: 0.0)
+            gradientLayer.endPoint = CGPoint(x: 0.0, y: 0.0)
+        case .trailing:
+            gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.0)
+            gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.0)
+        case .bottom:
+            gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.0)
+            gradientLayer.endPoint = CGPoint(x: 0.0, y: 1.0)
+        }
+        
         return gradientLayer
     }
 }

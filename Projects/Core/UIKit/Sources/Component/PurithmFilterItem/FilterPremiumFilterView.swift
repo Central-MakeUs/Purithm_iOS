@@ -1,12 +1,14 @@
 //
 //  FilterPremiumFilterView.swift
-//  Filter
+//  CoreUIKit
 //
-//  Created by 이숭인 on 7/30/24.
+//  Created by 이숭인 on 8/9/24.
 //
 
 import UIKit
-import CoreUIKit
+import SnapKit
+import Then
+import CoreCommonKit
 
 final class FilterPremiumFilterView: BaseView {
     let container = UIView().then {
@@ -59,7 +61,6 @@ final class FilterPremiumFilterView: BaseView {
         stampContainer.snp.makeConstraints { make in
             make.top.equalTo(premiumLabel.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
-//            make.horizontalEdges.equalToSuperview().inset(8)
         }
         
         stampLabel.snp.makeConstraints { make in
@@ -92,3 +93,4 @@ extension FilterPremiumFilterView {
         static let stampLabelTypo = Typography(size: .size14, weight: .medium, alignment: .center, color: .white, applyLineHeight: true)
     }
 }
+

@@ -29,8 +29,8 @@ final class FilterDetailReviewListViewModel {
     
     private let converter = FilterDetailReviewListSectionConverter()
     
-    private var detailReviews: [FilterDetailReviewModel] = [
-        FilterDetailReviewModel(
+    private var detailReviews: [FeedReviewModel] = [
+        FeedReviewModel(
             identifier: UUID().uuidString,
             imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
             author: "Hanna",
@@ -38,7 +38,7 @@ final class FilterDetailReviewListViewModel {
             satisfactionLevel: .high,
             content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
         ),
-        FilterDetailReviewModel(
+        FeedReviewModel(
             identifier: UUID().uuidString,
             imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
             author: "Hanna",
@@ -46,7 +46,7 @@ final class FilterDetailReviewListViewModel {
             satisfactionLevel: .high,
             content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
         ),
-        FilterDetailReviewModel(
+        FeedReviewModel(
             identifier: UUID().uuidString,
             imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
             author: "Hanna",
@@ -54,7 +54,7 @@ final class FilterDetailReviewListViewModel {
             satisfactionLevel: .high,
             content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
         ),
-        FilterDetailReviewModel(
+        FeedReviewModel(
             identifier: UUID().uuidString,
             imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
             author: "Hanna",
@@ -62,7 +62,7 @@ final class FilterDetailReviewListViewModel {
             satisfactionLevel: .high,
             content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
         ),
-        FilterDetailReviewModel(
+        FeedReviewModel(
             identifier: UUID().uuidString,
             imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
             author: "Hanna",

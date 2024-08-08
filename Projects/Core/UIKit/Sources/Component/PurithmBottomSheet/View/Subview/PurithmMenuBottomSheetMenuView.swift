@@ -34,7 +34,7 @@ final class PurithmMenuBottomSheetMenuView: BaseView {
         label.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.horizontalEdges.equalToSuperview().inset(20)
-            make.verticalEdges.lessThanOrEqualToSuperview()
+            make.verticalEdges.equalToSuperview()
         }
     }
     

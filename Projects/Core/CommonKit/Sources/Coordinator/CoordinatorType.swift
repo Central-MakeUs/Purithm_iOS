@@ -9,6 +9,6 @@ import Foundation
 
 public enum CoordinatorType {
     case app, login, tab
-    case filters
-    case filterDetail
+    case filters, filterDetail
+    case feeds
 }

@@ -14,6 +14,8 @@ let project = Project.makeMainApp(
         .core(.network),
         .feature(.login),
         .feature(.filter),
+        .feature(.feed),
+        .feature(.author),
         .thirdParty(.snapKit),
         .thirdParty(.then),
         .thirdParty(.combineCocoa),

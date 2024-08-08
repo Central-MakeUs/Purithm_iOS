@@ -10,4 +10,6 @@ import CoreCommonKit
 
 protocol ArtistCoordinatorable: Coordinator { 
     func pushArtistDetail(with artistID: String)
+    
+    func pushFilterDetail(with filterID: String)
 }

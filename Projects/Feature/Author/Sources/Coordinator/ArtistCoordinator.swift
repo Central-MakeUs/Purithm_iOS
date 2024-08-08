@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreCommonKit
+import Filter
 
 public final class ArtistCoordinator: ArtistCoordinatorable {
     public var finishDelegate: CoordinatorFinishDelegate?
@@ -31,5 +32,18 @@ public final class ArtistCoordinator: ArtistCoordinatorable {
         let detailViewController = ArtistDetailViewController(viewModel: viewModel)
         
         self.navigationController.pushViewController(detailViewController, animated: true)
+    }
+    
+    public func pushFilterDetail(with filterID: String) {
+        let coordinator = FilterDetailCoordinator(self.navigationController)
+        coordinator.finishDelegate = self
+        self.childCoordinators.append(coordinator)
+        coordinator.start()
+    }
+}
+
+extension ArtistCoordinator: CoordinatorFinishDelegate {
+    public func coordinatorDidFinish(childCoordinator: Coordinator) {
+        self.childCoordinators = self.childCoordinators.filter({ $0.type != childCoordinator.type })
     }
 }

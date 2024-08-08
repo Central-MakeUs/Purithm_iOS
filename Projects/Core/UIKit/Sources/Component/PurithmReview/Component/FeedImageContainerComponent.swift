@@ -113,12 +113,12 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         imageContainer = ImageContainerPageViewController(imageURLs: review.imageURLStrings)
         contentLabel.text = review.content
         
-        profileView.configure(
-            with: .user,
+        profileView.configure(with: PurithmProfileModel(
+            type: .user,
             satisfactionLevel: review.satisfactionLevel,
             name: review.author,
             profileURLString: review.authorProfileURL
-        )
+        ))
         
         setupSubviews()
         setupConstraints()

@@ -11,6 +11,20 @@ import Then
 import SnapKit
 import Kingfisher
 
+public struct PurithmProfileModel {
+    let type: PurithmProfileType
+    let satisfactionLevel: SatisfactionLevel?
+    let name: String
+    let profileURLString: String
+    
+    public init(type: PurithmProfileType, satisfactionLevel: SatisfactionLevel?, name: String, profileURLString: String) {
+        self.type = type
+        self.satisfactionLevel = satisfactionLevel
+        self.name = name
+        self.profileURLString = profileURLString
+    }
+}
+
 public final class PurithmProfileView: BaseView {
     let container = UIStackView().then {
         $0.axis = .horizontal
@@ -46,9 +60,11 @@ public final class PurithmProfileView: BaseView {
         $0.spacing = 4
     }
     let shopImageView = UIImageView().then {
-        $0.image = .icHome
+        $0.image = .icHome.withTintColor(.blue400)
     }
-    let shopLabel = PurithmLabel(typography: Constants.shopTypo)
+    let shopLabel = PurithmLabel(typography: Constants.shopTypo).then {
+        $0.text = "Shop"
+    }
     
     let satisfactionContainer = UIStackView().then {
         $0.axis = .vertical
@@ -104,25 +120,36 @@ public final class PurithmProfileView: BaseView {
         }
     }
     
-    public func configure(with profileType: PurithmProfileType, satisfactionLevel: SatisfactionLevel , name: String, profileURLString: String) {
-        switch profileType {
+    public func configure(with profileModel: PurithmProfileModel) {
+        switch profileModel.type {
         case .user:
-            shopContainer.isHidden = true
-            satisfactionContainer.isHidden = false
+            setupUserProfile(with: profileModel)
         case .artist:
-            shopContainer.isHidden = false
-            satisfactionContainer.isHidden = true
+            setupArtistProfile(with: profileModel)
         }
         
-        satisfactionImageView.image = satisfactionLevel.starImage.withTintColor(satisfactionLevel.color)
-        satisfactionLabel.text = "\(satisfactionLevel.rawValue) %"
-        satisfactionLabel.textColor = satisfactionLevel.color
-        
-        userNameLabel.text = name
-        
-        if let url = URL(string: profileURLString) {
+        userNameLabel.text = profileModel.name
+        if let url = URL(string: profileModel.profileURLString) {
             userProfileImageView.kf.setImage(with: url)
         }
+    }
+    
+    private func setupUserProfile(with profileModel: PurithmProfileModel) {
+        shopContainer.isHidden = true
+        satisfactionContainer.isHidden = false
+        
+        let starImage = profileModel.satisfactionLevel?.starImage ?? .icStarHigh
+        let color = profileModel.satisfactionLevel?.color ?? .purple400
+        let intensity = profileModel.satisfactionLevel?.rawValue ?? .zero
+        
+        satisfactionImageView.image = starImage.withTintColor(color)
+        satisfactionLabel.text = "\(intensity) %"
+        satisfactionLabel.textColor = color
+    }
+    
+    private func setupArtistProfile(with profileModel: PurithmProfileModel) {
+        shopContainer.isHidden = false
+        satisfactionContainer.isHidden = true
     }
 }
 

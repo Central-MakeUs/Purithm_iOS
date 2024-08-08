@@ -15,6 +15,7 @@ let project = Project.makeMainApp(
         .feature(.login),
         .feature(.filter),
         .feature(.feed),
+        .feature(.author),
         .thirdParty(.snapKit),
         .thirdParty(.then),
         .thirdParty(.combineCocoa),

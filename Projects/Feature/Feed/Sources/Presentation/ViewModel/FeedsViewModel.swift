@@ -172,11 +172,11 @@ final class FeedsViewModel {
                 guard let self else { return }
                 
                 switch actionItem {
-                case let action as FeedOrderOptionAction:
+                case _ as FeedOrderOptionAction:
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
                 case let action as FeedToDetailMoveAction:
                     //TODO: Filter Detail로 이동, FilterID 주입 필요함!!
-                    self.coordinator?.pushFilterDetail(with: "filterID")
+                    self.coordinator?.pushFilterDetail(with: "filterID/ identifier > \(action.identifier)")
                 default:
                     break
                 }

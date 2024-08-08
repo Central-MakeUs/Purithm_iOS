@@ -21,7 +21,7 @@ import AuthenticationServices
 public final class LoginViewController: ViewController<LoginView> {
     let viewModel: LoginViewModel
     
-    var cancellables = Set<AnyCancellable>()
+    public var cancellables = Set<AnyCancellable>()
     
     init(viewModel: LoginViewModel) {
         self.viewModel = viewModel
@@ -38,6 +38,7 @@ public final class LoginViewController: ViewController<LoginView> {
         
         bindAction()
         bindViewModel()
+        bindErrorHandler()
     }
     
     private func bindViewModel() {
@@ -94,8 +95,12 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
                 with: idTokenString ?? "",
                 name: userName
             )
-            print("::: idToken > \(idTokenString)")
-            print("::: userName > \(userName)")
         }
+    }
+}
+
+extension LoginViewController: PurithmErrorHandlerable {
+    public var errorPublisher: AnyPublisher<Error, Never> {
+        viewModel.errorPublisher
     }
 }

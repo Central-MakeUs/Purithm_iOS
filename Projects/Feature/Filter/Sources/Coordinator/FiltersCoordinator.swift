@@ -14,8 +14,9 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
     public var childCoordinators: [Coordinator] = []
     public var type: CoordinatorType { .filters }
     
-    //TODO: user case 추가
-//    private let signInUseCase = SignInUseCase(repository: AuthRepository())
+    private let filtersUseCase = FiltersUseCase(
+        authService: FiltersService()
+    )
     
     public init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -30,18 +31,16 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
         self.navigationController.viewControllers = [filtersViewController]
     }
     
-    public func finish() {
-        self.finishDelegate?.coordinatorDidFinish(childCoordinator: self)
-    }
-    
     public func pushFilterDetail(with filterID: String) {
-        let viewModel = FilterDetailViewModel(with: filterID, coordinator: self)
-        let filterDetailViewController = FilterDetailViewController(viewModel: viewModel)
-        filterDetailViewController.hidesBottomBarWhenPushed = true
-        self.navigationController.pushViewController(filterDetailViewController, animated: true)
+        let filterDetailCoordinator = FilterDetailCoordinator(self.navigationController)
+        filterDetailCoordinator.finishDelegate = self
+        self.childCoordinators.append(filterDetailCoordinator)
+        filterDetailCoordinator.start()
     }
-    
-    public func popViewController() {
-        self.navigationController.popViewController(animated: true)
+}
+
+extension FiltersCoordinator: CoordinatorFinishDelegate {
+    public func coordinatorDidFinish(childCoordinator: Coordinator) {
+        self.childCoordinators = self.childCoordinators.filter({ $0.type != childCoordinator.type })
     }
 }

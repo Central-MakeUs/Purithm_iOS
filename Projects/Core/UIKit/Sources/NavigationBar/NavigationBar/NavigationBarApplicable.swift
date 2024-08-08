@@ -52,19 +52,7 @@ extension NavigationBarApplicable {
 
     public func initNavigationTitleView(with type: NavigationBarType = .page, title: String = "", subtitle: String = "") {
 
-        guard let titleView = navigationItem.titleView as? PurithmNavigationTitleView else {
-            navigationItem.titleView = PurithmNavigationTitleView(with: type, title: title)
-            return
-        }
-
-        guard titleView.superview != nil else {
-            navigationItem.titleView = PurithmNavigationTitleView(with: type, title: title)
-            return
-        }
-
-        if titleView.type != type || titleView.title != title {
-            navigationItem.titleView = PurithmNavigationTitleView(with: type, title: title)
-        }
+        navigationItem.title = title
     }
 }
 

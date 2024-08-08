@@ -180,8 +180,9 @@ extension SignInUseCase {
             
             publisher.values()
                 .sink { response in
-                    print("::: Kakao Login Success. ")
-                    return promise(.success(response.data ?? ""))
+                    let tokenResponse = response.data?.accessToken ?? ""
+                    
+                    return promise(.success(tokenResponse))
                 }
                 .store(in: &cancellables)
             
@@ -248,8 +249,8 @@ extension SignInUseCase {
             
             publisher.values()
                 .sink { response in
-                    print("::: Apple Login Success. ")
-                    return promise(.success(response.data ?? ""))
+                    let tokenResponse = response.data?.accessToken ?? ""
+                    return promise(.success(tokenResponse))
                 }
                 .store(in: &cancellables)
             

@@ -13,7 +13,6 @@ import Combine
 final class FilterDetailBottomView: BaseView {
     //MARK: UI
     let gradientContainer = UIView()
-    let gradientBackgroundView = UIView()
     
     let originalImageButton = PlainButton(type: .transparent, variant: .option, size: .medium).then {
         $0.text = "원본"
@@ -29,36 +28,32 @@ final class FilterDetailBottomView: BaseView {
         $0.shape = .circle
         $0.hasShadow = true
         $0.hasContentShdaow = true
+        $0.isSelected = false
     }
     
     let conformButton = PlainButton(type: .transparent, variant: .default, size: .large).then {
         $0.text = "필터값 보기"
     }
     
-    let purpleGradientLayer: CAGradientLayer = UIColor.purpleGradient(frame: .zero)
-    
-    //MARK: Life Cycle
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        purpleGradientLayer.frame = self.bounds
+    let bottomGradientView = PurithmGradientView().then {
+        $0.colorType = .purple(direction: .top)
     }
     
+    //MARK: Life Cycle
     override func setup() {
         super.setup()
         
         self.backgroundColor = .clear
-        gradientBackgroundView.layer.insertSublayer(purpleGradientLayer, at: 0)
     }
     
     override func setupSubviews() {
         addSubview(gradientContainer)
         
-        [originalImageButton, textHideButton, conformButton, gradientBackgroundView].forEach {
+        [originalImageButton, textHideButton, conformButton, bottomGradientView].forEach {
             gradientContainer.addSubview($0)
         }
         
-        gradientContainer.sendSubviewToBack(gradientBackgroundView)
+        gradientContainer.sendSubviewToBack(bottomGradientView)
     }
     
     override func setupConstraints() {
@@ -66,7 +61,7 @@ final class FilterDetailBottomView: BaseView {
             make.edges.equalToSuperview()
         }
         
-        gradientBackgroundView.snp.makeConstraints { make in
+        bottomGradientView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
@@ -89,17 +84,27 @@ final class FilterDetailBottomView: BaseView {
         }
     }
     
-    func fadeOutAndHide(with duration: TimeInterval) {
-        UIView.animate(withDuration: duration) {
-            self.conformButton.alpha = 0
-            self.gradientBackgroundView.alpha = 0
+    func showAndHide(with duration: TimeInterval) {
+        textHideButton.isSelected.toggle()
+        
+        if textHideButton.isSelected {
+            fadeOutAndHide(with: duration)
+        } else {
+            fadeInAndShow(with: duration)
         }
     }
     
-    func fadeInAndShow(with duration: TimeInterval) {
+    private func fadeOutAndHide(with duration: TimeInterval) {
+        UIView.animate(withDuration: duration) {
+            self.conformButton.alpha = 0
+            self.bottomGradientView.hide()
+        }
+    }
+    
+    private func fadeInAndShow(with duration: TimeInterval) {
         UIView.animate(withDuration: duration) {
             self.conformButton.alpha = 1
-            self.gradientBackgroundView.alpha = 1
+            self.bottomGradientView.show()
         }
     }
 }

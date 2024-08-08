@@ -15,7 +15,8 @@ extension FilterDetailViewModel {
         let pageBackEvent: AnyPublisher<Void, Never>
         let filterLikeEvent: AnyPublisher<Void, Never>
         let filterMoreOptionEvent: AnyPublisher<FilterDetailOptionType?, Never>
-        let showOriginalEvent: AnyPublisher<Void, Never>
+        let showOriginalTapEvent: AnyPublisher<Void, Never>
+        let showOriginalPressedEvent: AnyPublisher<Void, Never>
         let conformEvent: AnyPublisher<Void, Never>
     }
     
@@ -26,12 +27,16 @@ extension FilterDetailViewModel {
 
 final class FilterDetailViewModel {
     private var cancellabels = Set<AnyCancellable>()
-    weak var coordinator: FiltersCoordinatorable?
+    weak var coordinator: FilterDetailCoordinatorable?
+    
     private let converter = FilterDetailSectionConverter()
     
-    var filterDetail = CurrentValueSubject<FilterDetailModel?, Never>(nil)
+    private var filterDetail = CurrentValueSubject<FilterDetailModel?, Never>(nil)
+    var filter: FilterDetailModel? {
+        filterDetail.value
+    }
     
-    init(with filterID: String, coordinator: FiltersCoordinatorable) {
+    init(with filterID: String, coordinator: FilterDetailCoordinatorable) {
         //TODO: ID 를 기반으로 filter 상세 정보 불러와야함
         self.coordinator = coordinator
     }
@@ -91,7 +96,9 @@ extension FilterDetailViewModel {
         input.pageBackEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.coordinator?.popViewController()
+                self?.coordinator?.popViewController(animated: true)
+                self?.coordinator?.finish()
+                
             }
             .store(in: &cancellabels)
     }
@@ -106,29 +113,43 @@ extension FilterDetailViewModel {
     
     private func handleOptionTapEvent(input: Input, output: Output) {
         input.filterMoreOptionEvent
-            .sink { optionType in
+            .sink { [weak self] optionType in
                 guard let optionType else {
                     print(" optionType is nil. ")
                     return
                 }
-                //TODO: Type에 따라 화면 전환
-                print("//TODO: Type에 따라 화면 전환 > \(optionType)")
+                
+                //TODO: filterID주입해줘야함!!
+                switch optionType {
+                case .satisfaction:
+                    self?.coordinator?.pushFilterReviews(with: "filterID")
+                    break
+                case .introduction:
+                    self?.coordinator?.pushFilterDescription(with: "filterID")
+                }
             }
             .store(in: &cancellabels)
     }
     
     private func handleShowOriginalEvent(input: Input, output: Output) {
-        input.showOriginalEvent
+        input.showOriginalTapEvent
             .sink { _ in
                 print("handleShowOriginalEvent")
+            }
+            .store(in: &cancellabels)
+        input.showOriginalPressedEvent
+            .sink { _ in
+                print("showOriginalPressedEvent")
             }
             .store(in: &cancellabels)
     }
     
     private func handleConformEvent(input: Input, output: Output) {
         input.conformEvent
-            .sink { _ in
-                print("handleConformEvent")
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                //TODO: filterID주입해줘야함!!
+                self?.coordinator?.pushFilterOptionDetail(with: "filterID")
             }
             .store(in: &cancellabels)
     }

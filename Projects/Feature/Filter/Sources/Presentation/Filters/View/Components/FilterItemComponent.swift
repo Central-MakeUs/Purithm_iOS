@@ -75,13 +75,13 @@ final class FilterItemView: BaseView, ActionEventEmitable {
     let premiumFilterView = FilterPremiumFilterView()
     
     let bottomContainer = UIView()
-    let filterTitleLabel = UILabel(typography: Constants.titleTypo)
-    let authorLabel = UILabel(typography: Constants.authorTypo)
+    let filterTitleLabel = PurithmLabel(typography: Constants.titleTypo)
+    let authorLabel = PurithmLabel(typography: Constants.authorTypo)
     let likeButton = UIButton().then {
         $0.setImage(.icLikeUnpressed.withTintColor(.gray200).resizeImage(with: CGSize(width: 28, height: 28)), for: .normal)
         $0.setImage(.icLikePressed.withTintColor(.blue400).resizeImage(with: CGSize(width: 28, height: 28)), for: .selected)
     }
-    let likeCountLabel = UILabel(typography: Constants.countTypo)
+    let likeCountLabel = PurithmLabel(typography: Constants.countTypo)
     
     override func setup() {
         super.setup()

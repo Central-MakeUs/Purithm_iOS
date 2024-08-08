@@ -8,20 +8,16 @@
 import Combine
 import CoreUIKit
 
-final class FiltersViewSectionConverter {
-    func createSections(chips: [FilterChipModel],
-                        orderOption: FilterOrderOptionType,
-                        filters: [FilterItemModel]) -> [SectionModelType] {
+final class FiltersChipSectionConverter {
+    func createSections(chips: [FilterChipModel]) -> [SectionModelType] {
         [
-            createChipSection(with: chips),
-            createOrderOptionSection(with: orderOption),
-            createFilterItemSection(with: filters)
-        ].flatMap { $0 }
+            createChipSection(with: chips)
+        ]
+        .flatMap { $0 }
     }
 }
 
-//MARK: - Chip Section
-extension FiltersViewSectionConverter {
+extension FiltersChipSectionConverter {
     private func createChipSection(with chips: [FilterChipModel]) -> [SectionModelType] {
         let chipComponent = chips.map { chip in
             FilterChipComponent(identifier: chip.identifier, item: chip)
@@ -49,12 +45,26 @@ extension FiltersViewSectionConverter {
     }
 }
 
+final class FiltersViewSectionConverter {
+    func createSections(orderOption: FilterOrderOptionModel?,
+                        filters: [FilterItemModel]) -> [SectionModelType] {
+        [
+            createOrderOptionSection(with: orderOption),
+            createFilterItemSection(with: filters)
+        ].flatMap { $0 }
+    }
+}
+
 //MARK: - Order Option Section
 extension FiltersViewSectionConverter {
-    private func createOrderOptionSection(with option: FilterOrderOptionType) -> [SectionModelType] {
+    private func createOrderOptionSection(with option: FilterOrderOptionModel?) -> [SectionModelType] {
+        guard let option = option else {
+            return []
+        }
+        
         let optionComponent = FilterOrderOptionComponent(
             identifier: option.identifier,
-            optionTitle: option.title
+            optionTitle: option.option.title
         )
         
         let section = SectionModel(

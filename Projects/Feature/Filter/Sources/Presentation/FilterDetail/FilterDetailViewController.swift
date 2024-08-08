@@ -34,14 +34,8 @@ final class FilterDetailViewController: ViewController<FilterDetailView> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        contentView.configure(title: "BlueMing", likeCount: 12, isLike: true)
+        contentView.configure(with: .back(title: "Blueming", likeCount: 12, isLike: true))
         bindViewModel()
-        
-        contentView.backButtonTapEvent
-            .sink { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
-            }
-            .store(in: &cancellables)
     }
     
     private func bindViewModel() {
@@ -50,7 +44,8 @@ final class FilterDetailViewController: ViewController<FilterDetailView> {
             pageBackEvent: contentView.backButtonTapEvent,
             filterLikeEvent: contentView.likeButtonTapEvent,
             filterMoreOptionEvent: contentView.optionTapEvent,
-            showOriginalEvent: contentView.originalTapEvent,
+            showOriginalTapEvent: contentView.originalTapEvent,
+            showOriginalPressedEvent: contentView.originalPressedEvent,
             conformEvent: contentView.conformTapEvent
         )
         
@@ -65,14 +60,19 @@ final class FilterDetailViewController: ViewController<FilterDetailView> {
         contentView.textHideTapEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.contentView.bottomView.fadeInAndShow(with: 0.3)
+                self?.contentView.bottomView.showAndHide(with: 0.3)
             }
             .store(in: &cancellables)
         
-        contentView.textHidePressedEvent
+        adapter.didScrollPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.contentView.bottomView.fadeOutAndHide(with: 0.3)
+            .debounce(for: .seconds(0.2), scheduler: RunLoop.main)
+            .sink { [weak self] indexPath in
+                guard let totalCount = self?.viewModel.filter?.detailImages.count, totalCount > 0 else {
+                    return
+                }
+                
+                self?.contentView.updatePageBadge(total: totalCount, current: indexPath.row)
             }
             .store(in: &cancellables)
     }

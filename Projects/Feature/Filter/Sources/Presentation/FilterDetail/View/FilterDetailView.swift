@@ -13,8 +13,10 @@ final class FilterDetailView: BaseView {
     var cancellables = Set<AnyCancellable>()
     
     //MARK: View
-    let container = UIView()
-    let headerView = FilterDetailHeaderView()
+    let container = UIView().then {
+        $0.backgroundColor = .gray100
+    }
+    let headerView = PurithmHeaderView()
     var optionViews: [FilterMoreOptionView] = {
         FilterDetailOptionType.allCases.map { type in
             let optionView = FilterMoreOptionView()
@@ -27,6 +29,8 @@ final class FilterDetailView: BaseView {
         $0.spacing = 20
     }
     
+    let pageBadgeView = PurithmPagerBadgeView()
+    
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.isScrollEnabled = false
     }
@@ -35,7 +39,7 @@ final class FilterDetailView: BaseView {
     //MARK: Properties
     private let optionTapEventSubject = PassthroughSubject<FilterDetailOptionType?, Never>()
     var backButtonTapEvent: AnyPublisher<Void, Never> {
-        headerView.backButton.tap
+        headerView.leftButton.tap
     }
     var likeButtonTapEvent: AnyPublisher<Void, Never> {
         headerView.likeButton.tap
@@ -48,12 +52,12 @@ final class FilterDetailView: BaseView {
         bottomView.originalImageButton.tap
     }
     
-    var textHideTapEvent: AnyPublisher<Void, Never> {
-        bottomView.textHideButton.tap
+    var originalPressedEvent: AnyPublisher<Void, Never> {
+        bottomView.originalImageButton.pressed
     }
     
-    var textHidePressedEvent: AnyPublisher<Void, Never> {
-        bottomView.textHideButton.pressed
+    var textHideTapEvent: AnyPublisher<Void, Never> {
+        bottomView.textHideButton.tap
     }
     
     var conformTapEvent: AnyPublisher<Void, Never> {
@@ -64,11 +68,12 @@ final class FilterDetailView: BaseView {
     override func setup() {
         super.setup()
         
+        self.backgroundColor = .gray100
         bindAction()
     }
     
     override func setupSubviews() {
-        [container, collectionView, bottomView].forEach {
+        [container, collectionView, bottomView, pageBadgeView].forEach {
             addSubview($0)
         }
         
@@ -99,6 +104,12 @@ final class FilterDetailView: BaseView {
             make.bottom.equalToSuperview().inset(20)
         }
         
+        pageBadgeView.snp.makeConstraints { make in
+            make.top.equalTo(container.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(24)
+        }
+        
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(container.snp.bottom)
             make.horizontalEdges.equalToSuperview()
@@ -121,7 +132,11 @@ final class FilterDetailView: BaseView {
         }
     }
     
-    func configure(title: String, likeCount: Int, isLike: Bool) {
-        headerView.configure(title: title, likeCount: likeCount, isLike: isLike)
+    func configure(with headerType: PurithmHeaderType) {
+        headerView.configure(with: headerType)
+    }
+    
+    func updatePageBadge(total: Int, current: Int) {
+        pageBadgeView.configure(total: total, current: current)
     }
 }

@@ -21,10 +21,10 @@ final class OnboardingView: BaseView {
         $0.image = .bgOnboarding1
     }
     
-    let titleLabel = UILabel(typography: Constants.titleTypo).then {
+    let titleLabel = PurithmLabel(typography: Constants.titleTypo).then {
         $0.numberOfLines = 1
     }
-    let subTitleLabel = UILabel(typography: Constants.subTitleTypo).then {
+    let subTitleLabel = PurithmLabel(typography: Constants.subTitleTypo).then {
         $0.numberOfLines = 0
     }
     

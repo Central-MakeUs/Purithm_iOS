@@ -47,7 +47,7 @@ final class FilterOrderOptionView: BaseView, ActionEventEmitable {
     let container = UIView()
     let containerTapGesture = UITapGestureRecognizer()
     
-    let optionLabel = UILabel(typography: Constants.optionTitleTypo)
+    let optionLabel = PurithmLabel(typography: Constants.optionTitleTypo)
     let downImageView = UIImageView().then {
         $0.image = .icArrowBottom.withTintColor(.gray400)
     }

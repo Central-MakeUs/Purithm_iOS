@@ -24,7 +24,7 @@ final class FilterMoreOptionView: BaseView {
     let leftImageView = UIImageView().then {
         $0.image = .icStarHigh.withTintColor(.gray300)
     }
-    let optionTitleLabel = UILabel(typography: Constants.titleTypo)
+    let optionTitleLabel = PurithmLabel(typography: Constants.titleTypo)
     let rightImageView = UIImageView().then {
         $0.image = .icMove.withTintColor(.gray300)
     }
@@ -35,6 +35,7 @@ final class FilterMoreOptionView: BaseView {
         super.setup()
      
         self.addGestureRecognizer(viewTapGesture)
+        self.backgroundColor = .gray100
     }
     
     override func setupSubviews() {

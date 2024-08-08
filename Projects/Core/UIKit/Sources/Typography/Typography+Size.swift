@@ -14,6 +14,7 @@ extension Typography {
         case size11, size12, size13, size14, size15, size16, size17, size18, size19, size20
         case size21, size22, size23, size24, size25, size26, size27, size28, size29, size30
         case size31, size32
+        case size36
     }
 }
 
@@ -48,6 +49,8 @@ extension Typography.Size {
             return 36
         case .size30, .size31, .size32:
             return 39
+        case .size36:
+            return 47
         }
     }
 }

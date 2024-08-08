@@ -26,6 +26,11 @@ final class LoginViewModel {
     
     private let signInUseCase: SignInUseCase
     
+    private let errorSubject = PassthroughSubject<Error, Never>()
+    var errorPublisher: AnyPublisher<Error, Never> {
+        errorSubject.eraseToAnyPublisher()
+    }
+    
     init(coordinator: LoginCoordinatorable, useCase: SignInUseCase) {
         self.coordinator = coordinator
         self.signInUseCase = useCase
@@ -44,6 +49,7 @@ final class LoginViewModel {
                             print("::: complete")
                         case .failure(let error):
                             print("::: login failed > \(error)")
+                            self.errorSubject.send(error)
                         }
                     } receiveValue: { _ in
                         self.coordinator?.pushTermsViewController()

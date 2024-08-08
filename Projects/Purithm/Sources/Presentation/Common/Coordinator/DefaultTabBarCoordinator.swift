@@ -9,6 +9,7 @@ import UIKit
 import CoreCommonKit
 
 import Filter
+import Feed
 
 final class DefaultTabBarCoordinator: TabBarCoordinator {
     weak var finishDelegate: CoordinatorFinishDelegate?
@@ -88,9 +89,9 @@ extension DefaultTabBarCoordinator {
             authorVC.view.backgroundColor = .green
             tabNavigationController.viewControllers = [authorVC]
         case .collector:
-            let collectorVC = UIViewController()
-            collectorVC.view.backgroundColor = .blue400
-            tabNavigationController.viewControllers = [collectorVC]
+            let feedCoordinator = FeedsCoordinator(tabNavigationController)
+            self.childCoordinators.append(feedCoordinator)
+            feedCoordinator.start()
         case .mypage:
             let mypageVC = UIViewController()
             mypageVC.view.backgroundColor = .purple400

@@ -16,6 +16,7 @@ public enum Module {
         case profile = "Profile"
         case feed = "Feed"
         case like = "Like"
+        case review = "Review"
     }
     
     public enum Core: String, CaseIterable {

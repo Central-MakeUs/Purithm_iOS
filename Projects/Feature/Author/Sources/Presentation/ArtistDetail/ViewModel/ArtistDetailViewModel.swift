@@ -265,6 +265,19 @@ extension ArtistDetailViewModel {
                 switch actionItem {
                 case _ as ArtistDetailOrderOptionAction:
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
+                case let action as FilterDidTapAction:
+                    if let targetIndex = self.filters.value.firstIndex(where: { $0.identifier == action.identifier }) {
+                        if self.filters.value[targetIndex].canAccess {
+                            DispatchQueue.main.async {
+                                self.coordinator?.pushFilterDetail(with: action.identifier)
+                            }
+                        } else {
+                            output.presentFilterRockBottomSheetSubject.send(Void())
+                        }
+                    } else {
+                        let emptyError = NSError(domain: "잘못된 ID 값 입니다.\nID: \(action.identifier)", code: 0, userInfo: nil)
+                        self.errorSubject.send(emptyError)
+                    }
                 default:
                     break
                 }

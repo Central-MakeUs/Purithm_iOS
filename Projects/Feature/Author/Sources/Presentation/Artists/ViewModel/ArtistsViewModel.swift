@@ -168,11 +168,11 @@ extension ArtistsViewModel {
                 guard let self else { return }
                 
                 switch actionItem {
-                case let action as ArtistOrderOptionAction:
+                case _ as ArtistOrderOptionAction:
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
-                case let action as ArtistScrapItemAction:
-                    //TODO: 작가 상세페이지로 이동
-                    print("//TODO: 작가 상세페이지로 이동")
+                case _ as ArtistScrapItemAction:
+                    //TODO: 작가 ID 주입 필요!!!
+                    self.coordinator?.pushArtistDetail(with: "artist ID")
                 default:
                     break
                 }

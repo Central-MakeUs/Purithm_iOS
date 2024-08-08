@@ -25,4 +25,11 @@ public final class ArtistCoordinator: ArtistCoordinatorable {
         
         self.navigationController.viewControllers = [artistsViewController]
     }
+    
+    public func pushArtistDetail(with artistID: String) {
+        let viewModel = ArtistDetailViewModel(coordinator: self)
+        let detailViewController = ArtistDetailViewController(viewModel: viewModel)
+        
+        self.navigationController.pushViewController(detailViewController, animated: true)
+    }
 }

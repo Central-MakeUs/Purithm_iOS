@@ -8,4 +8,6 @@
 import Foundation
 import CoreCommonKit
 
-protocol ArtistCoordinatorable: Coordinator { }
+protocol ArtistCoordinatorable: Coordinator { 
+    func pushArtistDetail(with artistID: String)
+}

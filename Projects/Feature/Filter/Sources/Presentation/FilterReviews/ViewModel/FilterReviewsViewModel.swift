@@ -14,6 +14,7 @@ import CoreCommonKit
 extension FilterReviewsViewModel {
     struct Input {
         let itemSelectEvent: AnyPublisher<ItemModelType, Never>
+        let conformTapEvent: AnyPublisher<Void, Never>
     }
     
     struct Output {
@@ -117,11 +118,13 @@ final class FilterReviewsViewModel {
             }
             .store(in: &cancellables)
         
+        input.conformTapEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.coordinator?.pushReviewViewController()
+            }
+            .store(in: &cancellables)
+        
         return output
     }
 }
-
-//TODO:
-/*
- 오늘 후기 상세까지 다 끝내자. + 바텀시트
- */

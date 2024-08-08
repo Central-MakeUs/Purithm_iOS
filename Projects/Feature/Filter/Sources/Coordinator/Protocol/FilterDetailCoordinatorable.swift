@@ -14,4 +14,6 @@ public protocol FilterDetailCoordinatorable: Coordinator {
     func pushFilterReviews(with filterID: String)
     func pushFilterDescription(with filterID: String)
     func popViewController(animated: Bool)
+    
+    func pushReviewViewController()
 }

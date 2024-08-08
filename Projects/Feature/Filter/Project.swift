@@ -11,6 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.makeFeatureModule(
     .filter,
     dependencies: [
+        .feature(.review),
         .core(.common),
         .core(.uiKit),
         .thirdParty(.snapKit),

@@ -8,6 +8,8 @@
 import UIKit
 import CoreCommonKit
 
+import Review
+
 public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
     public var finishDelegate: CoordinatorFinishDelegate?
     public var navigationController: UINavigationController
@@ -78,5 +80,20 @@ public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
     
     public func popViewController(animated: Bool) {
         self.navigationController.popViewController(animated: animated)
+    }
+}
+
+extension FilterDetailCoordinator {
+    public func pushReviewViewController() {
+        let coordinator = ReviewCoordinator(self.navigationController)
+        coordinator.finishDelegate = self
+        self.childCoordinators.append(coordinator)
+        coordinator.start()
+    }
+}
+
+extension FilterDetailCoordinator: CoordinatorFinishDelegate {
+    public func coordinatorDidFinish(childCoordinator: Coordinator) {
+        self.childCoordinators = self.childCoordinators.filter({ $0.type != childCoordinator.type })
     }
 }

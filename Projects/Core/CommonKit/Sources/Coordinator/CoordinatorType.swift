@@ -11,4 +11,5 @@ public enum CoordinatorType {
     case app, login, tab
     case filters, filterDetail
     case feeds
+    case review
 }

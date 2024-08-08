@@ -51,7 +51,7 @@ public final class PurithmMenuBottomSheet: ViewController<PurithmMenuBottomSheet
         }
         
         let maxHeight = UIScreen.main.bounds.height - verticalSafeAreaInset - 44
-        let fittingSize = contentView.container.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        let fittingSize = contentView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
         let contentVerticalSafeAreaHeight = contentView.safeAreaInsets.top + contentView.safeAreaInsets.bottom
         
         let contentHeight = fittingSize - contentVerticalSafeAreaHeight

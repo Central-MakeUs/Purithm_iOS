@@ -39,6 +39,9 @@ public final class PurithmMenuBottomSheetView: BaseView {
     func configure(with menus: [PurithmMenuModel]) {
         let menuList: [PurithmMenuBottomSheetMenuView] = menus.map { menu in
             let menuView = PurithmMenuBottomSheetMenuView()
+            menuView.snp.makeConstraints { make in
+                make.height.equalTo(58)
+            }
             menuView.configure(with: menu)
             menuView.labelTapGesture.tapPublisher
                 .sink { [weak self] _ in
@@ -51,7 +54,5 @@ public final class PurithmMenuBottomSheetView: BaseView {
         menuList.forEach {
             container.addArrangedSubview($0)
         }
-        
-        container.layoutIfNeeded()
     }
 }

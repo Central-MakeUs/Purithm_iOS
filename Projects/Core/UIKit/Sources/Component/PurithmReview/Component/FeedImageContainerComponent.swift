@@ -55,7 +55,7 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
     public var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
     
     var imageContainer: ImageContainerPageViewController?
-    let profileView = PurithmProfileView()
+    let profileView = PurithmHorizontalProfileView()
     let contentLabel = PurithmLabel(typography: Constants.contentTypo).then {
         $0.numberOfLines = 0
     }
@@ -113,7 +113,7 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         imageContainer = ImageContainerPageViewController(imageURLs: review.imageURLStrings)
         contentLabel.text = review.content
         
-        profileView.configure(with: PurithmProfileModel(
+        profileView.configure(with: PurithmHorizontalProfileModel(
             type: .user,
             satisfactionLevel: review.satisfactionLevel,
             name: review.author,

@@ -85,7 +85,7 @@ final class ArtistScrapItemComponentView: BaseView, ActionEventEmitable {
         $0.alignment = .fill
     }
     
-    let profileView = PurithmProfileView()
+    let profileView = PurithmHorizontalProfileView()
     let contentLabel = PurithmLabel(typography: Constants.contentTypo)
     
     let imageContainerTapGesture = UITapGestureRecognizer()
@@ -138,7 +138,7 @@ final class ArtistScrapItemComponentView: BaseView, ActionEventEmitable {
         setupImageContainer(with: artist.scripImageType, imageURLStrings: artist.imageURLStrings)
         contentLabel.text = artist.content
         
-        profileView.configure(with: PurithmProfileModel(
+        profileView.configure(with: PurithmHorizontalProfileModel(
             type: .artist,
             satisfactionLevel: nil,
             name: artist.artist,

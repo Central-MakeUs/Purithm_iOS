@@ -11,7 +11,7 @@ import Then
 import SnapKit
 import Kingfisher
 
-public struct PurithmProfileModel {
+public struct PurithmHorizontalProfileModel {
     let type: PurithmProfileType
     let satisfactionLevel: SatisfactionLevel?
     let name: String
@@ -25,7 +25,7 @@ public struct PurithmProfileModel {
     }
 }
 
-public final class PurithmProfileView: BaseView {
+public final class PurithmHorizontalProfileView: BaseView {
     let container = UIStackView().then {
         $0.axis = .horizontal
         $0.distribution = .fill
@@ -120,7 +120,7 @@ public final class PurithmProfileView: BaseView {
         }
     }
     
-    public func configure(with profileModel: PurithmProfileModel) {
+    public func configure(with profileModel: PurithmHorizontalProfileModel) {
         switch profileModel.type {
         case .user:
             setupUserProfile(with: profileModel)
@@ -134,7 +134,7 @@ public final class PurithmProfileView: BaseView {
         }
     }
     
-    private func setupUserProfile(with profileModel: PurithmProfileModel) {
+    private func setupUserProfile(with profileModel: PurithmHorizontalProfileModel) {
         shopContainer.isHidden = true
         satisfactionContainer.isHidden = false
         
@@ -147,13 +147,13 @@ public final class PurithmProfileView: BaseView {
         satisfactionLabel.textColor = color
     }
     
-    private func setupArtistProfile(with profileModel: PurithmProfileModel) {
+    private func setupArtistProfile(with profileModel: PurithmHorizontalProfileModel) {
         shopContainer.isHidden = false
         satisfactionContainer.isHidden = true
     }
 }
 
-extension PurithmProfileView {
+extension PurithmHorizontalProfileView {
     private enum Constants {
         static let nameTypo = Typography(size: .size24, weight: .medium, color: .gray500, applyLineHeight: true)
         static let shopTypo = Typography(size: .size18, weight: .semibold, color: .blue400, applyLineHeight: true)

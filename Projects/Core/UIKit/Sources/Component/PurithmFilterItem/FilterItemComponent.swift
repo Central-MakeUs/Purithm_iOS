@@ -1,35 +1,35 @@
 //
 //  FilterItemComponent.swift
-//  Filter
+//  CoreUIKit
 //
-//  Created by 이숭인 on 7/28/24.
+//  Created by 이숭인 on 8/9/24.
 //
 
-//TODO: 해당 컴포넌트는 .. 공통으로 쓰여야할 것 같음. 추후 이동하는걸로.
 import UIKit
 import CoreCommonKit
-import CoreUIKit
+import SnapKit
+import Then
 import Combine
 import Kingfisher
 
-struct FilterLikeAction: ActionEventItem {
-    let identifier: String
+public struct FilterLikeAction: ActionEventItem {
+    public let identifier: String
 }
 
-struct FilterDidTapAction: ActionEventItem {
-    let identifier: String
+public struct FilterDidTapAction: ActionEventItem {
+    public let identifier: String
 }
 
-struct FilterItemComponent: Component {
-    var identifier: String
+public struct FilterItemComponent: Component {
+    public var identifier: String
     let item: FilterItemModel
     
-    init(identifier: String, item: FilterItemModel) {
+    public init(identifier: String, item: FilterItemModel) {
         self.identifier = identifier
         self.item = item
     }
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(item.filterImageURLString)
         hasher.combine(item.planType)
         hasher.combine(item.filterTitle)
@@ -40,9 +40,9 @@ struct FilterItemComponent: Component {
 }
 
 extension FilterItemComponent {
-    typealias ContentType = FilterItemView
+    public typealias ContentType = FilterItemView
     
-    func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
+    public func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
         content.configure(with: context.item)
         
         content.imageTapGesture.tapPublisher
@@ -59,8 +59,8 @@ extension FilterItemComponent {
     }
 }
 
-final class FilterItemView: BaseView, ActionEventEmitable {
-    let actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
+public final class FilterItemView: BaseView, ActionEventEmitable {
+    public let actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
     
     let topContainer = UIView().then {
         $0.layer.cornerRadius = 12
@@ -83,7 +83,7 @@ final class FilterItemView: BaseView, ActionEventEmitable {
     }
     let likeCountLabel = PurithmLabel(typography: Constants.countTypo)
     
-    override func setup() {
+    public override func setup() {
         super.setup()
         
         self.backgroundColor = .gray100
@@ -96,7 +96,7 @@ final class FilterItemView: BaseView, ActionEventEmitable {
         print("filterItemView deinit")
     }
     
-    override func setupSubviews() {
+    public override func setupSubviews() {
         [topContainer, bottomContainer].forEach {
             addSubview($0)
         }
@@ -112,7 +112,7 @@ final class FilterItemView: BaseView, ActionEventEmitable {
         }
     }
     
-    override func setupConstraints() {
+    public override func setupConstraints() {
         topContainer.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.horizontalEdges.equalToSuperview()
@@ -161,7 +161,7 @@ final class FilterItemView: BaseView, ActionEventEmitable {
         }
     }
     
-    func configure(with item: FilterItemModel) {
+    public func configure(with item: FilterItemModel) {
         premiumFilterView.isHidden = item.planType == .free
         premiumFilterView.configure(with: item.planType)
         

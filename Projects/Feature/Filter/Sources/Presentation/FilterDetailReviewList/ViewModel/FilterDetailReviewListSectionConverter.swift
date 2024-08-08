@@ -9,7 +9,7 @@ import Foundation
 import CoreUIKit
 
 final class FilterDetailReviewListSectionConverter {
-    func createSections(with detailReviews: [FilterDetailReviewModel]) -> [SectionModelType] {
+    func createSections(with detailReviews: [FeedReviewModel]) -> [SectionModelType] {
         [
             createImagePagerSection(with: detailReviews)
         ]
@@ -19,10 +19,9 @@ final class FilterDetailReviewListSectionConverter {
 
 //MARK: - ImamgePager
 extension FilterDetailReviewListSectionConverter {
-    private func createImagePagerSection(with reviews: [FilterDetailReviewModel]) -> [SectionModelType] {
-        
+    private func createImagePagerSection(with reviews: [FeedReviewModel]) -> [SectionModelType] {
         let components = reviews.map { review in
-            FilterDetailImageContainerComponent(
+            FeedDetailImageContainerComponent(
                 identifier: review.identifier,
                 review: review
             )

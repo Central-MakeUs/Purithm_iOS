@@ -12,12 +12,14 @@ import SnapKit
 import Kingfisher
 
 public struct PurithmVerticalProfileModel {
-    let type: PurithmProfileType
-    let name: String
-    let profileURLString: String
-    let introduction: String
+    public let identifier: String
+    public let type: PurithmProfileType
+    public let name: String
+    public let profileURLString: String
+    public let introduction: String
     
-    public init(type: PurithmProfileType, name: String, profileURLString: String, introduction: String) {
+    public init(identifier: String, type: PurithmProfileType, name: String, profileURLString: String, introduction: String) {
+        self.identifier = identifier
         self.type = type
         self.name = name
         self.profileURLString = profileURLString
@@ -76,11 +78,11 @@ public final class PurithmVerticalProfileView: BaseView {
         textContainer.snp.makeConstraints { make in
             make.top.equalTo(profileView.snp.bottom).offset(10)
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview()
+            make.bottom.lessThanOrEqualToSuperview()
         }
     }
     
-    func configure(with profileModel: PurithmVerticalProfileModel) {
+    public func configure(with profileModel: PurithmVerticalProfileModel) {
         switch profileModel.type {
         case .artist:
             introductionLabel.isHidden = false

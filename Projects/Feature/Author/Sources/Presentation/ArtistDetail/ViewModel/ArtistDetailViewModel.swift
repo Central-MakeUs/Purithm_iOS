@@ -25,6 +25,11 @@ extension ArtistDetailViewModel {
         var presentOrderOptionBottomSheetEvent: AnyPublisher<Void, Never> {
             presentOrderOptionBottomSheetEventSubject.eraseToAnyPublisher()
         }
+        
+        fileprivate let presentFilterRockBottomSheetSubject = PassthroughSubject<Void, Never>()
+        var presentFilterRockBottomSheetEvent: AnyPublisher<Void, Never> {
+            presentFilterRockBottomSheetSubject.eraseToAnyPublisher()
+        }
     }
 }
 
@@ -33,6 +38,11 @@ final class ArtistDetailViewModel {
     weak var coordinator: ArtistCoordinatorable?
     private var cancellables = Set<AnyCancellable>()
     private let converter = ArtistDetailSectionConverter()
+    
+    fileprivate let errorSubject = PassthroughSubject<Error, Never>()
+    var errorPublisher: AnyPublisher<Error, Never> {
+        errorSubject.eraseToAnyPublisher()
+    }
     
     private var orderOptionModels = CurrentValueSubject<[ArtistDetailOrderOptionModel], Never>([])
     private var selectedOrderOption: ArtistDetailOrderOptionModel? {

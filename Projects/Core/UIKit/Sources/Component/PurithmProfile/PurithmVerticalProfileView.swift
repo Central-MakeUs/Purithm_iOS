@@ -33,7 +33,11 @@ public final class PurithmVerticalProfileView: BaseView {
         $0.image = .bgMd
     }
     
-    let profileView = UIImageView()
+    let profileView = UIImageView().then {
+        $0.layer.cornerRadius = 100 / 2
+        $0.clipsToBounds = true
+        $0.contentMode = .scaleAspectFill
+    }
     let textContainer = UIStackView().then {
         $0.axis = .vertical
         $0.distribution = .fillProportionally
@@ -47,8 +51,8 @@ public final class PurithmVerticalProfileView: BaseView {
     }
     
     public override func setupSubviews() {
-        addSubview(container)
         addSubview(backgroundImageView)
+        addSubview(container)
         
         [profileView, textContainer].forEach {
             container.addSubview($0)
@@ -70,14 +74,13 @@ public final class PurithmVerticalProfileView: BaseView {
         
         profileView.snp.makeConstraints { make in
             make.size.equalTo(100)
-            make.top.equalToSuperview()
+            make.top.equalToSuperview().inset(40)
             make.centerX.equalToSuperview()
-            make.horizontalEdges.lessThanOrEqualToSuperview().inset(20)
         }
         
         textContainer.snp.makeConstraints { make in
             make.top.equalTo(profileView.snp.bottom).offset(10)
-            make.horizontalEdges.equalToSuperview()
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.lessThanOrEqualToSuperview()
         }
     }

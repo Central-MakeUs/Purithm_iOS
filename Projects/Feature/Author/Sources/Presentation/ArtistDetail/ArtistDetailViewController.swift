@@ -11,7 +11,10 @@ import CoreUIKit
 import CoreCommonKit
 
 final class ArtistDetailViewController: ViewController<ArtistDetailView> {
+    private var cancellables = Set<AnyCancellable>()
     let viewModel: ArtistDetailViewModel
+    
+    private lazy var adapter = CollectionViewAdapter(with: contentView.collectionView)
     
     init(viewModel: ArtistDetailViewModel) {
         self.viewModel = viewModel
@@ -26,6 +29,31 @@ final class ArtistDetailViewController: ViewController<ArtistDetailView> {
         super.viewDidLoad()
         
         initNavigationBar(with: .page)
+        
+        bindViewModel()
+    }
+    
+    private func bindViewModel() {
+        let input = ArtistDetailViewModel.Input(
+            viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
+            adapterActionEvent: adapter.actionEventPublisher
+        )
+        
+        let output = viewModel.transform(input: input)
+        
+        output.sections
+            .sink { [weak self] sections in
+                _ = self?.adapter.receive(sections)
+            }
+            .store(in: &cancellables)
+        
+        output.presentOrderOptionBottomSheetEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                //TODO: 바텀시트
+                print("//TODO: 바텀시트")
+            }
+            .store(in: &cancellables)
     }
 }
 

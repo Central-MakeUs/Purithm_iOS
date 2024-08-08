@@ -10,6 +10,10 @@ import CoreUIKit
 import CoreCommonKit
 
 final class ArtistDetailView: BaseView {
+    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
+        $0.backgroundColor = .gray100
+    }
+    
     override func setup() {
         super.setup()
         
@@ -17,10 +21,12 @@ final class ArtistDetailView: BaseView {
     }
     
     override func setupSubviews() {
-        
+        addSubview(collectionView)
     }
     
     override func setupConstraints() {
-        
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 }

@@ -44,6 +44,100 @@ final class ArtistDetailViewModel {
     
     private var artistProfileModel = CurrentValueSubject<PurithmVerticalProfileModel?, Never>(nil)
     
+    // only test
+    private var filters = CurrentValueSubject<[FilterItemModel], Never>([
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+            planType: .premiumPlus,
+            filterTitle: "Rainbow",
+            author: "Made by Ehwa",
+            isLike: true,
+            likeCount: 12,
+            canAccess: false
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+            planType: .premium,
+            filterTitle: "Blueming",
+            author: "Made by Ehwa",
+            isLike: false,
+            likeCount: 12,
+            canAccess: false
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+            planType: .free,
+            filterTitle: "title",
+            author: "author",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+            planType: .free,
+            filterTitle: "title",
+            author: "author",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "",
+            planType: .free,
+            filterTitle: "title",
+            author: "author",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "",
+            planType: .free,
+            filterTitle: "title",
+            author: "author",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "",
+            planType: .free,
+            filterTitle: "title",
+            author: "author",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "",
+            planType: .free,
+            filterTitle: "title",
+            author: "author",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "",
+            planType: .free,
+            filterTitle: "title",
+            author: "author",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+    ])
+    
     init(coordinator: ArtistCoordinatorable) {
         self.coordinator = coordinator
     }
@@ -68,7 +162,8 @@ final class ArtistDetailViewModel {
                 
                 let sections = self.converter.createSections(
                     profileModel: profileModel,
-                    option: selectedOrderOption
+                    option: selectedOrderOption,
+                    filters: filters.value
                 )
                 
                 output.sectionItems.send(sections)
@@ -84,8 +179,26 @@ final class ArtistDetailViewModel {
                 
                 let sections = self.converter.createSections(
                     profileModel: profileModel,
-                    option: selectedOrderOption
+                    option: selectedOrderOption,
+                    filters: filters.value
                 )
+                output.sectionItems.send(sections)
+            }
+            .store(in: &cancellables)
+        
+        filters
+            .compactMap { $0 }
+            .sink { [weak self] filters in
+                guard let self,
+                      let selectedOrderOption = self.selectedOrderOption,
+                      let profileModel = artistProfileModel.value else { return }
+                
+                let sections = self.converter.createSections(
+                    profileModel: profileModel,
+                    option: selectedOrderOption,
+                    filters: filters
+                )
+                
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellables)

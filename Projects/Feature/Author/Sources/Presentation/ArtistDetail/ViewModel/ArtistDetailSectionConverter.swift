@@ -9,10 +9,13 @@ import Foundation
 import CoreUIKit
 
 final class ArtistDetailSectionConverter {
-    func createSections(profileModel: PurithmVerticalProfileModel, option: ArtistDetailOrderOptionModel?) -> [SectionModelType] {
+    func createSections(profileModel: PurithmVerticalProfileModel,
+                        option: ArtistDetailOrderOptionModel?,
+                        filters: [FilterItemModel]) -> [SectionModelType] {
         [
             createProfileSection(with: profileModel),
-            createOrderSection(with: option)
+            createOrderSection(with: option),
+            createFilterItemSection(with: filters)
         ]
         .flatMap { $0 }
     }
@@ -75,6 +78,38 @@ extension ArtistDetailSectionConverter {
             groupStrategy: .group(widthDimension: .fractionalWidth(1.0),
                                  heightDimension: .estimated(60)),
            scrollBehavior: .none
+        )
+    }
+}
+
+//MARK: - Filter Item Section
+extension ArtistDetailSectionConverter {
+    private func createFilterItemSection(with filters: [FilterItemModel]) -> [SectionModelType] {
+        let filterComponents = filters.map { filter in
+            FilterItemComponent(
+                identifier: filter.identifier,
+                item: filter)
+        }
+        
+        let section = SectionModel(
+            identifier: "filter_item_section",
+            collectionLayout: createFilterItemCollectionLayout(),
+            itemModels: filterComponents)
+        
+        return [section]
+    }
+    
+    private func createFilterItemCollectionLayout() -> CompositionalLayoutModelType {
+        CompositionalLayoutModel(
+            itemStrategy: .item(widthDimension: .fractionalWidth(0.5),
+                                heightDimension: .estimated(200)),
+            groupStrategy: .group(widthDimension: .fractionalWidth(1.0),
+                                  heightDimension: .estimated(200)),
+            isHorizontalGroup: true,
+            itemSpacing: 12,
+            groupSpacing: 30,
+            sectionInset: .with(vertical: 0, horizontal: 20),
+            scrollBehavior: .none
         )
     }
 }

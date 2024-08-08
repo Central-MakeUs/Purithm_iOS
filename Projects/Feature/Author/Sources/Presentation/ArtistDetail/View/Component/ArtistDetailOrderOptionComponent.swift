@@ -92,7 +92,6 @@ final class ArtistDetailOrderOptionView: BaseView, ActionEventEmitable {
         
         downImageView.snp.makeConstraints { make in
             make.size.equalTo(16)
-            make.verticalEdges.lessThanOrEqualToSuperview()
             make.centerY.equalToSuperview()
             make.trailing.equalToSuperview()
         }

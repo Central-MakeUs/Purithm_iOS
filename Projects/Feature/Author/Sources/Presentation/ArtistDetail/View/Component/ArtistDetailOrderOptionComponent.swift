@@ -1,48 +1,47 @@
 //
-//  ArtistOrderOptionComponent.swift
+//  ArtistDetailOrderOptionComponent.swift
 //  Author
 //
-//  Created by 이숭인 on 8/8/24.
+//  Created by 이숭인 on 8/9/24.
 //
-
-import Foundation
 
 import UIKit
 import CoreUIKit
 import CoreCommonKit
 import Combine
 
-struct ArtistOrderOptionAction: ActionEventItem {
+struct ArtistDetailOrderOptionAction: ActionEventItem {
     let identifier: String
 }
 
-struct ArtistOrderOptionComponent: Component {
+
+struct ArtistDetailOrderOptionComponent: Component {
     var identifier: String
-    let artistCount: Int
+    let filterCount: Int
     let optionTitle: String
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(artistCount)
+        hasher.combine(filterCount)
         hasher.combine(optionTitle)
     }
 }
 
-extension ArtistOrderOptionComponent {
-    typealias ContentType = ArtistOrderOptionView
+extension ArtistDetailOrderOptionComponent {
+    typealias ContentType = ArtistDetailOrderOptionView
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
-        content.configure(count: context.artistCount, optionTitle: context.optionTitle)
+        content.configure(count: context.filterCount, optionTitle: context.optionTitle)
         
         content.containerTapGesture.tapPublisher
             .sink { [weak content] _ in
-                let action = ArtistOrderOptionAction(identifier: context.identifier)
+                let action = ArtistDetailOrderOptionAction(identifier: context.identifier)
                 content?.actionEventEmitter.send(action)
             }
             .store(in: &cancellable)
     }
 }
 
-final class ArtistOrderOptionView: BaseView, ActionEventEmitable {
+final class ArtistDetailOrderOptionView: BaseView, ActionEventEmitable {
     var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
     
     let container = UIView().then {
@@ -100,12 +99,12 @@ final class ArtistOrderOptionView: BaseView, ActionEventEmitable {
     }
     
     func configure(count: Int, optionTitle: String) {
-        reviewCountLabel.text = "\(count)명의 작가들"
+        reviewCountLabel.text = "\(count)개의 필터"
         orderLabel.text = optionTitle
     }
 }
 
-extension ArtistOrderOptionView {
+extension ArtistDetailOrderOptionView {
     private enum Constants {
         static let reviewTitleTypo = Typography(size: .size16, weight: .semibold, color: .gray500, applyLineHeight: true)
         static let orderTypo = Typography(size: .size14, weight: .semibold, color: .gray400, applyLineHeight: true)

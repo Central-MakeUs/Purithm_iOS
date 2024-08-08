@@ -50,13 +50,46 @@ final class ArtistDetailViewController: ViewController<ArtistDetailView> {
         output.presentOrderOptionBottomSheetEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                //TODO: 바텀시트
-                print("//TODO: 바텀시트")
+                self?.presentMenuBottomSheet()
             }
             .store(in: &cancellables)
     }
 }
 
+//MARK: - BottomSheet
+extension ArtistDetailViewController {
+    private func presentMenuBottomSheet() {
+        let bottomSheetVC = PurithmMenuBottomSheet()
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return bottomSheetVC.preferredContentSize.height
+            })]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16.0
+        }
+        
+        
+        bottomSheetVC.menus = viewModel.orderOptions.map { option in
+            PurithmMenuModel(
+                identifier: option.identifier,
+                title: option.option.title,
+                isSelected: option.isSelected
+            )
+        }
+        
+        bottomSheetVC.menuTapEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] identifier in
+                self?.viewModel.toggleSelectedOrderOption(target: identifier)
+                
+            }
+            .store(in: &self.cancellables)
+        
+        self.present(bottomSheetVC, animated: true, completion: nil)
+    }
+}
+
+//MARK: - Navigation
 extension ArtistDetailViewController: NavigationBarApplicable {
     var leftButtonItems: [NavigationBarButtonItemType] {
         return [

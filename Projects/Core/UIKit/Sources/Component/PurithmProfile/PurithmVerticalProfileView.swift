@@ -89,9 +89,11 @@ public final class PurithmVerticalProfileView: BaseView {
         switch profileModel.type {
         case .artist:
             introductionLabel.isHidden = false
+            editProfileLabel.isHidden = true
             introductionLabel.text = profileModel.introduction
         case .user:
             introductionLabel.isHidden = true
+            editProfileLabel.isHidden = false
         }
         
         nameLabel.text = profileModel.name

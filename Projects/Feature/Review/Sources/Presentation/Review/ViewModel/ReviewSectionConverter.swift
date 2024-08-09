@@ -68,9 +68,9 @@ extension ReviewSectionConverter {
     private func createSliderCollectionLayout() -> CompositionalLayoutModelType {
         CompositionalLayoutModel(
             itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
-                                heightDimension: .absolute(32 + 40)),
+                                heightDimension: .absolute(54 + 40)),
             groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
-                                 heightDimension: .absolute(32 + 40)),
+                                 heightDimension: .absolute(54 + 40)),
             scrollBehavior: .none
         )
     }

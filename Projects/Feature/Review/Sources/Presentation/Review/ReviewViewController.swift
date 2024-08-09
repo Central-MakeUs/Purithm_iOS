@@ -48,6 +48,30 @@ public final class ReviewViewController: ViewController<ReviewView> {
                 _ = self?.adapter.receive(sections)
             }
             .store(in: &cancellables)
+        
+        output.galleryOpenEventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                let imagePickerController = UIImagePickerController()
+                imagePickerController.delegate = self
+                imagePickerController.sourceType = .photoLibrary
+                self?.present(imagePickerController, animated: true, completion: nil)
+            }
+            .store(in: &cancellables)
+    }
+}
+
+//MARK: - Image Picker
+extension ReviewViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let selectedImage = info[.originalImage] as? UIImage {
+            viewModel.didFinishPickingImageSubject.send(selectedImage)
+        }
+        dismiss(animated: true, completion: nil)
+    }
+    
+    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
     }
 }
 

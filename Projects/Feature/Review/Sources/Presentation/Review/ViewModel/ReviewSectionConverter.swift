@@ -5,17 +5,18 @@
 //  Created by 이숭인 on 8/9/24.
 //
 
-import Foundation
+import UIKit
 import CoreUIKit
 import CoreCommonKit
 
 final class ReviewSectionConverter {
-    func createSections(headerModel: ReviewHeaderComponentModel) -> [SectionModelType] {
+    func createSections(headerModel: ReviewHeaderComponentModel,
+                        willUploadImageModels: [ReviewUploadImageContainerComponentModel]) -> [SectionModelType] {
         [
             createHeaderSection(with: headerModel),
             createSliderSection(),
             createReviewContentSection(),
-            createReviewImageContentSection(),
+            createReviewImageContentSection(with: willUploadImageModels),
             createReviewTermsAgreementSection(),
             createReviewTermsItemSection(),
         ]
@@ -102,8 +103,34 @@ extension ReviewSectionConverter {
 
 //MARK: - Review Image Content
 extension ReviewSectionConverter {
-    private func createReviewImageContentSection() -> [SectionModelType] {
-        return []
+    private func createReviewImageContentSection(with imageContainerModels: [ReviewUploadImageContainerComponentModel]) -> [SectionModelType] {
+        let components = imageContainerModels.map { model in
+            return ReviewUploadImageContainerComponent(
+                identifier: model.identifier,
+                model: model
+            )
+        }
+        
+        let section = SectionModel(
+            identifier: "image_upload_container_section",
+            collectionLayout: createReviewImageContentCollectionLayout(),
+            itemModels: components
+        )
+        
+        return [section]
+    }
+    
+    private func createReviewImageContentCollectionLayout() -> CompositionalLayoutModelType {
+        CompositionalLayoutModel(
+            itemStrategy: .item(widthDimension: .fractionalWidth(1/3),
+                                heightDimension: .estimated(100)),
+            groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                 heightDimension: .estimated(100)),
+            isHorizontalGroup: true,
+            itemSpacing: 20,
+            sectionInset: NSDirectionalEdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20),
+            scrollBehavior: .none
+        )
     }
 }
 

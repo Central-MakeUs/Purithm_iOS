@@ -5,7 +5,7 @@
 //  Created by 이숭인 on 8/9/24.
 //
 
-import Foundation
+import UIKit
 import Combine
 import CoreUIKit
 
@@ -20,6 +20,11 @@ extension ReviewViewModel {
         var sections: AnyPublisher<[SectionModelType], Never> {
             sectionItems.eraseToAnyPublisher()
         }
+        
+        fileprivate let galleryOpenEvent = PassthroughSubject<Void, Never>()
+        var galleryOpenEventPublisher: AnyPublisher<Void, Never> {
+            galleryOpenEvent.eraseToAnyPublisher()
+        }
     }
 }
 
@@ -28,8 +33,26 @@ public final class ReviewViewModel {
     weak var coordinator: ReviewCoordinatorable?
     private let converter = ReviewSectionConverter()
     
-    private var headerModel = CurrentValueSubject<ReviewHeaderComponentModel?, Never>(nil)
+    // 선택된 이미지 저장 Subject
+    var didFinishPickingImageSubject = PassthroughSubject<UIImage, Never>()
+    
+    private var headerModel = CurrentValueSubject<ReviewHeaderComponentModel, Never>(
+        ReviewHeaderComponentModel(
+            identifier: UUID().uuidString,
+            title: "How Purithm?",
+            description: "아래 바를 조절해 만족도를 남겨주세요.",
+            thumbnailURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+            satisfactionLevel: .none,
+            intensity: .zero
+        )
+    )
     private var intensitySubject = CurrentValueSubject<CGFloat, Never>(.zero)
+    private var willUploadImages = CurrentValueSubject<[ReviewUploadImageContainerComponentModel], Never>([
+        ReviewUploadImageContainerComponentModel(
+            identifier: UUID().uuidString,
+            selectedImage: nil
+        )
+    ])
     
     public init(coordinator: ReviewCoordinatorable) {
         self.coordinator = coordinator
@@ -52,9 +75,43 @@ public final class ReviewViewModel {
             .sink { [weak self] model in
                 guard let self else { return }
                 
-                let sections = self.converter.createSections(headerModel: model)
+                let sections = self.converter.createSections(
+                    headerModel: model,
+                    willUploadImageModels: self.willUploadImages.value)
                 
                 output.sectionItems.send(sections)
+            }
+            .store(in: &cancellables)
+        
+        willUploadImages
+            .sink { [weak self] uploadImageModels in
+                guard let self else { return }
+                
+                let sections = self.converter.createSections(
+                    headerModel: self.headerModel.value,
+                    willUploadImageModels: uploadImageModels)
+                
+                output.sectionItems.send(sections)
+            }
+            .store(in: &cancellables)
+        
+        didFinishPickingImageSubject
+            .sink { [weak self] selectedImage in
+                guard let self else { return }
+                
+                let uploadImageCount = self.willUploadImages.value.count
+                
+                if uploadImageCount <= 2 {
+                    let willUploadImageItem = ReviewUploadImageContainerComponentModel(
+                        identifier: UUID().uuidString,
+                        selectedImage: selectedImage
+                    )
+                    self.willUploadImages.value.insert(willUploadImageItem, at: .zero)
+                } else {
+                    guard self.willUploadImages.value[safe: 2] != nil else { return }
+                    
+                    self.willUploadImages.value[2].selectedImage = selectedImage
+                }
             }
             .store(in: &cancellables)
     }
@@ -93,12 +150,28 @@ extension ReviewViewModel {
                 
                 switch actionItem {
                 case let action as ReviewSliderAction:
-                    print("::: intensity > \(action.intensity)")
-                    headerModel.value?.updateIntensity(with: action.intensity)
+                    headerModel.value.updateIntensity(with: action.intensity)
+                case let action as ReviewUploadImageAction:
+                    output.galleryOpenEvent.send(Void())
+                case let action as ReviewCancelUploadImageAction:
+                    //TODO: id 찾아서 해당 컴포넌트 제거하기
+                    if let targetIndex = self.willUploadImages.value.firstIndex(where: { $0.identifier == action.identifier }) {
+                        
+                        guard self.willUploadImages.value[safe: targetIndex] != nil else {
+                            return
+                        }
+                        
+                        self.willUploadImages.value[targetIndex].selectedImage = nil
+                    }
+                    break
                 default:
                     break
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    private func findSectionItem(with identifier: String) {
+        
     }
 }

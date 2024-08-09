@@ -16,7 +16,17 @@ struct ReviewHeaderComponentModel {
     let title: String
     let description: String
     let thumbnailURLString: String
-    let satisfactionLevel: SatisfactionLevel
+    var satisfactionLevel: SatisfactionLevel
+    var intensity: CGFloat
+    
+    mutating func updateIntensity(with intensity: CGFloat) {
+        self.intensity = intensity
+        updateSatisfactionLevel()
+    }
+    
+    mutating private func updateSatisfactionLevel() {
+        satisfactionLevel = SatisfactionLevel(rawValue: Int(intensity)) ?? .low
+    }
 }
 
 struct ReviewHeaderComponent: Component {
@@ -28,6 +38,7 @@ struct ReviewHeaderComponent: Component {
         hasher.combine(headerModel.description)
         hasher.combine(headerModel.thumbnailURLString)
         hasher.combine(headerModel.satisfactionLevel)
+        hasher.combine(headerModel.intensity)
     }
 }
 
@@ -93,20 +104,46 @@ final class ReviewHeaderView: BaseView {
     }
     
     func configure(with headerModel: ReviewHeaderComponentModel) {
-        titleLabel.text = headerModel.title
-        descriptionLabel.text = headerModel.description
         backgroundImageView.image = headerModel.satisfactionLevel.backgroundSatisfactionImage
         
         if let url = URL(string: headerModel.thumbnailURLString) {
             filterThumbnailView.kf.setImage(with: url)
+        }
+        
+        updateTextTypo(with: headerModel)
+    }
+    
+    private func updateTextTypo(with headerModel: ReviewHeaderComponentModel) {
+        let intensity = Int(headerModel.intensity)
+        
+        switch SatisfactionLevel(rawValue: intensity) {
+        case .veryHigh, .mediumHigh, .high, .medium, .low:
+            
+            
+            titleLabel.text = "필터 만족도"
+            descriptionLabel.text = "\(intensity)%"
+            
+            titleLabel.applyTypography(with: Constants.satisfactionTitleTypo)
+            descriptionLabel.applyTypography(with: Constants.satisfactionIntensityTypo)
+        default:
+            
+            
+            titleLabel.text = headerModel.title
+            descriptionLabel.text = headerModel.description
+            
+            titleLabel.applyTypography(with: Constants.titleTypo)
+            descriptionLabel.applyTypography(with: Constants.descriptionTypo)
         }
     }
 }
 
 extension ReviewHeaderView {
     private enum Constants {
-        static let titleTypo = Typography(size: .size30, weight: .semibold, alignment: .center, color: .gray500, applyLineHeight: true)
-        static let descriptionTypo = Typography(size: .size14, weight: .medium, alignment: .center, color: .gray400, applyLineHeight: true)
+        static let titleTypo = Typography(size: .size30, weight: .semibold, alignment: .center, color: .gray500, applyLineHeight: false)
+        static let descriptionTypo = Typography(size: .size14, weight: .medium, alignment: .center, color: .gray400, applyLineHeight: false)
+        
+        static let satisfactionTitleTypo = Typography(size: .size14, weight: .semibold, color: .blue400, applyLineHeight: false)
+        static let satisfactionIntensityTypo = Typography(size: .size30, weight: .semibold, color: .blue400, applyLineHeight: false)
     }
 }
 

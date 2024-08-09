@@ -12,6 +12,7 @@ import CoreUIKit
 extension ReviewViewModel {
     struct Input {
         let viewWillAppearEvent: AnyPublisher<Bool, Never>
+        let adapterActionEvent: AnyPublisher<ActionEventItem, Never>
     }
     
     struct Output {
@@ -28,6 +29,7 @@ public final class ReviewViewModel {
     private let converter = ReviewSectionConverter()
     
     private var headerModel = CurrentValueSubject<ReviewHeaderComponentModel?, Never>(nil)
+    private var intensitySubject = CurrentValueSubject<CGFloat, Never>(.zero)
     
     public init(coordinator: ReviewCoordinatorable) {
         self.coordinator = coordinator
@@ -39,6 +41,7 @@ public final class ReviewViewModel {
         bind(output: output)
         
         handleViewWillAppearEvent(input: input, output: output)
+        handleAdapterActionEvent(input: input, output: output)
         
         return output
     }
@@ -55,7 +58,10 @@ public final class ReviewViewModel {
             }
             .store(in: &cancellables)
     }
-    
+}
+
+//MARK: - Handler
+extension ReviewViewModel {
     private func handleViewWillAppearEvent(input: Input, output: Output) {
         input.viewWillAppearEvent
             .sink { [weak self] _ in
@@ -67,12 +73,32 @@ public final class ReviewViewModel {
     private func setupHeader() {
         let model = ReviewHeaderComponentModel(
             identifier: UUID().uuidString,
-            title: "How Purithm",
+            title: "How Purithm?",
             description: "아래 바를 조절해 만족도를 남겨주세요.",
             thumbnailURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .low
+            satisfactionLevel: .none,
+            intensity: .zero
         )
         
         headerModel.send(model)
+    }
+}
+
+extension ReviewViewModel {
+    private func handleAdapterActionEvent(input: Input, output: Output) {
+        input.adapterActionEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] actionItem in
+                guard let self else { return }
+                
+                switch actionItem {
+                case let action as ReviewSliderAction:
+                    print("::: intensity > \(action.intensity)")
+                    headerModel.value?.updateIntensity(with: action.intensity)
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
     }
 }

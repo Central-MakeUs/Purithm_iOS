@@ -37,7 +37,8 @@ public final class ReviewViewController: ViewController<ReviewView> {
     
     private func bindViewModel() {
         let input = ReviewViewModel.Input(
-            viewWillAppearEvent: rx.viewWillAppear.asPublisher()
+            viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
+            adapterActionEvent: adapter.actionEventPublisher
         )
         
         let output = viewModel.transform(input: input)

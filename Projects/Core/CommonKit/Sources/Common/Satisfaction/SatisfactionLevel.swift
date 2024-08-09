@@ -13,6 +13,7 @@ public enum SatisfactionLevel: Int, CaseIterable {
     case mediumHigh = 60
     case medium = 40
     case low = 20
+    case none = 0
     
     public var color: UIColor {
         switch self {
@@ -26,6 +27,8 @@ public enum SatisfactionLevel: Int, CaseIterable {
             return .blue200
         case .low:
             return .blue100
+        case .none:
+            return .blue100
         }
     }
     
@@ -36,6 +39,8 @@ public enum SatisfactionLevel: Int, CaseIterable {
         case .mediumHigh:
             return .icStarMedium
         case .medium, .low:
+            return .icStarLow
+        case .none:
             return .icStarLow
         }
     }
@@ -52,6 +57,8 @@ public enum SatisfactionLevel: Int, CaseIterable {
             return ._104
         case .low:
             return ._105
+        case .none:
+            return ._105
         }
     }
     
@@ -67,6 +74,8 @@ public enum SatisfactionLevel: Int, CaseIterable {
             return .bgReview40
         case .low:
             return .bgReview20
+        case .none:
+            return .bgReview0
         }
     }
     
@@ -82,6 +91,8 @@ public enum SatisfactionLevel: Int, CaseIterable {
             return .bgReview40
         case .low:
             return .bgReview20
+        case .none:
+            return .bgReview0
         }
     }
 }

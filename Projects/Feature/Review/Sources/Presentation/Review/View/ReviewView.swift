@@ -22,7 +22,7 @@ public final class ReviewView: BaseView {
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalTo(self.keyboardLayoutGuide.snp.top)
         }
     }
 }

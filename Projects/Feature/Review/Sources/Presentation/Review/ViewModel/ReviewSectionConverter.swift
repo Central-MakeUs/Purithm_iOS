@@ -79,7 +79,24 @@ extension ReviewSectionConverter {
 //MARK: - Review Content
 extension ReviewSectionConverter {
     private func createReviewContentSection() -> [SectionModelType] {
-        return []
+        let component = ReviewTextViewComponent(identifier: "textview_component")
+        
+        let section = SectionModel(
+            identifier: "review_textview_section",
+            collectionLayout: createReviewContentCollectionLayout(),
+            itemModels: [component]
+        )
+        return [section]
+    }
+    
+    private func createReviewContentCollectionLayout() -> CompositionalLayoutModelType {
+        CompositionalLayoutModel(
+            itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                heightDimension: .absolute(240 + 60)),
+            groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                 heightDimension: .absolute(240 + 60)),
+            scrollBehavior: .none
+        )
     }
 }
 

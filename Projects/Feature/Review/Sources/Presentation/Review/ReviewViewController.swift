@@ -18,17 +18,35 @@ extension ReviewViewController {
 }
 
 public final class ReviewViewController: ViewController<ReviewView> {
+    var cancellables = Set<AnyCancellable>()
+    
     private let viewModel: ReviewViewModel
+    private lazy var adapter = CollectionViewAdapter(with: contentView.collectionView)
     
     public init(viewModel: ReviewViewModel) {
         self.viewModel = viewModel
         super.init()
         
         initNavigationBar(with: .page)
+        bindViewModel()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func bindViewModel() {
+        let input = ReviewViewModel.Input(
+            viewWillAppearEvent: rx.viewWillAppear.asPublisher()
+        )
+        
+        let output = viewModel.transform(input: input)
+        
+        output.sections
+            .sink { [weak self] sections in
+                _ = self?.adapter.receive(sections)
+            }
+            .store(in: &cancellables)
     }
 }
 

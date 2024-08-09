@@ -69,4 +69,19 @@ public enum SatisfactionLevel: Int, CaseIterable {
             return .bgReview20
         }
     }
+    
+    public var backgroundSatisfactionImage: UIImage {
+        switch self {
+        case .veryHigh:
+            return .bgReview100
+        case .high:
+            return .bgReview80
+        case .mediumHigh:
+            return .bgReview60
+        case .medium:
+            return .bgReview40
+        case .low:
+            return .bgReview20
+        }
+    }
 }

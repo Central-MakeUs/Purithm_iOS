@@ -11,14 +11,15 @@ import CoreCommonKit
 
 final class ReviewSectionConverter {
     func createSections(headerModel: ReviewHeaderComponentModel,
-                        willUploadImageModels: [ReviewUploadImageContainerComponentModel]) -> [SectionModelType] {
+                        willUploadImageModels: [ReviewUploadImageContainerComponentModel],
+                        termsItemModels: [ReviewTermsItemComponentModel]) -> [SectionModelType] {
         [
             createHeaderSection(with: headerModel),
             createSliderSection(),
             createReviewContentSection(),
             createReviewImageContentSection(with: willUploadImageModels),
             createReviewTermsAgreementSection(),
-            createReviewTermsItemSection(),
+            createReviewTermsItemSection(with: termsItemModels)
         ]
         .flatMap { $0 }
     }
@@ -128,7 +129,7 @@ extension ReviewSectionConverter {
                                  heightDimension: .estimated(100)),
             isHorizontalGroup: true,
             itemSpacing: 20,
-            sectionInset: NSDirectionalEdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20),
+            sectionInset: NSDirectionalEdgeInsets(top: 20, leading: 20, bottom: 60, trailing: 20),
             scrollBehavior: .none
         )
     }
@@ -137,14 +138,67 @@ extension ReviewSectionConverter {
 //MARK: - Terms Agreement
 extension ReviewSectionConverter {
     private func createReviewTermsAgreementSection() -> [SectionModelType] {
-        return []
+        let model = ReviewTermsAgreementComponentModel(
+            identifier: "terms_agreement_section_item",
+            title: "후기 약관 동의",
+            description: "작성하신 후기는 퓨리즘 및 퓨리즘 이용자에게 공개됩니다."
+        )
+        
+        let component = ReviewTermsAgreementComponent(
+            identifier: model.identifier,
+            title: model.title,
+            description: model.description
+        )
+        
+        let section = SectionModel(
+            identifier: "terms_agreement_section",
+            collectionLayout: createReviewTermsAgreementCollectionLayout(),
+            itemModels: [component]
+        )
+        
+        return [section]
+    }
+    
+    private func createReviewTermsAgreementCollectionLayout() -> CompositionalLayoutModelType {
+        CompositionalLayoutModel(
+            itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                heightDimension: .estimated(120)),
+            groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                 heightDimension: .estimated(120)),
+            sectionInset: NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 20, trailing: 20),
+            scrollBehavior: .none
+        )
     }
 }
 
 
 //MARK: - Terms Item
 extension ReviewSectionConverter {
-    private func createReviewTermsItemSection() -> [SectionModelType] {
-        return []
+    private func createReviewTermsItemSection(with models: [ReviewTermsItemComponentModel]) -> [SectionModelType] {
+        let components = models.map { model in
+            ReviewTermsItemComponent(
+                identifier: model.identifier,
+                termsModel: model
+            )
+        }
+        
+        let section = SectionModel(
+            identifier: "terms_item_section",
+            collectionLayout: createReviewTermsItemCollectionLayout(),
+            itemModels: components
+        )
+        
+        return [section]
+    }
+    
+    private func createReviewTermsItemCollectionLayout() -> CompositionalLayoutModelType {
+        CompositionalLayoutModel(
+            itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                heightDimension: .estimated(46)),
+            groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                 heightDimension: .estimated(46)),
+            sectionInset: NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 20, trailing: 20),
+            scrollBehavior: .none
+        )
     }
 }

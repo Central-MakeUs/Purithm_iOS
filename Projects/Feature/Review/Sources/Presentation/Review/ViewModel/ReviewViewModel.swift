@@ -31,6 +31,11 @@ extension ReviewViewModel {
         var conformStatePublisher: AnyPublisher<Bool, Never> {
             conformStateSubject.eraseToAnyPublisher()
         }
+        
+        var completeReviewSubject = PassthroughSubject<Void, Never>()
+        var completeReviewPublisher: AnyPublisher<Void, Never> {
+            completeReviewSubject.eraseToAnyPublisher()
+        }
     }
 }
 
@@ -83,6 +88,7 @@ public final class ReviewViewModel {
         bind(output: output)
         
         handleConformState(input: input)
+        handleConformActionEvent(input: input, output: output)
         handleViewWillAppearEvent(input: input, output: output)
         handleAdapterActionEvent(input: input, output: output)
         
@@ -226,6 +232,7 @@ extension ReviewViewModel {
         input.conformButtonTapEvent
             .sink { [weak self] _ in
                 //TODO: 필더 후기 작성 API Request
+                output.completeReviewSubject.send(Void())
             }
             .store(in: &cancellables)
     }

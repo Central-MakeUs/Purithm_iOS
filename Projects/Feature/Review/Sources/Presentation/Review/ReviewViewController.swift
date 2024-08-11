@@ -66,6 +66,13 @@ public final class ReviewViewController: ViewController<ReviewView> {
                 self?.contentView.updateConformButtonState(with: isEnabled)
             }
             .store(in: &cancellables)
+        
+        output.completeReviewPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.presentCompleteAlert()
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -102,6 +109,16 @@ extension ReviewViewController {
         }
         
         self.present(bottomSheetVC, animated: true, completion: nil)
+    }
+}
+
+//MARK: - Complete Alert
+extension ReviewViewController {
+    private func presentCompleteAlert() {
+        let stampViewController  = PurithmAnimateAlert<StampAnimateView>()
+        stampViewController.modalPresentationStyle = .overCurrentContext
+        
+        self.present(stampViewController, animated: false)
     }
 }
 

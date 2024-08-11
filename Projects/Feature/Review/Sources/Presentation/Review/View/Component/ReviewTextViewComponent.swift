@@ -11,6 +11,11 @@ import CoreCommonKit
 import Combine
 import CombineCocoa
 
+
+struct ReviewTextViewAction: ActionEventItem {
+    let text: String
+}
+
 struct ReviewTextViewComponent: Component {
     var identifier: String
     
@@ -28,6 +33,8 @@ extension ReviewTextViewComponent {
                 guard let text else { return }
                 
                 content?.updateTextCount(with: text.count)
+                
+                content?.actionEventEmitter.send(ReviewTextViewAction(text: text))
             }
             .store(in: &cancellable)
         
@@ -53,7 +60,9 @@ extension ReviewTextViewComponent {
     }
 }
 
-final class ReviewTextViewView: BaseView {
+final class ReviewTextViewView: BaseView, ActionEventEmitable {
+    var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
+    
     let container = UIView().then {
         $0.backgroundColor = .gray100
     }
@@ -65,6 +74,7 @@ final class ReviewTextViewView: BaseView {
     let textView = PlaceholderTextView().then {
         $0.layer.cornerRadius = 12
         $0.font = UIFont.Pretendard.medium.font(size: 16)
+        $0.textColor = .gray500
         $0.placeholder = "여기에 남겨주세요."
         $0.placeholderColor = .gray200
         $0.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 30, right: 20)
@@ -210,6 +220,7 @@ class PlaceholderTextView: UITextView {
     // 초기화
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
+        self.backgroundColor = .white
         setupPlaceholder()
     }
     

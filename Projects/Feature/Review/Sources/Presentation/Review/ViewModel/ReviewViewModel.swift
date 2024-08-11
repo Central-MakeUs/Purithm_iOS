@@ -13,6 +13,7 @@ extension ReviewViewModel {
     struct Input {
         let viewWillAppearEvent: AnyPublisher<Bool, Never>
         let adapterActionEvent: AnyPublisher<ActionEventItem, Never>
+        let conformButtonTapEvent: AnyPublisher<Void, Never>
     }
     
     struct Output {
@@ -24,6 +25,11 @@ extension ReviewViewModel {
         fileprivate let galleryOpenEvent = PassthroughSubject<Void, Never>()
         var galleryOpenEventPublisher: AnyPublisher<Void, Never> {
             galleryOpenEvent.eraseToAnyPublisher()
+        }
+        
+        var conformStateSubject = CurrentValueSubject<Bool, Never>(false)
+        var conformStatePublisher: AnyPublisher<Bool, Never> {
+            conformStateSubject.eraseToAnyPublisher()
         }
     }
 }
@@ -54,6 +60,19 @@ public final class ReviewViewModel {
         )
     ])
     
+    private var termsItems = CurrentValueSubject<[ReviewTermsItemComponentModel], Never>(
+        ReviewTerms.allCases.map { term in
+            ReviewTermsItemComponentModel(
+                identifier: UUID().uuidString,
+                termsItem: term,
+                isSelected: false
+            )
+        }
+    )
+    
+    //TODO: 추후 서버에 요청할 도메인 모델로 사용할 거임.. 일단 변수로 두자
+    private var conformState = CurrentValueSubject<Bool, Never>(false)
+    
     public init(coordinator: ReviewCoordinatorable) {
         self.coordinator = coordinator
     }
@@ -63,6 +82,7 @@ public final class ReviewViewModel {
         
         bind(output: output)
         
+        handleConformState(input: input)
         handleViewWillAppearEvent(input: input, output: output)
         handleAdapterActionEvent(input: input, output: output)
         
@@ -77,7 +97,9 @@ public final class ReviewViewModel {
                 
                 let sections = self.converter.createSections(
                     headerModel: model,
-                    willUploadImageModels: self.willUploadImages.value)
+                    willUploadImageModels: self.willUploadImages.value,
+                    termsItemModels: self.termsItems.value
+                    )
                 
                 output.sectionItems.send(sections)
             }
@@ -89,8 +111,9 @@ public final class ReviewViewModel {
                 
                 let sections = self.converter.createSections(
                     headerModel: self.headerModel.value,
-                    willUploadImageModels: uploadImageModels)
-                
+                    willUploadImageModels: uploadImageModels, 
+                    termsItemModels: self.termsItems.value
+                )
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellables)
@@ -112,6 +135,26 @@ public final class ReviewViewModel {
                     
                     self.willUploadImages.value[2].selectedImage = selectedImage
                 }
+            }
+            .store(in: &cancellables)
+        
+        termsItems
+            .sink { [weak self] termsItems in
+                guard let self else { return }
+                
+                let sections = self.converter.createSections(
+                    headerModel: self.headerModel.value,
+                    willUploadImageModels: self.willUploadImages.value,
+                    termsItemModels: self.termsItems.value
+                )
+                
+                output.sectionItems.send(sections)
+            }
+            .store(in: &cancellables)
+        
+        conformState
+            .sink { isEnabled in
+                output.conformStateSubject.send(isEnabled)
             }
             .store(in: &cancellables)
     }
@@ -141,6 +184,7 @@ extension ReviewViewModel {
     }
 }
 
+//MARK: Handle Adapter Action
 extension ReviewViewModel {
     private func handleAdapterActionEvent(input: Input, output: Output) {
         input.adapterActionEvent
@@ -151,7 +195,7 @@ extension ReviewViewModel {
                 switch actionItem {
                 case let action as ReviewSliderAction:
                     headerModel.value.updateIntensity(with: action.intensity)
-                case let action as ReviewUploadImageAction:
+                case _ as ReviewUploadImageAction:
                     output.galleryOpenEvent.send(Void())
                 case let action as ReviewCancelUploadImageAction:
                     //TODO: id 찾아서 해당 컴포넌트 제거하기
@@ -164,14 +208,41 @@ extension ReviewViewModel {
                         self.willUploadImages.value[targetIndex].selectedImage = nil
                     }
                     break
+                case let action as ReviewTermsItemAction:
+                    if let targetIndex = self.termsItems.value.firstIndex(where: { $0.identifier == action.identifier }) {
+                        self.termsItems.value[targetIndex].isSelected.toggle()
+                    }
                 default:
                     break
                 }
             }
             .store(in: &cancellables)
     }
+}
+
+//MARK: Handle Conform State
+extension ReviewViewModel {
+    private func handleConformActionEvent(input: Input, output: Output) {
+        input.conformButtonTapEvent
+            .sink { [weak self] _ in
+                //TODO: 필더 후기 작성 API Request
+            }
+            .store(in: &cancellables)
+    }
     
-    private func findSectionItem(with identifier: String) {
+    private func handleConformState(input: Input) {
+        let textChangeActionEventPublisher = input.adapterActionEvent
+            .compactMap { $0 as? ReviewTextViewAction }
+            .eraseToAnyPublisher()
         
+        Publishers.CombineLatest(termsItems, textChangeActionEventPublisher)
+            .map { termsItems, action in
+                let termsAllAgree = !termsItems.contains { !$0.isSelected }
+                return action.text.count >= 20 && termsAllAgree
+            }
+            .sink { [weak self] isEnabled in
+                self?.conformState.send(isEnabled)
+            }
+            .store(in: &cancellables)
     }
 }

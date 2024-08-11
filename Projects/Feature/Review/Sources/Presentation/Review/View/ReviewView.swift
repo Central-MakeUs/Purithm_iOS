@@ -8,6 +8,7 @@
 import UIKit
 import CoreUIKit
 import CoreCommonKit
+import Combine
 
 public final class ReviewView: BaseView {
     let container = UIView().then {
@@ -16,6 +17,14 @@ public final class ReviewView: BaseView {
     
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.backgroundColor = .gray100
+    }
+    
+    let conformButton = PlainButton(type: .filled, variant: .default, size: .large).then {
+        $0.text = "올리기"
+    }
+    
+    var conformButtonTapEvent: AnyPublisher<Void, Never> {
+        conformButton.tap
     }
     
     public override func setup() {
@@ -28,6 +37,7 @@ public final class ReviewView: BaseView {
         addSubview(container)
         
         container.addSubview(collectionView)
+        container.addSubview(conformButton)
     }
     
     public override func setupConstraints() {
@@ -38,7 +48,16 @@ public final class ReviewView: BaseView {
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(self.keyboardLayoutGuide.snp.top)
+            make.bottom.equalTo(conformButton.snp.top)
         }
+        
+        conformButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.bottom.equalTo(safeAreaLayoutGuide)
+        }
+    }
+    
+    func updateConformButtonState(with isEnabled: Bool) {
+        conformButton.isEnabled = isEnabled
     }
 }

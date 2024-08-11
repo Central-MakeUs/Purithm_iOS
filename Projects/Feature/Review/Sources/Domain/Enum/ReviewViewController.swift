@@ -105,6 +105,13 @@ extension ReviewViewController {
     }
 }
 
+//MARK: - Complete Alert
+extension ReviewViewController {
+    private func presentCompleteAlert() {
+        
+    }
+}
+
 //MARK: - Navigation
 extension ReviewViewController: NavigationBarApplicable {
     public func handleNavigationButtonAction(with identifier: String) {

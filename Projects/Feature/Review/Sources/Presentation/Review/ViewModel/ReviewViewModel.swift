@@ -46,6 +46,7 @@ public final class ReviewViewModel {
     
     // 선택된 이미지 저장 Subject
     var didFinishPickingImageSubject = PassthroughSubject<UIImage, Never>()
+    var selectedImageComponentIdentifier = CurrentValueSubject<String, Never>("")
     
     private var headerModel = CurrentValueSubject<ReviewHeaderComponentModel, Never>(
         ReviewHeaderComponentModel(
@@ -125,21 +126,31 @@ public final class ReviewViewModel {
             .store(in: &cancellables)
         
         didFinishPickingImageSubject
-            .sink { [weak self] selectedImage in
+            .compactMap { [weak self] image -> (identifier: String, image: UIImage)? in
+                guard let identifier = self?.selectedImageComponentIdentifier.value,
+                      !identifier.isEmpty else {
+                    return nil
+                }
+                
+                return (identifier, image)
+            }
+            .sink { [weak self] selectedInfo in
                 guard let self else { return }
+                guard let targetIndex = self.willUploadImages.value.firstIndex(where: { $0.identifier == selectedInfo.identifier }) else {
+                    return
+                }
                 
-                let uploadImageCount = self.willUploadImages.value.count
+                let isEmptyComponent = self.willUploadImages.value[targetIndex].selectedImage == nil
+                let isMaxLenght = !(self.willUploadImages.value.count <= 2)
+
+                self.willUploadImages.value[targetIndex].selectedImage = selectedInfo.image
                 
-                if uploadImageCount <= 2 {
+                if !isMaxLenght && isEmptyComponent  {
                     let willUploadImageItem = ReviewUploadImageContainerComponentModel(
                         identifier: UUID().uuidString,
-                        selectedImage: selectedImage
+                        selectedImage: nil
                     )
-                    self.willUploadImages.value.insert(willUploadImageItem, at: .zero)
-                } else {
-                    guard self.willUploadImages.value[safe: 2] != nil else { return }
-                    
-                    self.willUploadImages.value[2].selectedImage = selectedImage
+                    self.willUploadImages.value.append(willUploadImageItem)
                 }
             }
             .store(in: &cancellables)
@@ -201,19 +212,26 @@ extension ReviewViewModel {
                 switch actionItem {
                 case let action as ReviewSliderAction:
                     headerModel.value.updateIntensity(with: action.intensity)
-                case _ as ReviewUploadImageAction:
+                case let action as ReviewUploadImageAction:
+                    self.selectedImageComponentIdentifier.send(action.identifier)
                     output.galleryOpenEvent.send(Void())
                 case let action as ReviewCancelUploadImageAction:
-                    //TODO: id 찾아서 해당 컴포넌트 제거하기
                     if let targetIndex = self.willUploadImages.value.firstIndex(where: { $0.identifier == action.identifier }) {
-                        
                         guard self.willUploadImages.value[safe: targetIndex] != nil else {
                             return
                         }
                         
-                        self.willUploadImages.value[targetIndex].selectedImage = nil
+                        self.willUploadImages.value.remove(at: targetIndex)
+                        
+                        let isContainEmptyComponent = self.willUploadImages.value.contains { $0.selectedImage == nil }
+                        if !isContainEmptyComponent {
+                            let willUploadImageItem = ReviewUploadImageContainerComponentModel(
+                                identifier: UUID().uuidString,
+                                selectedImage: nil
+                            )
+                            self.willUploadImages.value.append(willUploadImageItem)
+                        }
                     }
-                    break
                 case let action as ReviewTermsItemAction:
                     if let targetIndex = self.termsItems.value.firstIndex(where: { $0.identifier == action.identifier }) {
                         self.termsItems.value[targetIndex].isSelected.toggle()

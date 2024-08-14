@@ -22,9 +22,5 @@ public final class PurithmAnimateAlert<Content: BaseView>: ViewController<Conten
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            self.dismiss(animated: false)
-        }
     }
 }

@@ -34,7 +34,6 @@ final class FilterDetailViewController: ViewController<FilterDetailView> {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        contentView.configure(with: .back(title: "Blueming", likeCount: 12, isLike: true))
         bindViewModel()
     }
     
@@ -50,6 +49,19 @@ final class FilterDetailViewController: ViewController<FilterDetailView> {
         )
         
         let output = viewModel.transform(input: input)
+        
+        output.headerInfo
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] detailModel in
+                self?.contentView.configure(with:
+                        .back(
+                            title: detailModel.detailInformation.title,
+                            likeCount: detailModel.detailInformation.likeCount,
+                            isLike: detailModel.detailInformation.isLike
+                        ), satisfaction: detailModel.detailInformation.satisfaction
+                )
+            }
+            .store(in: &cancellables)
         
         output.sections
             .sink { [weak self] sections in

@@ -22,6 +22,7 @@ extension FilterDetailViewModel {
     
     struct Output {
         let sections = CurrentValueSubject<[SectionModelType], Never>([])
+        let headerInfo = PassthroughSubject<FilterDetailModel, Never>()
     }
 }
 
@@ -76,6 +77,7 @@ extension FilterDetailViewModel {
             .sink { [weak self] detail in
                 if let sections = self?.converter.createSections(with: detail) {
                     output.sections.send(sections)
+                    output.headerInfo.send(detail)
                 }
             }
             .store(in: &cancellabels)
@@ -137,8 +139,7 @@ extension FilterDetailViewModel {
         input.conformEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                //TODO: filterID주입해줘야함!!
-                self?.coordinator?.pushFilterOptionDetail(with: "filterID")
+                self?.coordinator?.pushFilterOptionDetail(with: self?.filterID ?? "")
             }
             .store(in: &cancellabels)
     }

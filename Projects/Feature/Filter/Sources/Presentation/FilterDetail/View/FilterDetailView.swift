@@ -132,8 +132,10 @@ final class FilterDetailView: BaseView {
         }
     }
     
-    func configure(with headerType: PurithmHeaderType) {
+    func configure(with headerType: PurithmHeaderType, satisfaction: Int) {
         headerView.configure(with: headerType)
+        
+        optionViews.first?.optionTitleLabel.text = "필터 만족도 \(satisfaction)%"
     }
     
     func updatePageBadge(total: Int, current: Int) {

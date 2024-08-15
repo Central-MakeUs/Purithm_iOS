@@ -166,7 +166,6 @@ public final class FiltersViewModel {
     }
     
     func toggleSelectedOrderOption(target identifier: String) {
-        //TODO: order option 전환 후, 리스트 갱신 요청
         if let targetIndex = orderOptionModels.value.firstIndex(where: { $0.identifier == identifier }) {
             var tempOrderOptions = orderOptionModels.value
             for index in tempOrderOptions.indices {
@@ -209,7 +208,6 @@ extension FiltersViewModel {
                     tempChipModels[targetIndex].isSelected.toggle()
                     
                     self.chipModels.send(tempChipModels)
-                    //TODO: chip 상태 전환 후, 리스트 갱신 요청
                     filtersRequestDTO.value.tag = tempChipModels[targetIndex].chipType
                     self.requestFilters()
                 }
@@ -228,6 +226,14 @@ extension FiltersViewModel {
                 case let action as FilterLikeAction:
                     if let targetIndex = self.filters.value.firstIndex(where: { $0.identifier == action.identifier }) {
                         self.filters.value[targetIndex].isLike.toggle()
+                        
+                        if self.filters.value[targetIndex].isLike {
+                            self.filters.value[targetIndex].likeCount += 1
+                            self.requestLike(with: action.identifier)
+                        } else {
+                            self.filters.value[targetIndex].likeCount -= 1
+                            self.requestUnlike(with: action.identifier)
+                        }
                     }
                 case let action as FilterDidTapAction:
                     if let targetIndex = self.filters.value.firstIndex(where: { $0.identifier == action.identifier }) {
@@ -261,6 +267,24 @@ extension FiltersViewModel {
                 
                 self.filters.send(filters)
             })
+            .store(in: &cancellabels)
+    }
+    
+    private func requestLike(with filterID: String) {
+        usecase.requestLike(with: filterID)
+            .sink { _ in } receiveValue: { _ in
+                //TODO: 찜 토스트 띄워야함
+                print("//TODO: 찜 토스트 띄워야함")
+            }
+            .store(in: &cancellabels)
+    }
+    
+    private func requestUnlike(with filterID: String) {
+        usecase.requestUnlike(with: filterID)
+            .sink { _ in } receiveValue: { _ in
+                //TODO: 찜 해제 토스트 띄워야함
+                print("//TODO: 찜 해제 토스트 띄워야함")
+            }
             .store(in: &cancellabels)
     }
 }

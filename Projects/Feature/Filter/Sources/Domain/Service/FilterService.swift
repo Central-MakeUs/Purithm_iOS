@@ -23,4 +23,20 @@ public final class FilterService: FiltersServiceManageable {
             }
             .eraseToAnyPublisher()
     }
+    
+    public func requestLike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error> {
+        provider.requestPublisher(.likeFilter(filterID: filterID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<Bool>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestUnlike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error> {
+        provider.requestPublisher(.unlikeFilter(filterID: filterID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<Bool>.self)
+            }
+            .eraseToAnyPublisher()
+    }
 }

@@ -79,8 +79,10 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
     let filterTitleLabel = PurithmLabel(typography: Constants.titleTypo)
     let authorLabel = PurithmLabel(typography: Constants.authorTypo)
     let likeButton = UIButton().then {
-        $0.setImage(.icLikeUnpressed.withTintColor(.gray200).resizeImage(with: CGSize(width: 28, height: 28)), for: .normal)
-        $0.setImage(.icLikePressed.withTintColor(.blue400).resizeImage(with: CGSize(width: 28, height: 28)), for: .selected)
+        $0.setImage(.icLikeUnpressed.withTintColor(.gray200), for: .normal)
+        $0.setImage(.icLikePressed.withTintColor(.blue400), for: .selected)
+        
+        $0.imageView?.contentMode = .scaleAspectFill
     }
     let likeCountLabel = PurithmLabel(typography: Constants.countTypo)
     

@@ -11,6 +11,8 @@ import CoreKeychain
 
 enum FilterAPI {
     case getFilterList(requestModel: FilterListRequestDTO)
+    case likeFilter(filterID: String)
+    case unlikeFilter(filterID: String)
 }
 
 extension FilterAPI: TargetType {
@@ -29,6 +31,10 @@ extension FilterAPI: TargetType {
         switch self {
         case .getFilterList:
             return "api/filters"
+        case .likeFilter(let filterID):
+            return "api/filters/\(filterID)/likes"
+        case .unlikeFilter(let filterID):
+            return "api/filters/\(filterID)/likes"
         }
     }
     
@@ -36,6 +42,10 @@ extension FilterAPI: TargetType {
         switch self {
         case .getFilterList:
             return .get
+        case .likeFilter:
+            return .post
+        case .unlikeFilter:
+            return .delete
         }
     }
     
@@ -43,12 +53,18 @@ extension FilterAPI: TargetType {
         switch self {
         case .getFilterList(let requestModel):
             return .requestParameters(parameters: requestModel.toDictionary(), encoding: URLEncoding.queryString)
+        case .likeFilter(let filterID):
+            let parameters: [String: Any] = ["filterId": filterID]
+               return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
+        case .unlikeFilter(let filterID):
+            let parameters: [String: Any] = ["filterId": filterID]
+               return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .getFilterList:
+        default:
             print("::: filter header > \(serviceToken)")
             return [
                 "Authorization": "Bearer \(serviceToken)",

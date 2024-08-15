@@ -15,6 +15,7 @@ public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
     public var type: CoordinatorType { .filterDetail }
+    public var filterID: String = ""
     
     private let filtersUseCase = FiltersUseCase(
         filterService: FilterService()
@@ -34,8 +35,11 @@ public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
     }
     
     public func start() {
-        //TODO: filterID 주입받아야함
-        let viewModel = FilterDetailViewModel(with: "", coordinator: self)
+        let viewModel = FilterDetailViewModel(
+            with: filterID,
+            coordinator: self,
+            usecase: filtersUseCase
+        )
         let filterDetailViewController = FilterDetailViewController(viewModel: viewModel)
         filterDetailViewController.hidesBottomBarWhenPushed = true
         self.navigationController.pushViewController(filterDetailViewController, animated: true)

@@ -17,9 +17,17 @@ public final class FilterService: FiltersServiceManageable {
     public init() { }
     
     public func requestFilterList(with parameter: FilterListRequestDTO) -> AnyPublisher<ResponseWrapper<FilterListResponseDTO>, Error> {
-        provider.requestPublisher(.getFilterList(requestModel: parameter))
+        provider.requestPublisher(.fetchFilterList(requestModel: parameter))
             .tryMap { response in
                 return try response.map(ResponseWrapper<FilterListResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestFilterDetail(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterDetailResponseDTO>, any Error> {
+        provider.requestPublisher(.fetchFilterDetail(filterID: filterID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<FilterDetailResponseDTO>.self)
             }
             .eraseToAnyPublisher()
     }

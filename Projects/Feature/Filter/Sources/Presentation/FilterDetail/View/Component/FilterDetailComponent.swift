@@ -30,7 +30,10 @@ extension FilterDetailComponent {
 }
 
 final class FilterDetailComponentView: BaseView {
-    let imageView = UIImageView()
+    let imageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+    }
     
     override func setupSubviews() {
         addSubview(imageView)

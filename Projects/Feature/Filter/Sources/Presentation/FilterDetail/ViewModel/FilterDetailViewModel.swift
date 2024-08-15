@@ -28,17 +28,20 @@ extension FilterDetailViewModel {
 final class FilterDetailViewModel {
     private var cancellabels = Set<AnyCancellable>()
     weak var coordinator: FilterDetailCoordinatorable?
+    private let usecase: FiltersUseCase
     
     private let converter = FilterDetailSectionConverter()
     
+    private var filterID: String
     private var filterDetail = CurrentValueSubject<FilterDetailModel?, Never>(nil)
     var filter: FilterDetailModel? {
         filterDetail.value
     }
     
-    init(with filterID: String, coordinator: FilterDetailCoordinatorable) {
-        //TODO: ID 를 기반으로 filter 상세 정보 불러와야함
+    init(with filterID: String, coordinator: FilterDetailCoordinatorable, usecase: FiltersUseCase) {
+        self.filterID = filterID
         self.coordinator = coordinator
+        self.usecase = usecase
     }
 
     func transform(input: Input) -> Output{
@@ -59,26 +62,12 @@ final class FilterDetailViewModel {
 //MARK: - Handle Events
 extension FilterDetailViewModel {
     private func handleViewWillAppearEvent(input: Input, output: Output) {
-        let detail = FilterDetailModel(
-            detailInformation: FilterDetailModel.DetailInformation(
-                title: "BlueMing",
-                satisfaction: 80,
-                isLike: true,
-                likeCount: 12
-            ),
-            detailImages: [
-                FilterDetailModel.DetailImageModel(
-                    identifier: UUID().uuidString,
-                    imageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"
-                ),
-                FilterDetailModel.DetailImageModel(
-                    identifier: UUID().uuidString,
-                    imageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"
-                )
-            ]
-        )
-        
-        filterDetail.send(detail)
+        usecase.requestFilterDetail(with: filterID)
+            .sink { _ in } receiveValue: { [weak self] response in
+                let detailModel = response.convertModel()
+                self?.filterDetail.send(detailModel)
+            }
+            .store(in: &cancellabels)
     }
 
     private func handleFilterDetailChangeEvent(output: Output) {

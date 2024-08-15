@@ -34,6 +34,7 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
     public func pushFilterDetail(with filterID: String) {
         let filterDetailCoordinator = FilterDetailCoordinator(self.navigationController)
         filterDetailCoordinator.finishDelegate = self
+        filterDetailCoordinator.filterID = filterID
         self.childCoordinators.append(filterDetailCoordinator)
         filterDetailCoordinator.start()
     }

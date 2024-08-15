@@ -10,7 +10,8 @@ import Moya
 import CoreKeychain
 
 enum FilterAPI {
-    case getFilterList(requestModel: FilterListRequestDTO)
+    case fetchFilterList(requestModel: FilterListRequestDTO)
+    case fetchFilterDetail(filterID: String)
     case likeFilter(filterID: String)
     case unlikeFilter(filterID: String)
 }
@@ -29,8 +30,10 @@ extension FilterAPI: TargetType {
     
     var path: String {
         switch self {
-        case .getFilterList:
+        case .fetchFilterList:
             return "api/filters"
+        case .fetchFilterDetail(let filterID):
+            return "api/filters/\(filterID)"
         case .likeFilter(let filterID):
             return "api/filters/\(filterID)/likes"
         case .unlikeFilter(let filterID):
@@ -40,7 +43,9 @@ extension FilterAPI: TargetType {
     
     var method: Moya.Method {
         switch self {
-        case .getFilterList:
+        case .fetchFilterList:
+            return .get
+        case .fetchFilterDetail:
             return .get
         case .likeFilter:
             return .post
@@ -51,8 +56,10 @@ extension FilterAPI: TargetType {
     
     var task: Moya.Task {
         switch self {
-        case .getFilterList(let requestModel):
+        case .fetchFilterList(let requestModel):
             return .requestParameters(parameters: requestModel.toDictionary(), encoding: URLEncoding.queryString)
+        case .fetchFilterDetail(let filterID):
+            return .requestParameters(parameters: ["filterId": filterID], encoding: URLEncoding.queryString)
         case .likeFilter(let filterID):
             let parameters: [String: Any] = ["filterId": filterID]
                return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)

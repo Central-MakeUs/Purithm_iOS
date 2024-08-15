@@ -21,5 +21,6 @@ struct FilterDetailModel {
     struct DetailImageModel {
         let identifier: String
         let imageURLString: String
+        let originalImageURLString: String
     }
 }

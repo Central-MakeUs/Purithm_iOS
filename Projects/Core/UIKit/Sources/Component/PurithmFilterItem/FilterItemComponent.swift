@@ -67,6 +67,7 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
         $0.clipsToBounds = true
     }
     let filterImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
         $0.backgroundColor = .gray200
     }
     let activityIndicator = UIActivityIndicatorView(style: .large)

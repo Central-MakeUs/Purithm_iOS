@@ -17,7 +17,7 @@ public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
     public var type: CoordinatorType { .filterDetail }
     
     private let filtersUseCase = FiltersUseCase(
-        authService: FiltersService()
+        filterService: FilterService()
     )
     
     public init(_ navigationController: UINavigationController) {

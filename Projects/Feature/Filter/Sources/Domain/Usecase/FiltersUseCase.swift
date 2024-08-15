@@ -7,19 +7,43 @@
 
 import Foundation
 import Combine
+import CoreCommonKit
+import CombineExt
 
 public protocol FiltersServiceManageable {
-
+    func requestFilterList(with parameter: FilterListRequestDTO) -> AnyPublisher<ResponseWrapper<FilterListResponseDTO>, Error>
 }
 
-
-final class FiltersUseCase {
+public final class FiltersUseCase {
     private var cancellables = Set<AnyCancellable>()
     
-//    private let repository: AuthRepository
-    private let authService: FiltersServiceManageable
+    private let filterService: FiltersServiceManageable
     
-    init(authService: FiltersServiceManageable) {
-        self.authService = authService
+    public init(filterService: FiltersServiceManageable) {
+        self.filterService = filterService
+    }
+    
+    public func requestFilterList(with parameter: FilterListRequestDTO) -> AnyPublisher<FilterListResponseDTO, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = filterService.requestFilterList(with: parameter)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
     }
 }

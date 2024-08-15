@@ -41,6 +41,7 @@ public final class FiltersViewModel {
     private var cancellabels = Set<AnyCancellable>()
     
     weak var coordinator: FiltersCoordinatorable?
+    var usecase: FiltersUseCase
     private let sectionConverter = FiltersViewSectionConverter()
     private let chipSectionConverter = FiltersChipSectionConverter()
     
@@ -58,102 +59,22 @@ public final class FiltersViewModel {
         errorSubject.eraseToAnyPublisher()
     }
     
-    // only test
-    private var filters = CurrentValueSubject<[FilterItemModel], Never>([
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            planType: .premiumPlus,
-            filterTitle: "Rainbow",
-            author: "Made by Ehwa",
-            isLike: true,
-            likeCount: 12,
-            canAccess: false
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            planType: .premium,
-            filterTitle: "Blueming",
-            author: "Made by Ehwa",
-            isLike: false,
-            likeCount: 12,
-            canAccess: false
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-    ])
+    // Data
+    private var filtersRequestDTO = CurrentValueSubject<FilterListRequestDTO, Never>(
+        FilterListRequestDTO(
+            tag: .all,
+            sortedBy: .earliest,
+            page: 0,
+            size: 20
+        )
+    )
     
-    public init(coordinator: FiltersCoordinatorable) {
+    private var filters = CurrentValueSubject<[FilterItemModel], Never>([])
+    private var isLast: Bool = true
+    
+    public init(coordinator: FiltersCoordinatorable, usecase: FiltersUseCase) {
         self.coordinator = coordinator
+        self.usecase = usecase
     }
     
     func transform(input: Input) -> Output {
@@ -173,7 +94,6 @@ public final class FiltersViewModel {
             .compactMap { $0 }
             .sink { [weak self] chips in
                 guard let self else { return }
-                
                 let sections = self.chipSectionConverter.createSections(chips: chips)
                 output.chipSectionItems.send(sections)
             }
@@ -216,6 +136,8 @@ public final class FiltersViewModel {
             .sink { [weak self] _ in
                 self?.setupFilterChips() // chips setting
                 self?.setupOrderOption() // order option setting
+                
+                self?.requestFilters()
             }
             .store(in: &cancellabels)
     }
@@ -225,7 +147,7 @@ public final class FiltersViewModel {
             FilterChipModel(
                 identifier: type.rawValue,
                 title: type.title,
-                isSelected: type == .spring ? true : false,
+                isSelected: type == .all ? true : false,
                 chipType: type
             )
         }
@@ -253,6 +175,19 @@ public final class FiltersViewModel {
             tempOrderOptions[targetIndex].isSelected.toggle()
             
             orderOptionModels.send(tempOrderOptions)
+            
+            filtersRequestDTO.value.sortedBy = {
+                switch tempOrderOptions[targetIndex].option {
+                case .earliest:
+                    return FilterListRequestDTO.Sort.earliest
+                case .latest:
+                    return FilterListRequestDTO.Sort.latest
+                case .pureIndexHigh:
+                    return FilterListRequestDTO.Sort.popular
+                }
+            }()
+            
+            requestFilters()
         }
     }
 }
@@ -275,6 +210,8 @@ extension FiltersViewModel {
                     
                     self.chipModels.send(tempChipModels)
                     //TODO: chip 상태 전환 후, 리스트 갱신 요청
+                    filtersRequestDTO.value.tag = tempChipModels[targetIndex].chipType
+                    self.requestFilters()
                 }
             }
             .store(in: &cancellabels)
@@ -310,6 +247,20 @@ extension FiltersViewModel {
                     break
                 }
             }
+            .store(in: &cancellabels)
+    }
+}
+
+//MARK: - Filter List Request
+extension FiltersViewModel {
+    private func requestFilters() {
+        usecase.requestFilterList(with: filtersRequestDTO.value)
+            .sink(receiveCompletion: { _ in }, receiveValue: { response in
+                let filters = response.filters.map { $0.convertModel() }
+                self.isLast = response.isLast
+                
+                self.filters.send(filters)
+            })
             .store(in: &cancellabels)
     }
 }

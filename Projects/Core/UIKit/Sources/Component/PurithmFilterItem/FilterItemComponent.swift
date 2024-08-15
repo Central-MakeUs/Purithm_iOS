@@ -176,7 +176,8 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
         }
         
         filterTitleLabel.text = item.filterTitle
-        authorLabel.text = item.author
+        filterTitleLabel.font = UIFont.EBGaramond.medium.font(size: 24)
+        authorLabel.text = "Made by \(item.author)"
         likeCountLabel.text = "\(item.likeCount)"
         likeButton.isSelected = item.isLike
     }
@@ -189,5 +190,3 @@ extension FilterItemView {
         static let countTypo = Typography(size: .size12, weight: .medium, color: .gray200, applyLineHeight: true)
     }
 }
-// 바텀시트
-// 헤더 고정 - 어댑터 두개로 갈지도?

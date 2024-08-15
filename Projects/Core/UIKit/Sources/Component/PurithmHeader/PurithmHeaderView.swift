@@ -105,6 +105,8 @@ public final class PurithmHeaderView: BaseView {
             leftButton.setImage(.icCancel.withTintColor(.gray500), for: .normal)
             likeButton.isSelected = isLike
         }
+        
+        titleLabel.font = UIFont.EBGaramond.medium.font(size: 32)
     }
 }
 

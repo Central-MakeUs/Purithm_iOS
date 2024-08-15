@@ -58,17 +58,16 @@ final class FilterDetailViewModel {
         
         return output
     }
+    
+    deinit {
+        print("detail viewmOdel")
+    }
 }
 
 //MARK: - Handle Events
 extension FilterDetailViewModel {
     private func handleViewWillAppearEvent(input: Input, output: Output) {
-        usecase.requestFilterDetail(with: filterID)
-            .sink { _ in } receiveValue: { [weak self] response in
-                let detailModel = response.convertModel()
-                self?.filterDetail.send(detailModel)
-            }
-            .store(in: &cancellabels)
+        requestFilterDetail(with: filterID)
     }
 
     private func handleFilterDetailChangeEvent(output: Output) {
@@ -96,8 +95,21 @@ extension FilterDetailViewModel {
     
     private func handleLikeTapEvent(input: Input, output: Output) {
         input.filterLikeEvent
-            .sink { _ in
-                //TODO: like
+            .sink { [weak self] _ in
+                guard let filterID = self?.filterID else {
+                    return
+                }
+                
+                self?.filterDetail.value?.detailInformation.isLike.toggle()
+                let isLike = self?.filterDetail.value?.detailInformation.isLike ?? false
+                
+                if isLike {
+                    self?.filterDetail.value?.detailInformation.likeCount += 1
+                    self?.requestFilterLike(with: filterID)
+                } else {
+                    self?.filterDetail.value?.detailInformation.likeCount -= 1
+                    self?.requestFilterUnlike(with: filterID)
+                }
             }
             .store(in: &cancellabels)
     }
@@ -140,6 +152,36 @@ extension FilterDetailViewModel {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.coordinator?.pushFilterOptionDetail(with: self?.filterID ?? "")
+            }
+            .store(in: &cancellabels)
+    }
+}
+
+//MARK: - API Request
+extension FilterDetailViewModel {
+    private func requestFilterDetail(with filterID: String) {
+        usecase.requestFilterDetail(with: filterID)
+            .sink { _ in } receiveValue: { [weak self] response in
+                let detailModel = response.convertModel()
+                self?.filterDetail.send(detailModel)
+            }
+            .store(in: &cancellabels)
+    }
+    
+    private func requestFilterLike(with filterID: String) {
+        usecase.requestLike(with: filterID)
+            .sink { _ in } receiveValue: { [weak self] _ in
+                //TODO: 토스트 띄우기
+                print("//TODO: like 토스트 띄우기")
+            }
+            .store(in: &cancellabels)
+    }
+    
+    private func requestFilterUnlike(with filterID: String) {
+        usecase.requestUnlike(with: filterID)
+            .sink { _ in } receiveValue: { [weak self] _ in
+                //TODO: 토스트 띄우기
+                print("//TODO: unlike 토스트 띄우기")
             }
             .store(in: &cancellabels)
     }

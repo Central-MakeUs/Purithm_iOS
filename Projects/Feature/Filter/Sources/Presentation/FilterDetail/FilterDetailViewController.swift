@@ -25,6 +25,10 @@ final class FilterDetailViewController: ViewController<FilterDetailView> {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        print("detail viewcon deinit")
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         

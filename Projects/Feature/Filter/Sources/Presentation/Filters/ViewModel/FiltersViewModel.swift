@@ -41,7 +41,7 @@ public final class FiltersViewModel {
     private var cancellabels = Set<AnyCancellable>()
     
     weak var coordinator: FiltersCoordinatorable?
-    var usecase: FiltersUseCase
+    weak var usecase: FiltersUseCase?
     private let sectionConverter = FiltersViewSectionConverter()
     private let chipSectionConverter = FiltersChipSectionConverter()
     
@@ -69,7 +69,8 @@ public final class FiltersViewModel {
         )
     )
     
-    private var filters = CurrentValueSubject<[FilterItemModel], Never>([])
+    private var filters: [FilterItemModel] = []
+    private var filtersSubject = CurrentValueSubject<[FilterItemModel], Never>([])
     private var isLast: Bool = true
     
     public init(coordinator: FiltersCoordinatorable, usecase: FiltersUseCase) {
@@ -106,14 +107,14 @@ public final class FiltersViewModel {
                       let selectedOrderOption = self.selectedOrderOption else { return }
                 let sections = self.sectionConverter.createSections(
                     orderOption: selectedOrderOption,
-                    filters: self.filters.value
+                    filters: self.filters
                 )
                 
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellabels)
         
-        filters
+        filtersSubject
             .compactMap { $0 }
             .sink { [weak self] filters in
                 guard let self,
@@ -224,20 +225,22 @@ extension FiltersViewModel {
                 case _ as FilterOrderOptionAction:
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
                 case let action as FilterLikeAction:
-                    if let targetIndex = self.filters.value.firstIndex(where: { $0.identifier == action.identifier }) {
-                        self.filters.value[targetIndex].isLike.toggle()
+                    if let targetIndex = self.filters.firstIndex(where: { $0.identifier == action.identifier }) {
+                        self.filters[targetIndex].isLike.toggle()
                         
-                        if self.filters.value[targetIndex].isLike {
-                            self.filters.value[targetIndex].likeCount += 1
+                        if self.filters[targetIndex].isLike {
+                            self.filters[targetIndex].likeCount += 1
                             self.requestLike(with: action.identifier)
                         } else {
-                            self.filters.value[targetIndex].likeCount -= 1
+                            self.filters[targetIndex].likeCount -= 1
                             self.requestUnlike(with: action.identifier)
                         }
+                        
+                        self.filtersSubject.send(filters)
                     }
                 case let action as FilterDidTapAction:
-                    if let targetIndex = self.filters.value.firstIndex(where: { $0.identifier == action.identifier }) {
-                        if self.filters.value[targetIndex].canAccess {
+                    if let targetIndex = self.filters.firstIndex(where: { $0.identifier == action.identifier }) {
+                        if self.filters[targetIndex].canAccess {
                             DispatchQueue.main.async {
                                 self.coordinator?.pushFilterDetail(with: action.identifier)
                             }
@@ -260,18 +263,19 @@ extension FiltersViewModel {
 //MARK: - Filter List Request
 extension FiltersViewModel {
     private func requestFilters() {
-        usecase.requestFilterList(with: filtersRequestDTO.value)
-            .sink(receiveCompletion: { _ in }, receiveValue: { response in
+        usecase?.requestFilterList(with: filtersRequestDTO.value)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
                 let filters = response.filters.map { $0.convertModel() }
-                self.isLast = response.isLast
+                self?.isLast = response.isLast
                 
-                self.filters.send(filters)
+                self?.filters = filters
+                self?.filtersSubject.send(filters)
             })
             .store(in: &cancellabels)
     }
     
     private func requestLike(with filterID: String) {
-        usecase.requestLike(with: filterID)
+        usecase?.requestLike(with: filterID)
             .sink { _ in } receiveValue: { _ in
                 //TODO: 찜 토스트 띄워야함
                 print("//TODO: 찜 토스트 띄워야함")
@@ -280,7 +284,7 @@ extension FiltersViewModel {
     }
     
     private func requestUnlike(with filterID: String) {
-        usecase.requestUnlike(with: filterID)
+        usecase?.requestUnlike(with: filterID)
             .sink { _ in } receiveValue: { _ in
                 //TODO: 찜 해제 토스트 띄워야함
                 print("//TODO: 찜 해제 토스트 띄워야함")

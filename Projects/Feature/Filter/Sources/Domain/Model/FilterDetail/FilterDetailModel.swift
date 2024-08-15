@@ -8,14 +8,14 @@
 import Foundation
 
 struct FilterDetailModel {
-    let detailInformation: DetailInformation
+    var detailInformation: DetailInformation
     let detailImages: [DetailImageModel]
     
     struct DetailInformation {
         let title: String
         let satisfaction: Int // 만족도
-        let isLike: Bool
-        let likeCount: Int
+        var isLike: Bool
+        var likeCount: Int
     }
     
     struct DetailImageModel {

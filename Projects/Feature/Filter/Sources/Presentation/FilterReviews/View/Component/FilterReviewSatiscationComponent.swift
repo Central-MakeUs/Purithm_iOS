@@ -13,9 +13,11 @@ import CoreCommonKit
 struct FilterReviewSatiscationComponent: Component {
     var identifier: String
     let satisfactionLevel: SatisfactionLevel
+    let averageValue: Int?
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(satisfactionLevel)
+        hasher.combine(averageValue)
     }
 }
 
@@ -23,7 +25,10 @@ extension FilterReviewSatiscationComponent {
     typealias ContentType = FilterReviewSatiscationView
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
-        content.configure(with: context.satisfactionLevel)
+        content.configure(
+            with: context.satisfactionLevel,
+            averageValue: context.averageValue
+        )
     }
 }
 
@@ -84,8 +89,10 @@ final class FilterReviewSatiscationView: BaseView {
         }
     }
     
-    func configure(with level: SatisfactionLevel) {
-        satisfactionLabel.text = "\(level.rawValue) %"
+    func configure(with level: SatisfactionLevel, averageValue: Int? = nil) {
+        let isAverageValue = averageValue != nil
+        
+        satisfactionLabel.text = "\(isAverageValue ? averageValue ?? .zero : level.rawValue) %"
         backgroundView.image = level.circleBackgroundImage
         backgroundStarImageView.image = level.backgroundStarImage
     }

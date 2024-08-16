@@ -13,6 +13,7 @@ enum FilterAPI {
     case fetchFilterList(requestModel: FilterListRequestDTO)
     case fetchFilterDetail(filterID: String)
     case fetchFilterAdjustment(filterID: String)
+    case fetchReviewsFromFilter(filterID: String)
     case likeFilter(filterID: String)
     case unlikeFilter(filterID: String)
 }
@@ -37,6 +38,8 @@ extension FilterAPI: TargetType {
             return "api/filters/\(filterID)"
         case .fetchFilterAdjustment(let filterID):
             return "api/filters/\(filterID)/iOS"
+        case .fetchReviewsFromFilter(let filterID):
+            return "api/filters/\(filterID)/reviews"
         case .likeFilter(let filterID):
             return "api/filters/\(filterID)/likes"
         case .unlikeFilter(let filterID):
@@ -52,6 +55,8 @@ extension FilterAPI: TargetType {
             return .get
         case .fetchFilterAdjustment:
             return .get
+        case .fetchReviewsFromFilter:
+            return .get
         case .likeFilter:
             return .post
         case .unlikeFilter:
@@ -66,6 +71,8 @@ extension FilterAPI: TargetType {
         case .fetchFilterDetail(let filterID):
             return .requestParameters(parameters: ["filterId": filterID], encoding: URLEncoding.queryString)
         case .fetchFilterAdjustment(let filterID):
+            return .requestParameters(parameters: ["filterId": filterID], encoding: URLEncoding.queryString)
+        case .fetchReviewsFromFilter(let filterID):
             return .requestParameters(parameters: ["filterId": filterID], encoding: URLEncoding.queryString)
         case .likeFilter(let filterID):
             let parameters: [String: Any] = ["filterId": filterID]

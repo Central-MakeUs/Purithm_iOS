@@ -24,10 +24,18 @@ public final class FilterService: FiltersServiceManageable {
             .eraseToAnyPublisher()
     }
     
-    public func requestFilterDetail(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterDetailResponseDTO>, any Error> {
+    public func requestFilterDetail(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterDetailResponseDTO>, Error> {
         provider.requestPublisher(.fetchFilterDetail(filterID: filterID))
             .tryMap { response in
                 return try response.map(ResponseWrapper<FilterDetailResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestFilterAdjustment(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterAdjustmentResponseDTO>, Error> {
+        provider.requestPublisher(.fetchFilterAdjustment(filterID: filterID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<FilterAdjustmentResponseDTO>.self)
             }
             .eraseToAnyPublisher()
     }

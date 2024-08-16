@@ -27,15 +27,12 @@ final class FilterOptionDetailViewController: ViewController<FilterOptionDetailV
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        contentView.configure(
-            with: .close(title: "Blueming", isLike: true),
-            imageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"
-        )
         bindViewModel()
     }
     
     private func bindViewModel() {
         let input = FilterOptionDetailViewModel.Input(
+            viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
             closeButtonTapEvent: contentView.backButtonTapEvent,
             likeButtonTapEvent: contentView.likeButtonTapEvent
         )
@@ -48,6 +45,16 @@ final class FilterOptionDetailViewController: ViewController<FilterOptionDetailV
             }
             .store(in: &cancellables)
             
+        viewModel.contentInfoPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] (title, isLike, thumbnail) in
+                self?.contentView.configure(with: .close(
+                    title: title,
+                    isLike: isLike
+                ), imageURLString: thumbnail)
+            }
+            .store(in: &cancellables)
+        
         contentView.helpOptionTapEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in

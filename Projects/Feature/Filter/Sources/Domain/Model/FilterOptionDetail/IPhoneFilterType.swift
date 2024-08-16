@@ -9,21 +9,56 @@ import UIKit
 import CoreCommonKit
 
 enum IPhonePhotoFilter: String, CaseIterable {
-    case exposure = "노출"
-    case brightness = "휘도"
-    case highlights = "하이라이트"
-    case shadows = "그림자"
-    case contrast = "대비"
-    case luminance = "밝기"
-    case blackPoint = "블랙포인트"
-    case saturation = "채도"
-    case colorSharpness = "색 선명도"
-    case warmth = "따뜻함"
-    case tint = "색조"
-    case sharpness = "선명도"
-    case clarity = "명료도"
-    case noiseReduction = "노이즈 감소"
-    case vignette = "비네트"
+    case exposure
+    case brightness
+    case highlight
+    case shadow
+    case contrast
+    case luminance
+    case blackPoint
+    case saturation
+    case colorSharpness = "colorfulness"
+    case warmth
+    case tint = "hue"
+    case sharpness = "clear"
+    case clarity
+    case noiseReduction = "noise"
+    case vignette
+    
+    var title: String {
+        switch self {
+        case .exposure:
+            return "노출"
+        case .brightness:
+            return "휘도"
+        case .highlight:
+            return "하이라이트"
+        case .shadow:
+            return "그림자"
+        case .contrast:
+            return "대비"
+        case .luminance:
+            return "밝기"
+        case .blackPoint:
+            return "블랙포인트"
+        case .saturation:
+            return "채도"
+        case .colorSharpness:
+            return "색 선명도"
+        case .warmth:
+            return "따뜻함"
+        case .tint:
+            return "색조"
+        case .sharpness:
+            return "선명도"
+        case .clarity:
+            return "명료도"
+        case .noiseReduction:
+            return "노이즈 감소"
+        case .vignette:
+            return "비네트"
+        }
+    }
     
     var image: UIImage {
         switch self {
@@ -31,9 +66,9 @@ enum IPhonePhotoFilter: String, CaseIterable {
             return .icExposure
         case .brightness:
             return .icBrightness
-        case .highlights:
+        case .highlight:
             return .icHighlight
-        case .shadows:
+        case .shadow:
             return .icShadow
         case .contrast:
             return .icContrast

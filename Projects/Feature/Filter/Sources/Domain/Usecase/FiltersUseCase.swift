@@ -13,6 +13,7 @@ import CombineExt
 public protocol FiltersServiceManageable {
     func requestFilterList(with parameter: FilterListRequestDTO) -> AnyPublisher<ResponseWrapper<FilterListResponseDTO>, Error>
     func requestFilterDetail(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterDetailResponseDTO>, Error>
+    func requestFilterAdjustment(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterAdjustmentResponseDTO>, Error>
     func requestLike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error>
     func requestUnlike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error>
 }
@@ -55,6 +56,30 @@ public final class FiltersUseCase {
             guard let self else { return }
             
             let publisher = filterService.requestFilterDetail(with: filterID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func requestFilterAdjustment(with filterID: String) -> AnyPublisher<FilterAdjustmentResponseDTO, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = filterService.requestFilterAdjustment(with: filterID)
                 .share()
                 .materialize()
             

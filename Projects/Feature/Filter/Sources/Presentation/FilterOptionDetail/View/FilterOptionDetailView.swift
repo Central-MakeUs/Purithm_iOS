@@ -28,7 +28,9 @@ final class FilterOptionDetailView: BaseView {
     }
     
     let bottomContainer = UIView()
-    let contentImageView = UIImageView()
+    let contentImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
+    }
     let gradientView = PurithmGradientView().then {
         $0.colorType = .purple(direction: .trailing)
     }

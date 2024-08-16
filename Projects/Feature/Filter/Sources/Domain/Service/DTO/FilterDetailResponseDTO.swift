@@ -34,7 +34,7 @@ public struct FilterDetailResponseDTO: Codable {
                     imageURLString: $0.picture,
                     originalImageURLString: $0.originalPicture
                 )
-            }
+            }, isShowOriginal: false
         )
     }
 }

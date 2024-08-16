@@ -48,7 +48,8 @@ public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
     public func pushFilterOptionDetail(with filterID: String) {
         let viewModel = FilterOptionDetailViewModel(
             coordinator: self,
-            filtersUsecase: filtersUseCase
+            filtersUsecase: filtersUseCase,
+            filterID: filterID
         )
         let optionDetailViewController = FilterOptionDetailViewController(viewModel: viewModel)
         self.navigationController.pushViewController(optionDetailViewController, animated: false)

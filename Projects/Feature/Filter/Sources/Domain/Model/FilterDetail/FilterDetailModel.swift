@@ -10,6 +10,7 @@ import Foundation
 struct FilterDetailModel {
     var detailInformation: DetailInformation
     let detailImages: [DetailImageModel]
+    var isShowOriginal: Bool
     
     struct DetailInformation {
         let title: String

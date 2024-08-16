@@ -122,13 +122,12 @@ extension FilterDetailViewModel {
                     return
                 }
                 
-                //TODO: filterID주입해줘야함!!
                 switch optionType {
                 case .satisfaction:
-                    self?.coordinator?.pushFilterReviews(with: "filterID")
+                    self?.coordinator?.pushFilterReviews(with: self?.filterID ?? "")
                     break
                 case .introduction:
-                    self?.coordinator?.pushFilterDescription(with: "filterID")
+                    self?.coordinator?.pushFilterDescription(with: self?.filterID ?? "")
                 }
             }
             .store(in: &cancellabels)
@@ -136,13 +135,15 @@ extension FilterDetailViewModel {
     
     private func handleShowOriginalEvent(input: Input, output: Output) {
         input.showOriginalTapEvent
-            .sink { _ in
+            .sink { [weak self] _ in
                 print("handleShowOriginalEvent")
+                self?.filterDetail.value?.isShowOriginal = false
             }
             .store(in: &cancellabels)
         input.showOriginalPressedEvent
-            .sink { _ in
+            .sink { [weak self] _ in
                 print("showOriginalPressedEvent")
+                self?.filterDetail.value?.isShowOriginal = true
             }
             .store(in: &cancellabels)
     }

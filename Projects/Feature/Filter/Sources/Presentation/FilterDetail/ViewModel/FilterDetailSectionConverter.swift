@@ -21,7 +21,9 @@ extension FilterDetailSectionConverter {
         let detailComponents = detailModel.detailImages.map { detailImage in
             FilterDetailComponent(
                 identifier: detailImage.identifier,
-                imageURLString: detailImage.imageURLString
+                imageURLString: detailImage.imageURLString,
+                originalImageURLString: detailImage.originalImageURLString,
+                showOriginal: detailModel.isShowOriginal
             )
         }
         
@@ -38,8 +40,8 @@ extension FilterDetailSectionConverter {
         CompositionalLayoutModel(
             itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
                                 heightDimension: .fractionalHeight(1.0)),
-           groupStrategy: .group(widthDimension: .fractionalWidth(1.0),
-                                 heightDimension: .fractionalHeight(1.0)),
+            groupStrategy: .group(widthDimension: .fractionalWidth(1.0),
+                                  heightDimension: .fractionalHeight(1.0)),
             scrollBehavior: .groupPaging
         )
     }

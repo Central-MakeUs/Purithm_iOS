@@ -33,13 +33,22 @@ final class FilterDetailReviewListViewController: ViewController<FilterDetailRev
     }
     
     private func bindViewModel() {
-        let input = FilterDetailReviewListViewModel.Input()
+        let input = FilterDetailReviewListViewModel.Input(
+            viewWillAppearEvent: rx.viewWillAppear.asPublisher()
+        )
         
-        let output = viewModel.transform(intput: input)
+        let output = viewModel.transform(input: input)
         
         output.sections
             .sink { [weak self] sections in
                 _ = self?.adapter.receive(sections)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.willMoveItemIndexPath
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] indexPath in
+                self?.contentView.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
             }
             .store(in: &cancellables)
     }

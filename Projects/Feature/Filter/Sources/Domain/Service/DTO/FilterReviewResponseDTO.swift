@@ -7,19 +7,23 @@
 
 import Foundation
 import CoreCommonKit
+import CoreUIKit
 
 public struct FilterReviewResponseDTO: Codable {
     var avg: Int // 평균 퓨어지수
+    var hasViewed: Bool
     var reviews: [ReviewDTO]
     
     enum CodingKeys: String, CodingKey {
-        case avg, reviews
+        case avg
+        case hasViewed
+        case reviews
     }
     
-    func convertModel() -> [FilterReviewItemModel] {
+    func convertReviewItemModel() -> [FilterReviewItemModel] {
         reviews.map { review in
             FilterReviewItemModel(
-                identifier: UUID().uuidString,
+                identifier: "\(review.id)",
                 thumbnailImageURLString: review.pictures.first ?? "",
                 author: review.user,
                 date: review.createdAt,
@@ -27,16 +31,41 @@ public struct FilterReviewResponseDTO: Codable {
             )
         }
     }
+    
+    func convertReviewModel() -> [FeedReviewModel] {
+        reviews.map { review in
+            FeedReviewModel(
+                identifier: "\(review.id)",
+                imageURLStrings: review.pictures,
+                author: review.user,
+                authorProfileURL: review.profile,
+                satisfactionLevel: SatisfactionLevel(rawValue: review.pureDegree) ?? .none,
+                content: review.content
+            )
+        }
+    }
 }
 
-struct ReviewDTO: Codable {
-    var id: Int
-    var pureDegree: Int
-    var user: String
-    var createdAt: String
-    var pictures: [String]
-    
-    enum CodingKeys: String, CodingKey {
-        case id, pureDegree, user, createdAt, pictures
+
+extension FilterReviewResponseDTO {
+    struct ReviewDTO: Codable {
+        let id: Int
+        let pureDegree: Int
+        let user: String
+        let profile: String
+        let content: String
+        let createdAt: String
+        let pictures: [String]
+        
+        enum CodingKeys: String, CodingKey {
+            case id
+            case pureDegree
+            case user
+            case profile
+            case content
+            case createdAt
+            case pictures
+        }
     }
+
 }

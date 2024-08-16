@@ -55,10 +55,12 @@ public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
         self.navigationController.pushViewController(optionDetailViewController, animated: false)
     }
     
-    public func pushFilterReviewDetailList() {
+    public func pushFilterReviewDetailList(with reviewID: String, filterID: String) {
         let viewModel = FilterDetailReviewListViewModel(
             usecase: filtersUseCase,
-            coordinator: self
+            coordinator: self, 
+            filterID: filterID,
+            reviewID: reviewID
         )
         let detailReviewListViewController = FilterDetailReviewListViewController(viewModel: viewModel)
         self.navigationController.pushViewController(detailReviewListViewController, animated: true)

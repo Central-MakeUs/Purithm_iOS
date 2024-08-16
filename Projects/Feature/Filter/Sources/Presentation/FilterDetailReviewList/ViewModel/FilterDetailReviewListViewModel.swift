@@ -12,7 +12,7 @@ import CoreCommonKit
 
 extension FilterDetailReviewListViewModel {
     struct Input {
-        
+        let viewWillAppearEvent: AnyPublisher<Bool, Never>
     }
     
     struct Output {
@@ -27,62 +27,58 @@ final class FilterDetailReviewListViewModel {
     weak var coordinator: FilterDetailCoordinatorable?
     weak var filtersUsecase: FiltersUseCase?
     
+    private var cancellables = Set<AnyCancellable>()
+    private var filterID: String
+    private var reviewID: String
+    
     private let converter = FilterDetailReviewListSectionConverter()
     
-    private var detailReviews: [FeedReviewModel] = [
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        ),
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        ),
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        ),
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        ),
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        )
-    ]
+    private var detailReviewsSubject = CurrentValueSubject<[FeedReviewModel], Never>([])
+    var willMoveItemIndexPath = PassthroughSubject<IndexPath, Never>()
     
-    init(usecase: FiltersUseCase, coordinator: FilterDetailCoordinatorable) {
+    init(usecase: FiltersUseCase,
+         coordinator: FilterDetailCoordinatorable,
+         filterID: String,
+         reviewID: String) {
         self.coordinator = coordinator
         self.filtersUsecase = usecase
+        self.filterID = filterID
+        self.reviewID = reviewID
     }
     
-    func transform(intput: Input) -> Output {
+    func transform(input: Input) -> Output {
         let output = Output()
         
-        let sections = converter.createSections(with: detailReviews)
-        output.sectionSubject.send(sections)
+        input.viewWillAppearEvent
+            .sink { [weak self] _ in
+                self?.requestReviews(filterID: self?.filterID ?? "")
+            }
+            .store(in: &cancellables)
+        
+        detailReviewsSubject
+            .sink { [weak self] reviews in
+                let sections = self?.converter.createSections(with: reviews) ?? []
+                output.sectionSubject.send(sections)
+                
+                //TODO: review 찾아서 거기로 이동해야함
+                if let targetIndex = reviews.firstIndex(where: { $0.identifier == (self?.reviewID ?? "") }) {
+                    let indexPath = IndexPath(row: targetIndex, section: 0)
+                    self?.willMoveItemIndexPath.send(indexPath)
+                }
+            }
+            .store(in: &cancellables)
         
         return output
+    }
+}
+
+extension FilterDetailReviewListViewModel {
+    private func requestReviews(filterID: String) {
+        filtersUsecase?.requestReviewsFromFilter(with: filterID)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                let reviewModels = response.convertReviewModel()
+                self?.detailReviewsSubject.send(reviewModels)
+            })
+            .store(in: &cancellables)
     }
 }

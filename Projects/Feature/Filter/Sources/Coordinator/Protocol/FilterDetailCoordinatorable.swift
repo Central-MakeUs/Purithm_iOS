@@ -10,7 +10,7 @@ import CoreCommonKit
 
 public protocol FilterDetailCoordinatorable: Coordinator {
     func pushFilterOptionDetail(with filterID: String)
-    func pushFilterReviewDetailList()
+    func pushFilterReviewDetailList(with reviewID: String, filterID: String)
     func pushFilterReviews(with filterID: String)
     func pushFilterDescription(with filterID: String)
     func popViewController(animated: Bool)

@@ -74,7 +74,9 @@ final class FilterReviewsViewModel {
         input.itemSelectEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] itemModel in
-                self?.coordinator?.pushFilterReviewDetailList()
+                //TODO: reviewID 주입
+                let reviewID = itemModel.identifier
+                self?.coordinator?.pushFilterReviewDetailList(with: reviewID, filterID: self?.filterID ?? "")
             }
             .store(in: &cancellables)
         
@@ -105,7 +107,7 @@ extension FilterReviewsViewModel {
                 self?.satisfactionModel = satisfaction
                 
                 // 리뷰 리스트 설정
-                let reviewItems = response.convertModel()
+                let reviewItems = response.convertReviewItemModel()
                 self?.reviews.send(reviewItems)
             })
             .store(in: &cancellables)

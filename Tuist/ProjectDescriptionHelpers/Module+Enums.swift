@@ -35,7 +35,7 @@ public enum Module {
             case .common:
                 return makeCommonModuleInfoPlist()
             default:
-                return InfoPlist.default
+                return makeDefaultInfoPlist()
             }
         }
         private func makeAuthModuleInfoPlist() -> InfoPlist {
@@ -62,6 +62,19 @@ public enum Module {
                 ]])
             
             return infoPlist
+        }
+        
+        private func makeDefaultInfoPlist() -> InfoPlist {
+            let infoPlist: [String: Plist.Value] = [
+                "NSAppTransportSecurity": [
+                    "NSAllowsArbitraryLoads": true,
+                    "NSAllowsArbitraryLoadsInWebContent": true,
+                    "NSAllowsLocalNetworking": true
+                ],
+                
+            ]
+            
+            return InfoPlist.extendingDefault(with: infoPlist)
         }
     }
     

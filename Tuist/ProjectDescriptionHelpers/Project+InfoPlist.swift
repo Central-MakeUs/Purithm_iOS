@@ -25,4 +25,17 @@ extension Project {
         
         return InfoPlist.extendingDefault(with: infoPlist)
     }
+    
+    static func makeDefaultInfoPlist() -> InfoPlist {
+        let infoPlist: [String: Plist.Value] = [
+            "NSAppTransportSecurity": [
+                "NSAllowsArbitraryLoads": true,
+                "NSAllowsArbitraryLoadsInWebContent": true,
+                "NSAllowsLocalNetworking": true
+            ],
+            
+        ]
+        
+        return InfoPlist.extendingDefault(with: infoPlist)
+    }
 }

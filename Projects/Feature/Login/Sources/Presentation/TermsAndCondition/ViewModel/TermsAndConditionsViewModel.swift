@@ -118,9 +118,7 @@ extension TermsAndConditionsViewModel {
             .sink { actionItem in
                 switch actionItem {
                 case _ as TermsAndConditionItemAction:
-                    //TODO: 이용약관 페이지로 이동
-                    print("//TODO: 이용약관 페이지로 이동")
-                    if let url = URL(string: "https://www.naver.com") {
+                    if let url = URL(string: "https://www.notion.so/798f1bf6c507421584861961deb173d6?pvs=4") {
                         UIApplication.shared.open(url, options: [:], completionHandler: nil)
                     }
                 default:

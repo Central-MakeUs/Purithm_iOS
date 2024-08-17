@@ -43,6 +43,10 @@ extension FilterItemComponent {
     public typealias ContentType = FilterItemView
     
     public func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
+//        if let url = URL(string: context.item.filterImageURLString) {
+//            ImagePrefetcher(urls: [url]).start()
+//        }
+        
         content.configure(with: context.item)
         
         content.imageTapGesture.tapPublisher
@@ -69,8 +73,8 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
     let filterImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.backgroundColor = .gray200
+        $0.kf.indicatorType = .activity
     }
-    let activityIndicator = UIActivityIndicatorView(style: .large)
     let imageTapGesture = UITapGestureRecognizer()
     
     let premiumFilterView = FilterPremiumFilterView()
@@ -91,8 +95,6 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
         
         self.backgroundColor = .gray100
         topContainer.addGestureRecognizer(imageTapGesture)
-        
-        activityIndicator.color = .gray400
     }
     
     deinit {
@@ -108,8 +110,6 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
             topContainer.addSubview($0)
         }
         
-        filterImageView.addSubview(activityIndicator)
-        
         [filterTitleLabel, authorLabel, likeButton, likeCountLabel].forEach {
             bottomContainer.addSubview($0)
         }
@@ -124,10 +124,6 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
         
         filterImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-        
-        activityIndicator.snp.makeConstraints { make in
-            make.center.equalToSuperview()
         }
         
         premiumFilterView.snp.makeConstraints { make in
@@ -169,12 +165,7 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
         premiumFilterView.configure(with: item.planType)
         
         if let url = URL(string: item.filterImageURLString) {
-            activityIndicator.startAnimating()
-            
-            filterImageView.kf.setImage(with: url, options: nil) { [weak self] result in
-                self?.activityIndicator.stopAnimating()
-                self?.activityIndicator.removeFromSuperview()
-            }
+            filterImageView.kf.setImage(with: url, placeholder: UIImage.placeholderSquareLg)
         }
         
         filterTitleLabel.text = item.filterTitle

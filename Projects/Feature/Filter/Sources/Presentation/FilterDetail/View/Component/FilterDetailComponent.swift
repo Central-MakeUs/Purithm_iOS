@@ -29,11 +29,6 @@ extension FilterDetailComponent {
     typealias ContentType = FilterDetailComponentView
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
-        if let original = URL(string: imageURLString),
-           let edited = URL(string: originalImageURLString) {
-            ImagePrefetcher(urls: [original, edited]).start()
-        }
-        
         content.configure(with: context.showOriginal ? context.originalImageURLString : context.imageURLString)
     }
 }
@@ -42,6 +37,7 @@ final class FilterDetailComponentView: BaseView {
     let imageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
+        $0.kf.indicatorType = .activity
     }
     
     override func setupSubviews() {
@@ -60,9 +56,7 @@ final class FilterDetailComponentView: BaseView {
     
     func configure(with imageURLString: String) {
         if let url = URL(string: imageURLString) {
-            imageView.kf.setImage(with: url) { result in
-                //TODO: 인디케이터? 아니면 place holder 이미지 추가하자.
-            }
+            imageView.kf.setImage(with: url, placeholder: UIImage.placeholderSquareXl)
         }
     }
 }

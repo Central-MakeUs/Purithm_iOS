@@ -30,6 +30,7 @@ final class FilterOptionDetailView: BaseView {
     let bottomContainer = UIView()
     let contentImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
+        $0.kf.indicatorType = .activity
     }
     let gradientView = PurithmGradientView().then {
         $0.colorType = .purple(direction: .trailing)
@@ -132,7 +133,7 @@ final class FilterOptionDetailView: BaseView {
         headerView.configure(with: headerType)
         
         if let url = URL(string: imageURLString) {
-            contentImageView.kf.setImage(with: url)
+            contentImageView.kf.setImage(with: url, placeholder: UIImage.placeholderSquareXl)
         }
     }
 }

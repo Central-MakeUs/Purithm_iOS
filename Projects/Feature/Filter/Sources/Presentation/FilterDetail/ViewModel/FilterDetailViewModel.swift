@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import CoreUIKit
+import Kingfisher
 
 extension FilterDetailViewModel {
     struct Input {
@@ -59,6 +60,15 @@ final class FilterDetailViewModel {
         return output
     }
     
+    private func prefetchDetailImagesIfNeeded(with detailImages: [FilterDetailModel.DetailImageModel]) {
+        detailImages.forEach { detailImage in
+            if let edited = URL(string: detailImage.imageURLString),
+               let original = URL(string: detailImage.originalImageURLString) {
+                ImagePrefetcher(urls: [edited, original]).start()
+            }
+        }
+    }
+    
     deinit {
         print("detail viewmOdel")
     }
@@ -75,6 +85,8 @@ extension FilterDetailViewModel {
             .compactMap { $0 }
             .sink { [weak self] detail in
                 if let sections = self?.converter.createSections(with: detail) {
+                    self?.prefetchDetailImagesIfNeeded(with: detail.detailImages)
+                    
                     output.sections.send(sections)
                     output.headerInfo.send(detail)
                 }

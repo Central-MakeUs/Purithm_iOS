@@ -54,6 +54,7 @@ extension DefaultAppCoordinator: CoordinatorFinishDelegate {
             self.navigationController.setNavigationBarHidden(true, animated: false)
             self.showLoginFlow()
         case .login:
+            self.navigationController.setNavigationBarHidden(true, animated: false)
             self.showTabBarFlow()
         default:
             break

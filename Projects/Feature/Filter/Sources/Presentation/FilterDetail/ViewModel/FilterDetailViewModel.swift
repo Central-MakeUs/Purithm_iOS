@@ -22,23 +22,27 @@ extension FilterDetailViewModel {
     
     struct Output {
         let sections = CurrentValueSubject<[SectionModelType], Never>([])
+        let headerInfo = PassthroughSubject<FilterDetailModel, Never>()
     }
 }
 
 final class FilterDetailViewModel {
     private var cancellabels = Set<AnyCancellable>()
     weak var coordinator: FilterDetailCoordinatorable?
+    private let usecase: FiltersUseCase
     
     private let converter = FilterDetailSectionConverter()
     
+    private var filterID: String
     private var filterDetail = CurrentValueSubject<FilterDetailModel?, Never>(nil)
     var filter: FilterDetailModel? {
         filterDetail.value
     }
     
-    init(with filterID: String, coordinator: FilterDetailCoordinatorable) {
-        //TODO: ID 를 기반으로 filter 상세 정보 불러와야함
+    init(with filterID: String, coordinator: FilterDetailCoordinatorable, usecase: FiltersUseCase) {
+        self.filterID = filterID
         self.coordinator = coordinator
+        self.usecase = usecase
     }
 
     func transform(input: Input) -> Output{
@@ -54,31 +58,16 @@ final class FilterDetailViewModel {
         
         return output
     }
+    
+    deinit {
+        print("detail viewmOdel")
+    }
 }
 
 //MARK: - Handle Events
 extension FilterDetailViewModel {
     private func handleViewWillAppearEvent(input: Input, output: Output) {
-        let detail = FilterDetailModel(
-            detailInformation: FilterDetailModel.DetailInformation(
-                title: "BlueMing",
-                satisfaction: 80,
-                isLike: true,
-                likeCount: 12
-            ),
-            detailImages: [
-                FilterDetailModel.DetailImageModel(
-                    identifier: UUID().uuidString,
-                    imageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"
-                ),
-                FilterDetailModel.DetailImageModel(
-                    identifier: UUID().uuidString,
-                    imageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"
-                )
-            ]
-        )
-        
-        filterDetail.send(detail)
+        requestFilterDetail(with: filterID)
     }
 
     private func handleFilterDetailChangeEvent(output: Output) {
@@ -87,6 +76,7 @@ extension FilterDetailViewModel {
             .sink { [weak self] detail in
                 if let sections = self?.converter.createSections(with: detail) {
                     output.sections.send(sections)
+                    output.headerInfo.send(detail)
                 }
             }
             .store(in: &cancellabels)
@@ -105,8 +95,21 @@ extension FilterDetailViewModel {
     
     private func handleLikeTapEvent(input: Input, output: Output) {
         input.filterLikeEvent
-            .sink { _ in
-                //TODO: like
+            .sink { [weak self] _ in
+                guard let filterID = self?.filterID else {
+                    return
+                }
+                
+                self?.filterDetail.value?.detailInformation.isLike.toggle()
+                let isLike = self?.filterDetail.value?.detailInformation.isLike ?? false
+                
+                if isLike {
+                    self?.filterDetail.value?.detailInformation.likeCount += 1
+                    self?.requestFilterLike(with: filterID)
+                } else {
+                    self?.filterDetail.value?.detailInformation.likeCount -= 1
+                    self?.requestFilterUnlike(with: filterID)
+                }
             }
             .store(in: &cancellabels)
     }
@@ -119,13 +122,12 @@ extension FilterDetailViewModel {
                     return
                 }
                 
-                //TODO: filterID주입해줘야함!!
                 switch optionType {
                 case .satisfaction:
-                    self?.coordinator?.pushFilterReviews(with: "filterID")
+                    self?.coordinator?.pushFilterReviews(with: self?.filterID ?? "")
                     break
                 case .introduction:
-                    self?.coordinator?.pushFilterDescription(with: "filterID")
+                    self?.coordinator?.pushFilterDescription(with: self?.filterID ?? "")
                 }
             }
             .store(in: &cancellabels)
@@ -133,13 +135,15 @@ extension FilterDetailViewModel {
     
     private func handleShowOriginalEvent(input: Input, output: Output) {
         input.showOriginalTapEvent
-            .sink { _ in
+            .sink { [weak self] _ in
                 print("handleShowOriginalEvent")
+                self?.filterDetail.value?.isShowOriginal = false
             }
             .store(in: &cancellabels)
         input.showOriginalPressedEvent
-            .sink { _ in
+            .sink { [weak self] _ in
                 print("showOriginalPressedEvent")
+                self?.filterDetail.value?.isShowOriginal = true
             }
             .store(in: &cancellabels)
     }
@@ -148,8 +152,37 @@ extension FilterDetailViewModel {
         input.conformEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                //TODO: filterID주입해줘야함!!
-                self?.coordinator?.pushFilterOptionDetail(with: "filterID")
+                self?.coordinator?.pushFilterOptionDetail(with: self?.filterID ?? "")
+            }
+            .store(in: &cancellabels)
+    }
+}
+
+//MARK: - API Request
+extension FilterDetailViewModel {
+    private func requestFilterDetail(with filterID: String) {
+        usecase.requestFilterDetail(with: filterID)
+            .sink { _ in } receiveValue: { [weak self] response in
+                let detailModel = response.convertModel()
+                self?.filterDetail.send(detailModel)
+            }
+            .store(in: &cancellabels)
+    }
+    
+    private func requestFilterLike(with filterID: String) {
+        usecase.requestLike(with: filterID)
+            .sink { _ in } receiveValue: { [weak self] _ in
+                //TODO: 토스트 띄우기
+                print("//TODO: like 토스트 띄우기")
+            }
+            .store(in: &cancellabels)
+    }
+    
+    private func requestFilterUnlike(with filterID: String) {
+        usecase.requestUnlike(with: filterID)
+            .sink { _ in } receiveValue: { [weak self] _ in
+                //TODO: 토스트 띄우기
+                print("//TODO: unlike 토스트 띄우기")
             }
             .store(in: &cancellabels)
     }

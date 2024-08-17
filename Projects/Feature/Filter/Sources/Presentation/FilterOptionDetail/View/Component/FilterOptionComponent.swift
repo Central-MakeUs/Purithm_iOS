@@ -64,7 +64,7 @@ final class FilterOptionView: BaseView {
     
     func configure(with optionType: IPhonePhotoFilter, intensity: Int) {
         optionButton.image = optionType.image
-        optionButton.text = "\(optionType.rawValue) \(intensity)"
+        optionButton.text = "\(optionType.title) \(intensity)"
     }
 }
 

@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import CoreCommonKit
 
 public protocol PurithmAuthServiceManageable {
     func requestTokenValidate(with serviceToken: String) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error>

@@ -15,7 +15,7 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
     public var type: CoordinatorType { .filters }
     
     private let filtersUseCase = FiltersUseCase(
-        authService: FiltersService()
+        filterService: FilterService()
     )
     
     public init(_ navigationController: UINavigationController) {
@@ -24,7 +24,7 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
     }
     
     public func start() {
-        let viewModel = FiltersViewModel(coordinator: self)
+        let viewModel = FiltersViewModel(coordinator: self, usecase: filtersUseCase)
         let filtersViewController = FiltersViewController(viewModel: viewModel)
         self.navigationController.setNavigationBarHidden(false, animated: false)
         
@@ -34,6 +34,7 @@ public final class FiltersCoordinator: FiltersCoordinatorable {
     public func pushFilterDetail(with filterID: String) {
         let filterDetailCoordinator = FilterDetailCoordinator(self.navigationController)
         filterDetailCoordinator.finishDelegate = self
+        filterDetailCoordinator.filterID = filterID
         self.childCoordinators.append(filterDetailCoordinator)
         filterDetailCoordinator.start()
     }

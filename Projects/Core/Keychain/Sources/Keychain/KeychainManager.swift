@@ -14,6 +14,13 @@ let purithmAccount: String = "com.purithm.app"
 public final class KeychainManager {
     public static let shared = KeychainManager()
     private let authKeychainItem = AuthKeychainItem(service: keychainServiceKey, account: purithmAccount)
+    public var serviceToken: String {
+        do {
+            return try authKeychainItem.retrieve().accessToken
+        } catch {
+            fatalError("The BACKEND_ENDPOINT environment variable was not found.")
+        }
+    }
     
     private init() { }
 }

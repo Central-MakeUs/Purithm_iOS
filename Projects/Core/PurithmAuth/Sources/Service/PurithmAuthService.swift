@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import Moya
 import CombineMoya
+import CoreCommonKit
 
 public final class PurithmAuthService: PurithmAuthServiceManageable {
     let provider = MoyaProvider<AuthAPI>()

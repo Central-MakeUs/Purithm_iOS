@@ -61,7 +61,8 @@ final class ArtistDetailViewModel {
             filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
             planType: .premiumPlus,
             filterTitle: "Rainbow",
-            author: "Made by Ehwa",
+            author: "Made by Ehwa", 
+            authorID: "",
             isLike: true,
             likeCount: 12,
             canAccess: false
@@ -71,7 +72,8 @@ final class ArtistDetailViewModel {
             filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
             planType: .premium,
             filterTitle: "Blueming",
-            author: "Made by Ehwa",
+            author: "Made by Ehwa", 
+            authorID: "",
             isLike: false,
             likeCount: 12,
             canAccess: false
@@ -81,7 +83,8 @@ final class ArtistDetailViewModel {
             filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
             planType: .free,
             filterTitle: "title",
-            author: "author",
+            author: "author", 
+            authorID: "",
             isLike: false,
             likeCount: 12,
             canAccess: true
@@ -91,7 +94,52 @@ final class ArtistDetailViewModel {
             filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
             planType: .free,
             filterTitle: "title",
-            author: "author",
+            author: "author", 
+            authorID: "",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "",
+            planType: .free,
+            filterTitle: "title",
+            author: "author", 
+            authorID: "",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "",
+            planType: .free,
+            filterTitle: "title",
+            author: "author", 
+            authorID: "",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "",
+            planType: .free,
+            filterTitle: "title",
+            author: "author", 
+            authorID: "",
+            isLike: false,
+            likeCount: 12,
+            canAccess: true
+        ),
+        FilterItemModel(
+            identifier: UUID().uuidString,
+            filterImageURLString: "",
+            planType: .free,
+            filterTitle: "title",
+            author: "author", 
+            authorID: "",
             isLike: false,
             likeCount: 12,
             canAccess: true
@@ -102,46 +150,7 @@ final class ArtistDetailViewModel {
             planType: .free,
             filterTitle: "title",
             author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
+            authorID: "",
             isLike: false,
             likeCount: 12,
             canAccess: true

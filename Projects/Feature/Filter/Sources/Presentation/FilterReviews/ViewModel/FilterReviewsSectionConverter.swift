@@ -24,7 +24,8 @@ extension FilterReviewsSectionConverter {
     private func createSatisfactionSections(with satisfaction: FilterSatisfactionModel) -> [SectionModelType] {
         let component = FilterReviewSatiscationComponent(
             identifier: satisfaction.identifier,
-            satisfactionLevel: satisfaction.satisfactionLevel
+            satisfactionLevel: satisfaction.satisfactionLevel,
+            averageValue: satisfaction.averageValue
         )
         
         let section = SectionModel(

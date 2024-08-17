@@ -67,6 +67,7 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
         $0.clipsToBounds = true
     }
     let filterImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
         $0.backgroundColor = .gray200
     }
     let activityIndicator = UIActivityIndicatorView(style: .large)
@@ -78,8 +79,10 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
     let filterTitleLabel = PurithmLabel(typography: Constants.titleTypo)
     let authorLabel = PurithmLabel(typography: Constants.authorTypo)
     let likeButton = UIButton().then {
-        $0.setImage(.icLikeUnpressed.withTintColor(.gray200).resizeImage(with: CGSize(width: 28, height: 28)), for: .normal)
-        $0.setImage(.icLikePressed.withTintColor(.blue400).resizeImage(with: CGSize(width: 28, height: 28)), for: .selected)
+        $0.setImage(.icLikeUnpressed.withTintColor(.gray200), for: .normal)
+        $0.setImage(.icLikePressed.withTintColor(.blue400), for: .selected)
+        
+        $0.imageView?.contentMode = .scaleAspectFill
     }
     let likeCountLabel = PurithmLabel(typography: Constants.countTypo)
     
@@ -175,7 +178,8 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
         }
         
         filterTitleLabel.text = item.filterTitle
-        authorLabel.text = item.author
+        filterTitleLabel.font = UIFont.EBGaramond.medium.font(size: 24)
+        authorLabel.text = "Made by \(item.author)"
         likeCountLabel.text = "\(item.likeCount)"
         likeButton.isSelected = item.isLike
     }
@@ -188,5 +192,3 @@ extension FilterItemView {
         static let countTypo = Typography(size: .size12, weight: .medium, color: .gray200, applyLineHeight: true)
     }
 }
-// 바텀시트
-// 헤더 고정 - 어댑터 두개로 갈지도?

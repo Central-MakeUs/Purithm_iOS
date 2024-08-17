@@ -41,7 +41,9 @@ final class FilterReviewsViewController: ViewController<FilterReviewsView> {
     
     private func bindViewModel() {
         let input = FilterReviewsViewModel.Input(
-            itemSelectEvent: adapter.didSelectItemPublisher
+            viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
+            itemSelectEvent: adapter.didSelectItemPublisher,
+            conformTapEvent: contentView.conformTapEvent
         )
         
         let output = viewModel.transform(input: input)

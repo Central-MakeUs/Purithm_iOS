@@ -70,33 +70,13 @@ extension Typography {
     public var font: UIFont {
         switch weight {
         case .bold:
-            switch language {
-            case .korean:
-                return .Pretendard.bold.font(size: size.rawValue)
-            case .english:
-                return .EBGaramond.semiBold.font(size: size.rawValue)
-            }
+            return .Pretendard.bold.font(size: size.rawValue)
         case .semibold:
-            switch language {
-            case .korean:
-                return .Pretendard.semiBold.font(size: size.rawValue)
-            case .english:
-                return .EBGaramond.semiBold.font(size: size.rawValue)
-            }
+            return .Pretendard.semiBold.font(size: size.rawValue)
         case .medium:
-            switch language {
-            case .korean:
-                return .Pretendard.medium.font(size: size.rawValue)
-            case .english:
-                return .EBGaramond.medium.font(size: size.rawValue)
-            }
+            return .Pretendard.medium.font(size: size.rawValue)
         default:
-            switch language {
-            case .korean:
-                return .Pretendard.medium.font(size: size.rawValue)
-            case .english:
-                return .EBGaramond.medium.font(size: size.rawValue)
-            }
+            return .Pretendard.medium.font(size: size.rawValue)
         }
     }
 }

@@ -8,14 +8,6 @@
 import Foundation
 import Moya
 
-public struct ResponseWrapper<ResponseType: Decodable>: Decodable {
-    public let code: Int
-    public let message: String?
-    public let data: ResponseType?
-}
-
-public struct EmptyResponseType: Decodable { }
-
 enum AuthAPI {
     case validateToken(serviceToken: String)
     case appleSignIn(parameter: [String: Any], token: String)

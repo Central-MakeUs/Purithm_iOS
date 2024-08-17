@@ -13,7 +13,9 @@ import CoreCommonKit
 
 extension FilterReviewsViewModel {
     struct Input {
+        let viewWillAppearEvent: AnyPublisher<Bool, Never>
         let itemSelectEvent: AnyPublisher<ItemModelType, Never>
+        let conformTapEvent: AnyPublisher<Void, Never>
     }
     
     struct Output {
@@ -31,89 +33,57 @@ final class FilterReviewsViewModel {
     
     private let converter = FilterReviewsSectionConverter()
     
+    private let filterID: String
+    
     private var reviewTotalCount = 100
-    private var satisfactionModel = FilterSatisfactionModel(
-        identifier: UUID().uuidString,
-        satisfactionLevel: .veryHigh
-    )
-    private var reviews: [FilterReviewItemModel] = [
-        FilterReviewItemModel(
-            identifier: UUID().uuidString,
-            thumbnailImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            author: "Hanna",
-            date: "2024.07.09",
-            satisfactionLevel: .veryHigh
-        ),
-        FilterReviewItemModel(
-            identifier: UUID().uuidString,
-            thumbnailImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            author: "Hanna",
-            date: "2024.07.09",
-            satisfactionLevel: .high
-        ),
-        FilterReviewItemModel(
-            identifier: UUID().uuidString,
-            thumbnailImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            author: "Hanna",
-            date: "2024.07.09",
-            satisfactionLevel: .mediumHigh
-        ),
-        FilterReviewItemModel(
-            identifier: UUID().uuidString,
-            thumbnailImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            author: "Hanna",
-            date: "2024.07.09",
-            satisfactionLevel: .medium
-        ),
-        FilterReviewItemModel(
-            identifier: UUID().uuidString,
-            thumbnailImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            author: "Hanna",
-            date: "2024.07.09",
-            satisfactionLevel: .low
-        ),
-        FilterReviewItemModel(
-            identifier: UUID().uuidString,
-            thumbnailImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            author: "Hanna",
-            date: "2024.07.09",
-            satisfactionLevel: .low
-        ),
-        FilterReviewItemModel(
-            identifier: UUID().uuidString,
-            thumbnailImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            author: "Hanna",
-            date: "2024.07.09",
-            satisfactionLevel: .low
-        ),
-        FilterReviewItemModel(
-            identifier: UUID().uuidString,
-            thumbnailImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            author: "Hanna",
-            date: "2024.07.09",
-            satisfactionLevel: .low
-        )
-    ]
+    
+    private var satisfactionModel: FilterSatisfactionModel?
+    
+    private var reviews = CurrentValueSubject<[FilterReviewItemModel], Never>([])
     
     init(with filterID: String, usecase: FiltersUseCase, coordinator: FilterDetailCoordinatorable) {
+        self.filterID = filterID
         self.coordinator = coordinator
+        self.filtersUsecase = usecase
     }
     
     func transform(input: Input) -> Output {
         let output = Output()
         
-        let sections = converter.createSections(
-            satisfaction: satisfactionModel,
-            reviews: reviews,
-            reviewCount: reviewTotalCount
-        )
+        reviews
+            .sink { [weak self] reviews in
+                guard let self,
+                      let satisfactionModel = self.satisfactionModel else { return }
+                
+                let sections = self.converter.createSections(
+                    satisfaction: satisfactionModel,
+                    reviews: reviews,
+                    reviewCount: self.reviewTotalCount
+                )
+                
+                output.sectionsSubject.send(sections)
+            }
+            .store(in: &cancellables)
         
-        output.sectionsSubject.send(sections)
+        input.viewWillAppearEvent
+            .sink { [weak self] _ in
+                self?.requestReviewsFromFilter(with: self?.filterID ?? "")
+            }
+            .store(in: &cancellables)
         
         input.itemSelectEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] itemModel in
-                self?.coordinator?.pushFilterReviewDetailList()
+                //TODO: reviewID 주입
+                let reviewID = itemModel.identifier
+                self?.coordinator?.pushFilterReviewDetailList(with: reviewID, filterID: self?.filterID ?? "")
+            }
+            .store(in: &cancellables)
+        
+        input.conformTapEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.coordinator?.pushReviewViewController()
             }
             .store(in: &cancellables)
         
@@ -121,7 +91,42 @@ final class FilterReviewsViewModel {
     }
 }
 
-//TODO:
-/*
- 오늘 후기 상세까지 다 끝내자. + 바텀시트
- */
+//MARK: - API Request
+extension FilterReviewsViewModel {
+    private func requestReviewsFromFilter(with filterID: String) {
+        filtersUsecase?.requestReviewsFromFilter(with: filterID)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                // 평균 만족도 설정
+                let satisfactionLevel = self?.calculateSatisfactionLevel(with: response.avg)
+              
+                let satisfaction = FilterSatisfactionModel(
+                    identifier: UUID().uuidString,
+                    satisfactionLevel: satisfactionLevel ?? .none,
+                    averageValue: response.avg
+                )
+                self?.satisfactionModel = satisfaction
+                
+                // 리뷰 리스트 설정
+                let reviewItems = response.convertReviewItemModel()
+                self?.reviews.send(reviewItems)
+            })
+            .store(in: &cancellables)
+    }
+    
+    private func calculateSatisfactionLevel(with averageValue: Int) -> SatisfactionLevel {
+        switch averageValue {
+        case 20...30:
+            return SatisfactionLevel.low
+        case 31...50:
+            return SatisfactionLevel.medium
+        case 51...70:
+            return SatisfactionLevel.mediumHigh
+        case 71...90:
+            return SatisfactionLevel.high
+        case 91...100:
+            return SatisfactionLevel.veryHigh
+        default:
+            return SatisfactionLevel.none
+        }
+    }
+}

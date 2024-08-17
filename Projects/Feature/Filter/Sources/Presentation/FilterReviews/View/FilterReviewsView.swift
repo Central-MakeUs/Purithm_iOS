@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreUIKit
+import Combine
 
 final class FilterReviewsView: BaseView {
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
@@ -20,6 +21,10 @@ final class FilterReviewsView: BaseView {
     
     let bottomGradientView = PurithmGradientView().then {
         $0.colorType = .white(direction: .top)
+    }
+    
+    var conformTapEvent: AnyPublisher<Void, Never> {
+        conformButton.tap
     }
     
     override func setup() {

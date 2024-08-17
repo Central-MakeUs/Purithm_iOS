@@ -49,7 +49,7 @@ final class FiltersViewSectionConverter {
     func createSections(orderOption: FilterOrderOptionModel?,
                         filters: [FilterItemModel]) -> [SectionModelType] {
         [
-            createOrderOptionSection(with: orderOption),
+            filters.isEmpty ? [] : createOrderOptionSection(with: orderOption),
             createFilterItemSection(with: filters)
         ].flatMap { $0 }
     }

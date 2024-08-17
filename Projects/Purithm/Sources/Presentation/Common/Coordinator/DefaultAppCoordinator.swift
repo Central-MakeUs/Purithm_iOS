@@ -56,14 +56,7 @@ extension DefaultAppCoordinator: CoordinatorFinishDelegate {
             self.showLoginFlow()
         case .login:
             self.navigationController.setNavigationBarHidden(true, animated: false)
-            let welcomeViewController = PurithmAnimateAlert<WelcomeAnimateView>()
-            welcomeViewController.modalPresentationStyle = .overCurrentContext
-            self.navigationController.present(welcomeViewController, animated: false)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
-                welcomeViewController.dismiss(animated: false)
-                self?.showTabBarFlow()
-            }
+            self.showTabBarFlow()
         default:
             break
         }

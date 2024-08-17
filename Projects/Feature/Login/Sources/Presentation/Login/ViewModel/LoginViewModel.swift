@@ -46,14 +46,12 @@ final class LoginViewModel {
                     .sink { completion in
                         switch completion {
                         case .finished:
-                            print("::: complete")
+                            break
                         case .failure(let error):
-                            print("::: login failed > \(error)")
                             self.errorSubject.send(error)
                         }
                     } receiveValue: { _ in
-                        self.coordinator?.pushTermsViewController()
-                        print("::: 약관 선택화면으로 이동")
+                        self.coordinator?.start()
                     }
                     .store(in: &self.cancellables)
             }
@@ -62,15 +60,15 @@ final class LoginViewModel {
     
     func loginWithApple(with idToken: String, name: String) {
         signInUseCase.loginWithApple(with: idToken, name: name)
-            .sink { completion in
+            .sink { [weak self] completion in
                 switch completion {
                 case .finished:
                     print("::: apple login completed.")
                 case .failure(let error):
-                    print("::: apple login failed. > \(error)")
+                    self?.errorSubject.send(error)
                 }
             } receiveValue: { [weak self]_ in
-                self?.coordinator?.pushTermsViewController()
+                self?.coordinator?.start()
             }
             .store(in: &cancellables)
     }

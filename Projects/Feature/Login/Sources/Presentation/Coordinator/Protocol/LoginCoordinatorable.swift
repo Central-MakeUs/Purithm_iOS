@@ -10,4 +10,6 @@ import CoreCommonKit
 public protocol LoginCoordinatorable: Coordinator {
     func pushLoginViewController()
     func pushTermsViewController()
+    func testLogin()
+    func presentWelcomeAlert()
 }

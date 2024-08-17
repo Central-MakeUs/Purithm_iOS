@@ -33,10 +33,12 @@ public final class SignInUseCase {
 
 //MARK: - Login validate check
 extension SignInUseCase {
+    public func testLoggedIn() -> AnyPublisher<Void, Error> {
+        return Fail(outputType: Void.self, failure: NetworkError.invalidToken)
+            .eraseToAnyPublisher()
+    }
+    
     public func isAlreadyLoggedIn() -> AnyPublisher<Void, Error> {
-        // only test
-//        return Fail(outputType: Void.self, failure: NetworkError.invalidToken)
-//            .eraseToAnyPublisher()
         do {
             let purithmToken = try repository.retriveAuthToken()
             

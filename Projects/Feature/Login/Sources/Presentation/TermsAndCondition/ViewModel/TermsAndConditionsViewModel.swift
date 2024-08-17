@@ -139,7 +139,7 @@ extension TermsAndConditionsViewModel {
                 
                 publisher?.values()
                     .sink { _ in
-                        self.coordinator?.finish()
+                        self.coordinator?.presentWelcomeAlert()
                     }
                     .store(in: &cancellables)
                 

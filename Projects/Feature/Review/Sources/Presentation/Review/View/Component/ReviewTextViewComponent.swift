@@ -71,6 +71,11 @@ final class ReviewTextViewView: BaseView, ActionEventEmitable {
     let titleLabel = PurithmLabel(typography: Constants.titleTypo).then {
         $0.text = "필터 사용 후기를 남겨주세요."
     }
+    
+    let descriptionLabel = PurithmLabel(typography: Constants.descriptionTypo).then {
+        $0.text = "(필수) 텍스트 20자 이상"
+    }
+    
     let textView = PlaceholderTextView().then {
         $0.layer.cornerRadius = 12
         $0.font = UIFont.Pretendard.medium.font(size: 16)
@@ -98,6 +103,7 @@ final class ReviewTextViewView: BaseView, ActionEventEmitable {
         self.backgroundColor = .gray100
         
         container.addSubview(titleLabel)
+        container.addSubview(descriptionLabel)
         container.addSubview(textView)
         
         container.addSubview(countLabel)
@@ -116,8 +122,13 @@ final class ReviewTextViewView: BaseView, ActionEventEmitable {
             make.horizontalEdges.equalToSuperview()
         }
         
-        textView.snp.makeConstraints { make in
+        descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview()
+        }
+        
+        textView.snp.makeConstraints { make in
+            make.top.equalTo(descriptionLabel.snp.bottom).offset(10)
             make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview()
             make.height.equalTo(200)
@@ -153,6 +164,7 @@ final class ReviewTextViewView: BaseView, ActionEventEmitable {
 extension ReviewTextViewView {
     private enum Constants {
         static let titleTypo = Typography(size: .size18, weight: .semibold, color: .gray500, applyLineHeight: true)
+        static let descriptionTypo = Typography(size: .size14, weight: .medium, color: .gray300, applyLineHeight: true)
         
         static let textCountTypo = Typography(size: .size14, weight: .medium, color: .gray300, applyLineHeight: true)
         static let countTypo = Typography(size: .size14, weight: .medium, color: .blue400, applyLineHeight: true)

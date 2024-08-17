@@ -164,7 +164,11 @@ extension FilterDetailViewModel {
         input.conformEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.coordinator?.pushFilterOptionDetail(with: self?.filterID ?? "")
+                
+                self?.coordinator?.pushFilterOptionDetail(
+                    with: self?.filterID ?? "",
+                    filterName: self?.filterDetail.value?.detailInformation.title ?? ""
+                )
             }
             .store(in: &cancellabels)
     }

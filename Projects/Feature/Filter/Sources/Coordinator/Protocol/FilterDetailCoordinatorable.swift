@@ -9,7 +9,7 @@ import Foundation
 import CoreCommonKit
 
 public protocol FilterDetailCoordinatorable: Coordinator {
-    func pushFilterOptionDetail(with filterID: String)
+    func pushFilterOptionDetail(with filterID: String, filterName: String)
     func pushFilterReviewDetailList(with reviewID: String, filterID: String)
     func pushFilterReviews(with filterID: String)
     func pushFilterDescription(with filterID: String)

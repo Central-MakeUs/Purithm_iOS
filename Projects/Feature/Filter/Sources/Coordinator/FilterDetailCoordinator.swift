@@ -7,7 +7,7 @@
 
 import UIKit
 import CoreCommonKit
-
+import CoreUIKit
 import Review
 
 public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
@@ -45,14 +45,23 @@ public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
         self.navigationController.pushViewController(filterDetailViewController, animated: true)
     }
     
-    public func pushFilterOptionDetail(with filterID: String) {
+    public func pushFilterOptionDetail(with filterID: String, filterName: String) {
         let viewModel = FilterOptionDetailViewModel(
             coordinator: self,
             filtersUsecase: filtersUseCase,
             filterID: filterID
         )
         let optionDetailViewController = FilterOptionDetailViewController(viewModel: viewModel)
-        self.navigationController.pushViewController(optionDetailViewController, animated: false)
+        
+        let waitViewController = PurithmAnimateAlert<FilterWaitAnimateView>()
+        waitViewController.contentView.configure(with: filterName)
+        waitViewController.modalPresentationStyle = .overCurrentContext
+        self.navigationController.present(waitViewController, animated: false)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+            waitViewController.dismiss(animated: false)
+            self?.navigationController.pushViewController(optionDetailViewController, animated: false)
+        }
     }
     
     public func pushFilterReviewDetailList(with reviewID: String, filterID: String) {

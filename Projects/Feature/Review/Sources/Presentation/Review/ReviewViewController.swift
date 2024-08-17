@@ -23,6 +23,8 @@ public final class ReviewViewController: ViewController<ReviewView> {
     private let viewModel: ReviewViewModel
     private lazy var adapter = CollectionViewAdapter(with: contentView.collectionView)
     
+    var lastContentOffset: CGPoint = .zero
+    
     public init(viewModel: ReviewViewModel) {
         self.viewModel = viewModel
         super.init()
@@ -43,6 +45,18 @@ public final class ReviewViewController: ViewController<ReviewView> {
         )
         
         let output = viewModel.transform(input: input)
+        
+        adapter.didScrollPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] (_ , contentOffset) in
+                guard let self else { return }
+                
+                if contentOffset.y < lastContentOffset.y {
+                    self.contentView.endEditing(true)
+                }
+                lastContentOffset = contentOffset
+            }
+            .store(in: &cancellables)
         
         output.sections
             .sink { [weak self] sections in

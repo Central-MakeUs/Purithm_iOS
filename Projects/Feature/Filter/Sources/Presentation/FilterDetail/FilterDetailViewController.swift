@@ -80,7 +80,7 @@ final class FilterDetailViewController: ViewController<FilterDetailView> {
             }
             .store(in: &cancellables)
         
-        adapter.didScrollPublisher
+        adapter.visibleItemPublisher
             .receive(on: DispatchQueue.main)
             .debounce(for: .seconds(0.2), scheduler: RunLoop.main)
             .sink { [weak self] indexPath in

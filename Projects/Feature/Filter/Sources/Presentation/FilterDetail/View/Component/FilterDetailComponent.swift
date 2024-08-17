@@ -29,6 +29,11 @@ extension FilterDetailComponent {
     typealias ContentType = FilterDetailComponentView
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
+        if let original = URL(string: imageURLString),
+           let edited = URL(string: originalImageURLString) {
+            ImagePrefetcher(urls: [original, edited]).start()
+        }
+        
         content.configure(with: context.showOriginal ? context.originalImageURLString : context.imageURLString)
     }
 }

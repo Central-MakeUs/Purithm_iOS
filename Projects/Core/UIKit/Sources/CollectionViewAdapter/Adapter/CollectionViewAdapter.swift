@@ -24,8 +24,13 @@ public final class CollectionViewAdapter: NSObject {
         didSelectItemSubject.eraseToAnyPublisher()
     }
     
-    private let didScrollSubject = PassthroughSubject<IndexPath, Never>()
-    public var didScrollPublisher: AnyPublisher<IndexPath, Never> {
+    private let visibleItemSubject = PassthroughSubject<IndexPath, Never>()
+    public var visibleItemPublisher: AnyPublisher<IndexPath, Never> {
+        visibleItemSubject.eraseToAnyPublisher()
+    }
+    
+    private let didScrollSubject = PassthroughSubject<(visibleItems: [NSCollectionLayoutVisibleItem], contentOffset: CGPoint), Never>()
+    public var didScrollPublisher: AnyPublisher<(visibleItems: [NSCollectionLayoutVisibleItem], contentOffset: CGPoint), Never> {
         didScrollSubject.eraseToAnyPublisher()
     }
     
@@ -270,8 +275,9 @@ extension CollectionViewAdapter {
         section.contentInsets = layoutModel.sectionInset
         section.orthogonalScrollingBehavior = layoutModel.scrollBehavior
         section.visibleItemsInvalidationHandler = { [weak self] (visibleItems, contentOffset, environment) in
+            self?.didScrollSubject.send((visibleItems, contentOffset))
             for item in visibleItems {
-                self?.didScrollSubject.send(item.indexPath)
+                self?.visibleItemSubject.send(item.indexPath)
             }
         }
         

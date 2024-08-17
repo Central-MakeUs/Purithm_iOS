@@ -31,7 +31,13 @@ extension Project {
                             "UILaunchStoryboardName": "LaunchScreen.storyboard",
                             "NSCameraUsageDescription": "이 앱은 카메라를 사용합니다.",
                             "NSPhotoLibraryUsageDescription": "이 앱은 사진 앨범에 접근합니다.",
-                            "NSAppTransportSecurity": [ "NSAllowsArbitraryLoads": true ]
+                            "NSAppTransportSecurity": [ "NSAllowsArbitraryLoads": true ],
+                            "LSApplicationQueriesSchemes": [ "kakaokompassauth" , "kakaotalk"],
+                            "CFBundleURLTypes": [
+                                [
+                                    "CFBundleURLSchemes": [ "kakao0d6fbb90fdd3615fa419c28d59c290b7" ]
+                                ]
+                            ]
                         ]
                     ),
                     hasResource: true,

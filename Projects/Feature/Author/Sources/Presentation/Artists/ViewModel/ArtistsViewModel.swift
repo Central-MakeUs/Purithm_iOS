@@ -161,9 +161,8 @@ extension ArtistsViewModel {
                 switch actionItem {
                 case _ as ArtistOrderOptionAction:
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
-                case _ as ArtistScrapItemAction:
-                    //TODO: 작가 ID 주입 필요!!!
-                    self.coordinator?.pushArtistDetail(with: "artist ID")
+                case let action as ArtistScrapItemAction:
+                    self.coordinator?.pushArtistDetail(with: action.identifier)
                 default:
                     break
                 }

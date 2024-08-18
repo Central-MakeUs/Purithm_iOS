@@ -42,6 +42,7 @@ public final class PurithmHorizontalProfileView: BaseView {
     let userProfileImageView = UIImageView().then {
         $0.layer.cornerRadius = 40 / 2
         $0.clipsToBounds = true
+        $0.contentMode = .scaleAspectFill
         $0.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         $0.setContentHuggingPriority(.defaultHigh, for: .vertical)
         $0.setContentCompressionResistancePriority(.required, for: .horizontal)

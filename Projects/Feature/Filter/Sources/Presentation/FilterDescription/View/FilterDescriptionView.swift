@@ -13,6 +13,7 @@ extension FilterDescriptionView {
     private enum Constants {
         static let titleTypo = Typography(size: .size36, weight: .medium, color: .gray500, applyLineHeight: true)
         static let subTitleTypo = Typography(size: .size21, weight: .medium , color: .blue400, applyLineHeight: true)
+        static let tagTypo = Typography(size: .size14, weight: .medium, color: .gray400, applyLineHeight: true)
     }
 }
 
@@ -22,9 +23,15 @@ final class FilterDescriptionView: BaseView {
     }
     private let contentView = UIView()
     
-    let headerDescriptionView = FilterDescriptionItemView()
+    let descriptionHeaderView = FilterDescriptionHeader()
+    
     let firstDescriptionView = FilterDescriptionItemView()
     let secondDescriptionView = FilterDescriptionItemView()
+    let thirdDescriptionView = FilterDescriptionItemView()
+    
+    let tagLabel = PurithmLabel(typography: Constants.tagTypo).then {
+        $0.numberOfLines = 0
+    }
     
     override func setupSubviews() {
         self.backgroundColor = .gray100
@@ -32,9 +39,11 @@ final class FilterDescriptionView: BaseView {
         addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        contentView.addSubview(headerDescriptionView)
+        contentView.addSubview(descriptionHeaderView)
         contentView.addSubview(firstDescriptionView)
         contentView.addSubview(secondDescriptionView)
+        contentView.addSubview(thirdDescriptionView)
+        contentView.addSubview(tagLabel)
     }
     
     override func setupConstraints() {
@@ -47,34 +56,49 @@ final class FilterDescriptionView: BaseView {
             make.width.equalTo(scrollView)
         }
         
-        headerDescriptionView.snp.makeConstraints { make in
+        descriptionHeaderView.snp.makeConstraints { make in
             make.top.equalToSuperview()
-            make.horizontalEdges.equalToSuperview()
+            make.horizontalEdges.equalToSuperview().inset(20)
         }
         
         firstDescriptionView.snp.makeConstraints { make in
-            make.top.equalTo(headerDescriptionView.snp.bottom).offset(40)
+            make.top.equalTo(descriptionHeaderView.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview()
         }
         
         secondDescriptionView.snp.makeConstraints { make in
             make.top.equalTo(firstDescriptionView.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview()
+        }
+        
+        thirdDescriptionView.snp.makeConstraints { make in
+            make.top.equalTo(secondDescriptionView.snp.bottom).offset(40)
+            make.horizontalEdges.equalToSuperview()
             make.bottom.lessThanOrEqualToSuperview()
+        }
+        
+        tagLabel.snp.makeConstraints { make in
+            make.top.equalTo(thirdDescriptionView.snp.bottom).offset(40)
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview()
         }
     }
     
-    func configure(with descriptions: [FilterDescriptionModel]) {
-        if let header = descriptions[safe: 0] {
-            headerDescriptionView.configure(with: header)
-        }
+    func configure(with descriptionModel: FilterDescriptionModel) {
+        descriptionHeaderView.configure(with: descriptionModel)
         
-        if let firstContent = descriptions[safe: 1] {
+        if let firstContent = descriptionModel.photos[safe: 0] {
             firstDescriptionView.configure(with: firstContent)
         }
         
-        if let secondContent = descriptions[safe: 2] {
+        if let secondContent = descriptionModel.photos[safe: 1] {
             secondDescriptionView.configure(with: secondContent)
         }
+        
+        if let thirdContent = descriptionModel.photos[safe: 2] {
+            thirdDescriptionView.configure(with: thirdContent)
+        }
+        
+        tagLabel.text = descriptionModel.tags.map { "#\($0)" }.joined(separator: ", ")
     }
 }

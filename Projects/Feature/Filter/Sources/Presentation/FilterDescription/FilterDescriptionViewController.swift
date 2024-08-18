@@ -33,12 +33,14 @@ final class FilterDescriptionViewController: ViewController<FilterDescriptionVie
         super.viewDidLoad()
         
         initNavigationBar(with: .page, hideShadow: true)
-        initNavigationTitleView(with: .page)
+        initNavigationTitleView(with: .page, title: "필터 소개")
         bindViewModel()
     }
     
     private func bindViewModel() {
-        let input = FilterDescriptionViewModel.Input()
+        let input = FilterDescriptionViewModel.Input(
+            viewWillAppearEvent: rx.viewWillAppear.asPublisher()
+        )
         
         let output = viewModel.transform(from: input)
         

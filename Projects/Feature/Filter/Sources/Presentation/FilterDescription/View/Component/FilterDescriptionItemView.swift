@@ -36,22 +36,6 @@ final class FilterDescriptionItemView: BaseView {
         $0.distribution = .fillProportionally
         $0.spacing = 40
     }
-    let headerContainer = UIStackView().then {
-        $0.axis = .vertical
-        $0.spacing = 0
-        $0.distribution = .fill
-    }
-    let headerLabel = PurithmLabel(typography: Constants.headerTitleTypo)
-    let headerSubTitleContainer = UIStackView().then {
-        $0.axis = .horizontal
-        $0.distribution = .fillProportionally
-        $0.spacing = 5
-    }
-    let subTitleImage = UIImageView().then {
-        $0.image = .icHome.withTintColor(.blue400)
-    }
-    let headerSubTitleLabel = PurithmLabel(typography: Constants.headerSubTitleTypo)
-    
     let descriptionContainer = UIStackView().then {
         $0.axis = .vertical
         $0.distribution = .fillProportionally
@@ -78,14 +62,7 @@ final class FilterDescriptionItemView: BaseView {
         addSubview(imageView)
         addSubview(contentContainer)
         
-        contentContainer.addArrangedSubview(headerContainer)
         contentContainer.addArrangedSubview(descriptionContainer)
-        
-        headerContainer.addArrangedSubview(headerLabel)
-        headerContainer.addArrangedSubview(headerSubTitleContainer)
-        headerSubTitleContainer.addArrangedSubview(subTitleImage)
-        headerSubTitleContainer.addArrangedSubview(headerSubTitleLabel)
-        
         descriptionContainer.addArrangedSubview(titleLabel)
         descriptionContainer.addArrangedSubview(descriptionLabel)
     }
@@ -102,14 +79,10 @@ final class FilterDescriptionItemView: BaseView {
             make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview()
         }
- 
-        subTitleImage.snp.makeConstraints { make in
-            make.size.equalTo(20)
-        }
     }
     
-    func configure(with model: FilterDescriptionModel) {
-        if let url = URL(string: model.contentImageURLString) {
+    func configure(with model: FilterDescriptionModel.PhotoDescription) {
+        if let url = URL(string: model.imageURLString) {
             imageView.kf.setImage(with: url) { [weak self] response in
                 switch response {
                 case .success(let success):
@@ -121,15 +94,8 @@ final class FilterDescriptionItemView: BaseView {
             }
         }
         
-        if model.type == .content {
-            headerContainer.isHidden = true
-        }
-        
-        headerLabel.text = "from.\(model.headerTitle ?? "")"
-        headerSubTitleLabel.text = "Go to shop"
-        
-        titleLabel.text = model.contentTitle
-        descriptionLabel.text = model.contentDescription
+        titleLabel.text = model.title
+        descriptionLabel.text = model.description
     }
     
     private func updateImageViewHeight() {

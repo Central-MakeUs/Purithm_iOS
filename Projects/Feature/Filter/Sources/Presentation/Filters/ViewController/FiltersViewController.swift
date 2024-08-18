@@ -47,8 +47,10 @@ public final class FiltersViewController: ViewController<FiltersView> {
         let input = FiltersViewModel.Input(
             viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
             chipDidTapEvent: chipAdapter.didSelectItemPublisher,
-            adapterItemTapEvent: adapter.actionEventPublisher
+            adapterItemTapEvent: adapter.actionEventPublisher,
+            adapterWillDisplayCellEvent: adapter.willDisplayCellPublisher
         )
+        
         
         let output = viewModel.transform(input: input)
         

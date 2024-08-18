@@ -13,6 +13,8 @@ enum AuthorAPI {
     case fetchAuthors(sorted: AuthorsRequestDTO)
     case fetchAuthor(authorID: String)
     case fetchReviewsByAuthor(parameter: AuthorFiltersRequestDTO)
+    case likeFilter(filterID: String)
+    case unlikeFilter(filterID: String)
 }
 
 extension AuthorAPI: TargetType {
@@ -35,6 +37,10 @@ extension AuthorAPI: TargetType {
             return "api/photographers/\(authorID)"
         case .fetchReviewsByAuthor(let parameter):
             return "api/photographers/\(parameter.authorID)/filters"
+        case .likeFilter(let filterID):
+            return "api/filters/\(filterID)/likes"
+        case .unlikeFilter(let filterID):
+            return "api/filters/\(filterID)/likes"
         }
     }
     
@@ -46,23 +52,42 @@ extension AuthorAPI: TargetType {
             return .get
         case .fetchReviewsByAuthor:
             return .get
+        case .likeFilter:
+            return .post
+        case .unlikeFilter:
+            return .delete
         }
     }
     
     var task: Moya.Task {
         switch self {
         case .fetchAuthors(let sorted):
-                .requestParameters(
-                    parameters: sorted.toDictionary(),
-                    encoding: URLEncoding.queryString
-                )
+            return .requestParameters(
+                parameters: sorted.toDictionary(),
+                encoding: URLEncoding.queryString
+            )
         case .fetchAuthor(let authorID):
-                .requestParameters(parameters: ["photographerId": authorID], encoding: URLEncoding.queryString)
+            return  .requestParameters(
+                parameters: ["photographerId": authorID],
+                encoding: URLEncoding.queryString
+            )
         case .fetchReviewsByAuthor(let parameter):
-                .requestParameters(
-                    parameters: parameter.toDictionary(),
-                    encoding: URLEncoding.queryString
-                )
+            return  .requestParameters(
+                parameters: parameter.toDictionary(),
+                encoding: URLEncoding.queryString
+            )
+        case .likeFilter(let filterID):
+            let parameters: [String: Any] = ["filterId": filterID]
+            return .requestParameters(
+                parameters: parameters,
+                encoding: JSONEncoding.default
+            )
+        case .unlikeFilter(let filterID):
+            let parameters: [String: Any] = ["filterId": filterID]
+            return .requestParameters(
+                parameters: parameters,
+                encoding: JSONEncoding.default
+            )
         }
     }
     

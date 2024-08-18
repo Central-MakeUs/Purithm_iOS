@@ -90,4 +90,59 @@ public final class AuthorUsecase {
         }
         .eraseToAnyPublisher()
     }
+    
+    public func requestLike(with filterID: String) -> AnyPublisher<Bool, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = authorService.requestLike(with: filterID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { _ in } receiveValue: { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+
+            
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func requestUnlike(with filterID: String) -> AnyPublisher<Bool, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = authorService.requestUnlike(with: filterID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { _ in } receiveValue: { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+
+            
+        }
+        .eraseToAnyPublisher()
+    }
+
 }

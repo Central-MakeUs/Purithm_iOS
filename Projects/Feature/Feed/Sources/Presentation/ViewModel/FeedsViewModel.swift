@@ -31,6 +31,8 @@ extension FeedsViewModel {
 
 final class FeedsViewModel {
     weak var coordinator: FeedsCoordinatorable?
+    weak var usecase: FeedUsecase?
+    
     var cancellables = Set<AnyCancellable>()
     let converter = FeedsSectionConverter()
     
@@ -42,54 +44,18 @@ final class FeedsViewModel {
         orderOptionModels.value
     }
     
-    private var reviewsModels = CurrentValueSubject<[FeedReviewModel], Never>([
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        ),
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        ),
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        ),
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        ),
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        )
-    ])
+    private let feedRequestDTO = CurrentValueSubject<FeedsRequestDTO, Never>(
+        FeedsRequestDTO(sortedBy: .earliest)
+    )
+    
+    private var reviewsModels = CurrentValueSubject<[FeedReviewModel], Never>([])
     var reviews: AnyPublisher<[FeedReviewModel], Never> {
         reviewsModels.eraseToAnyPublisher()
     }
     
-    init(coordinator: FeedsCoordinatorable) {
+    init(coordinator: FeedsCoordinatorable, usecase: FeedUsecase) {
         self.coordinator = coordinator
+        self.usecase = usecase
     }
     
     func transform(input: Input) -> Output {
@@ -135,6 +101,7 @@ final class FeedsViewModel {
         input.viewWillAppearEvent
             .sink { [weak self] _ in
                 self?.setupOrderOption()
+                self?.requestFeeds()
             }
             .store(in: &cancellables)
     }
@@ -144,7 +111,7 @@ final class FeedsViewModel {
             FeedOrderOptionModel(
                 identifier: option.identifier,
                 option: option,
-                reviewCount: 20, //TODO: ???? 어떻게 주입할까..
+                reviewCount: 0,
                 isSelected: option == .earliest ? true : false
             )
         }
@@ -153,7 +120,6 @@ final class FeedsViewModel {
     }
     
     func toggleSelectedOrderOption(target identifier: String) {
-        //TODO: order option 전환 후, 리스트 갱신 요청
         if let targetIndex = orderOptionModels.value.firstIndex(where: { $0.identifier == identifier }) {
             var tempOrderOptions = orderOptionModels.value
             for index in tempOrderOptions.indices {
@@ -162,6 +128,19 @@ final class FeedsViewModel {
             tempOrderOptions[targetIndex].isSelected.toggle()
             
             orderOptionModels.send(tempOrderOptions)
+            
+            feedRequestDTO.value.sortedBy = {
+                switch tempOrderOptions[targetIndex].option {
+                case .earliest:
+                    return FeedsRequestDTO.Sort.earliest
+                case .latest:
+                    return FeedsRequestDTO.Sort.latest
+                case .pureIndexHigh:
+                    return FeedsRequestDTO.Sort.pureIndexHigh
+                }
+            }()
+            
+            requestFeeds()
         }
     }
     
@@ -175,8 +154,7 @@ final class FeedsViewModel {
                 case _ as FeedOrderOptionAction:
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
                 case let action as FeedToDetailMoveAction:
-                    //TODO: Filter Detail로 이동, FilterID 주입 필요함!!
-                    self.coordinator?.pushFilterDetail(with: "filterID/ identifier > \(action.identifier)")
+                    self.coordinator?.pushFilterDetail(with: action.identifier)
                 default:
                     break
                 }
@@ -184,6 +162,24 @@ final class FeedsViewModel {
             }
             .store(in: &cancellables)
     }
-    
-   
+}
+
+extension FeedsViewModel {
+    private func requestFeeds() {
+        usecase?.reqeustFeeds(with: feedRequestDTO.value)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                let convertedResponse = response.map { $0.convertModel() }
+                
+                self?.reviewsModels.send(convertedResponse)
+                
+                // 선택한 옵션의 리스트 개수를 계산
+                let targetIdentifier = self?.selectedOrderOption?.identifier ?? ""
+                if let targetIndex = self?.orderOptionModels.value.firstIndex(where: {
+                    $0.identifier == targetIdentifier
+                }) {
+                    self?.orderOptionModels.value[targetIndex].reviewCount = convertedResponse.count
+                }
+            })
+            .store(in: &cancellables)
+    }
 }

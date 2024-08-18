@@ -13,6 +13,11 @@ public final class FeedsCoordinator: FeedsCoordinatorable {
     public var finishDelegate: CoordinatorFinishDelegate?
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
+    
+    private let feedUsecase = FeedUsecase(
+        feedService: FeedService()
+    )
+    
     public var type: CoordinatorType { .feeds }
     
     public init(_ navigationController: UINavigationController) {
@@ -21,7 +26,10 @@ public final class FeedsCoordinator: FeedsCoordinatorable {
     }
     
     public func start() {
-        let viewModel = FeedsViewModel(coordinator: self)
+        let viewModel = FeedsViewModel(
+            coordinator: self,
+            usecase: feedUsecase
+        )
         let feedsViewController = FeedsViewController(viewModel: viewModel)
         
         self.navigationController.viewControllers = [feedsViewController]
@@ -30,6 +38,7 @@ public final class FeedsCoordinator: FeedsCoordinatorable {
     public func pushFilterDetail(with filterID: String) {
         let coordinator = FilterDetailCoordinator(self.navigationController)
         coordinator.finishDelegate = self
+        coordinator.filterID = filterID
         self.childCoordinators.append(coordinator)
         coordinator.start()
     }

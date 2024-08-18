@@ -10,6 +10,6 @@ import Foundation
 struct FeedOrderOptionModel {
     let identifier: String
     let option: FeedOrderOption
-    let reviewCount: Int
+    var reviewCount: Int
     var isSelected: Bool
 }

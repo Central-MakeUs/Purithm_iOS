@@ -42,4 +42,52 @@ public final class AuthorUsecase {
         }
         .eraseToAnyPublisher()
     }
+    
+    public func requestAuthor(with authorID: String) -> AnyPublisher<AuthorResponseDTO, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = authorService.requestAuthor(with: authorID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func requestFiltersByAuthor(with parameter: AuthorFiltersRequestDTO) -> AnyPublisher<AuthorFiltersResponseDTO, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = authorService.requestFiltersByAuthor(with: parameter)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
 }

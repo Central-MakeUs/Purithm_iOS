@@ -13,6 +13,8 @@ import CoreCommonKit
 
 public protocol AuthorServiceManageable {
     func requestAuthors(with sorted: AuthorsRequestDTO) -> AnyPublisher<ResponseWrapper<[AuthorsResponseDTO]>, Error>
+    func requestAuthor(with authorID: String) -> AnyPublisher<ResponseWrapper<AuthorResponseDTO>, Error>
+    func requestFiltersByAuthor(with parameter: AuthorFiltersRequestDTO) -> AnyPublisher<ResponseWrapper<AuthorFiltersResponseDTO>, Error>
 }
 
 public final class AuthorService: AuthorServiceManageable {
@@ -24,6 +26,22 @@ public final class AuthorService: AuthorServiceManageable {
         provider.requestPublisher(.fetchAuthors(sorted: sorted))
             .tryMap { response in
                 return try response.map(ResponseWrapper<[AuthorsResponseDTO]>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestAuthor(with authorID: String) -> AnyPublisher<ResponseWrapper<AuthorResponseDTO>, Error> {
+        provider.requestPublisher(.fetchAuthor(authorID: authorID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<AuthorResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestFiltersByAuthor(with parameter: AuthorFiltersRequestDTO) -> AnyPublisher<ResponseWrapper<AuthorFiltersResponseDTO>, Error> {
+        provider.requestPublisher(.fetchReviewsByAuthor(parameter: parameter))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<AuthorFiltersResponseDTO>.self)
             }
             .eraseToAnyPublisher()
     }

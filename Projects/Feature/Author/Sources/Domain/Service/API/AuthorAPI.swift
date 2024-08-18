@@ -11,6 +11,8 @@ import CoreKeychain
 
 enum AuthorAPI {
     case fetchAuthors(sorted: AuthorsRequestDTO)
+    case fetchAuthor(authorID: String)
+    case fetchReviewsByAuthor(parameter: AuthorFiltersRequestDTO)
 }
 
 extension AuthorAPI: TargetType {
@@ -29,12 +31,20 @@ extension AuthorAPI: TargetType {
         switch self {
         case .fetchAuthors:
             return "api/photographers"
+        case .fetchAuthor(let authorID):
+            return "api/photographers/\(authorID)"
+        case .fetchReviewsByAuthor(let parameter):
+            return "api/photographers/\(parameter.authorID)/filters"
         }
     }
     
     var method: Moya.Method {
         switch self {
         case .fetchAuthors:
+            return .get
+        case .fetchAuthor:
+            return .get
+        case .fetchReviewsByAuthor:
             return .get
         }
     }
@@ -44,6 +54,13 @@ extension AuthorAPI: TargetType {
         case .fetchAuthors(let sorted):
                 .requestParameters(
                     parameters: sorted.toDictionary(),
+                    encoding: URLEncoding.queryString
+                )
+        case .fetchAuthor(let authorID):
+                .requestParameters(parameters: ["photographerId": authorID], encoding: URLEncoding.queryString)
+        case .fetchReviewsByAuthor(let parameter):
+                .requestParameters(
+                    parameters: parameter.toDictionary(),
                     encoding: URLEncoding.queryString
                 )
         }

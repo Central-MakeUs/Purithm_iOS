@@ -37,6 +37,7 @@ extension ArtistDetailViewModel {
 final class ArtistDetailViewModel {
     weak var coordinator: ArtistCoordinatorable?
     weak var usecase: AuthorUsecase?
+    private let authorID: String
     
     private var cancellables = Set<AnyCancellable>()
     private let converter = ArtistDetailSectionConverter()
@@ -56,112 +57,22 @@ final class ArtistDetailViewModel {
     
     private var artistProfileModel = CurrentValueSubject<PurithmVerticalProfileModel?, Never>(nil)
     
-    // only test
-    private var filters = CurrentValueSubject<[FilterItemModel], Never>([
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            planType: .premiumPlus,
-            filterTitle: "Rainbow",
-            author: "Made by Ehwa", 
+    private var filterRequestModel = CurrentValueSubject<AuthorFiltersRequestDTO, Never>(
+        AuthorFiltersRequestDTO(
             authorID: "",
-            isLike: true,
-            likeCount: 12,
-            canAccess: false
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            planType: .premium,
-            filterTitle: "Blueming",
-            author: "Made by Ehwa", 
-            authorID: "",
-            isLike: false,
-            likeCount: 12,
-            canAccess: false
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            planType: .free,
-            filterTitle: "title",
-            author: "author", 
-            authorID: "",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            planType: .free,
-            filterTitle: "title",
-            author: "author", 
-            authorID: "",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author", 
-            authorID: "",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author", 
-            authorID: "",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author", 
-            authorID: "",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author", 
-            authorID: "",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-        FilterItemModel(
-            identifier: UUID().uuidString,
-            filterImageURLString: "",
-            planType: .free,
-            filterTitle: "title",
-            author: "author",
-            authorID: "",
-            isLike: false,
-            likeCount: 12,
-            canAccess: true
-        ),
-    ])
+            sortedBy: .earliest,
+            page: 0,
+            size: 20
+        )
+    )
+    private var filterModels = CurrentValueSubject<[FilterItemModel], Never>([])
     
-    init(coordinator: ArtistCoordinatorable, usecase: AuthorUsecase) {
+    init(coordinator: ArtistCoordinatorable, usecase: AuthorUsecase, authorID: String) {
         self.coordinator = coordinator
         self.usecase = usecase
+        self.authorID = authorID
+        
+        updateRequestParameter()
     }
     
     func transform(input: Input) -> Output {
@@ -185,7 +96,7 @@ final class ArtistDetailViewModel {
                 let sections = self.converter.createSections(
                     profileModel: profileModel,
                     option: selectedOrderOption,
-                    filters: filters.value
+                    filters: filterModels.value
                 )
                 
                 output.sectionItems.send(sections)
@@ -202,13 +113,13 @@ final class ArtistDetailViewModel {
                 let sections = self.converter.createSections(
                     profileModel: profileModel,
                     option: selectedOrderOption,
-                    filters: filters.value
+                    filters: filterModels.value
                 )
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellables)
         
-        filters
+        filterModels
             .compactMap { $0 }
             .sink { [weak self] filters in
                 guard let self,
@@ -236,7 +147,24 @@ final class ArtistDetailViewModel {
             tempOrderOptions[targetIndex].isSelected.toggle()
             
             orderOptionModels.send(tempOrderOptions)
+            
+            filterRequestModel.value.sortedBy = {
+                switch tempOrderOptions[targetIndex].option {
+                case .earliest:
+                    return AuthorFiltersRequestDTO.Sort.earliest
+                case .latest:
+                    return AuthorFiltersRequestDTO.Sort.latest
+                case .pureIndexHigh:
+                    return AuthorFiltersRequestDTO.Sort.pureIndexHigh
+                }
+            }()
+            
+            requestFilters()
         }
+    }
+    
+    private func updateRequestParameter() {
+        filterRequestModel.value.authorID = authorID
     }
 }
 
@@ -246,7 +174,8 @@ extension ArtistDetailViewModel {
         input.viewWillAppearEvent
             .sink { [weak self] _ in
                 self?.setupOrderOption()
-                self?.setupArtistProfile()
+                self?.requestAuthorInformation()
+                self?.requestFilters()
             }
             .store(in: &cancellables)
     }
@@ -262,18 +191,6 @@ extension ArtistDetailViewModel {
         
         orderOptionModels.send(orderOptions)
     }
-    
-    private func setupArtistProfile() {
-        let profileModel = PurithmVerticalProfileModel(
-            identifier: UUID().uuidString,
-            type: .artist,
-            name: "Greta",
-            profileURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            introduction: "순간의 풍경을 담는 작가, 이화입니다."
-        )
-        
-        artistProfileModel.send(profileModel)
-    }
 }
 
 //MARK: - Handle Adapter Event
@@ -288,8 +205,8 @@ extension ArtistDetailViewModel {
                 case _ as ArtistDetailOrderOptionAction:
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
                 case let action as FilterDidTapAction:
-                    if let targetIndex = self.filters.value.firstIndex(where: { $0.identifier == action.identifier }) {
-                        if self.filters.value[targetIndex].canAccess {
+                    if let targetIndex = self.filterModels.value.firstIndex(where: { $0.identifier == action.identifier }) {
+                        if self.filterModels.value[targetIndex].canAccess {
                             DispatchQueue.main.async {
                                 self.coordinator?.pushFilterDetail(with: action.identifier)
                             }
@@ -304,6 +221,35 @@ extension ArtistDetailViewModel {
                     break
                 }
             }
+            .store(in: &cancellables)
+    }
+}
+
+
+extension ArtistDetailViewModel {
+    private func requestAuthorInformation() {
+        usecase?.requestAuthor(with: self.authorID)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                let convertedResponse = response.convertModel()
+                self?.artistProfileModel.send(convertedResponse)
+            })
+            .store(in: &cancellables)
+    }
+    
+    private func requestFilters() {
+        usecase?.requestFiltersByAuthor(with: filterRequestModel.value)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                let convertedFilters = response.filters.map { $0.convertModel() }
+                
+                self?.filterModels.send(convertedFilters)
+                
+                let targetIdentifier = self?.selectedOrderOption?.identifier ?? ""
+                if let targetIndex = self?.orderOptionModels.value.firstIndex(where: {
+                    $0.identifier == targetIdentifier
+                }) {
+                    self?.orderOptionModels.value[targetIndex].filterCount = convertedFilters.count
+                }
+            })
             .store(in: &cancellables)
     }
 }

@@ -35,7 +35,8 @@ public final class ArtistCoordinator: ArtistCoordinatorable {
     public func pushArtistDetail(with artistID: String) {
         let viewModel = ArtistDetailViewModel(
             coordinator: self,
-            usecase: artistUsecase
+            usecase: artistUsecase,
+            authorID: artistID
         )
         let detailViewController = ArtistDetailViewController(viewModel: viewModel)
         
@@ -45,6 +46,7 @@ public final class ArtistCoordinator: ArtistCoordinatorable {
     public func pushFilterDetail(with filterID: String) {
         let coordinator = FilterDetailCoordinator(self.navigationController)
         coordinator.finishDelegate = self
+        coordinator.filterID = filterID
         self.childCoordinators.append(coordinator)
         coordinator.start()
     }

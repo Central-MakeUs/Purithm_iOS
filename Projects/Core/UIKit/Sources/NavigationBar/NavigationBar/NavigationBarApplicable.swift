@@ -51,7 +51,6 @@ extension NavigationBarApplicable {
     }
 
     public func initNavigationTitleView(with type: NavigationBarType = .page, title: String = "", subtitle: String = "") {
-
         navigationItem.title = title
     }
 }
@@ -63,6 +62,10 @@ extension NavigationBarApplicable {
         appearance.shadowColor = .clear
         appearance.shadowImage = hideShadow ? UIColor.clear.as1pxImage() : UIColor.black005.as1pxImage()
         appearance.titlePositionAdjustment = type.titlePositionAdjustment
+        appearance.titleTextAttributes = [
+            .foregroundColor: UIColor.gray500,
+            .font: UIFont.Pretendard.bold.font(size: 18)
+        ]
         
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance

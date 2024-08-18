@@ -37,6 +37,7 @@ final class FilterDetailComponentView: BaseView {
     let imageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
+        $0.kf.indicatorType = .activity
     }
     
     override func setupSubviews() {
@@ -55,9 +56,7 @@ final class FilterDetailComponentView: BaseView {
     
     func configure(with imageURLString: String) {
         if let url = URL(string: imageURLString) {
-            imageView.kf.setImage(with: url) { result in
-                //TODO: 인디케이터? 아니면 place holder 이미지 추가하자.
-            }
+            imageView.kf.setImage(with: url, placeholder: UIImage.placeholderSquareXl)
         }
     }
 }

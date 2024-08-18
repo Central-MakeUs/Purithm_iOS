@@ -10,6 +10,6 @@ import Foundation
 struct ArtistDetailOrderOptionModel {
     let identifier: String
     let option: ArtistDetailOrderOption
-    let filterCount: Int
+    var filterCount: Int
     var isSelected: Bool
 }

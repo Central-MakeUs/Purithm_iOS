@@ -32,7 +32,7 @@ final class FilterDetailBottomView: BaseView {
     }
     
     let conformButton = PlainButton(type: .transparent, variant: .default, size: .large).then {
-        $0.text = "필터값 보기"
+        $0.text = "필터 보정값 보기"
     }
     
     let bottomGradientView = PurithmGradientView().then {

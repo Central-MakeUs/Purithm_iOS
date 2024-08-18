@@ -11,6 +11,7 @@ import CorePurithmAuth
 import Combine
 import CoreNetwork
 import Moya
+import CoreUIKit
 
 public final class LoginCoordinator: LoginCoordinatorable {
     public var finishDelegate: CoordinatorFinishDelegate?
@@ -28,6 +29,34 @@ public final class LoginCoordinator: LoginCoordinatorable {
     public init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
         navigationController.setNavigationBarHidden(true, animated: false)
+    }
+    
+    public func testLogin() {
+        signInUseCase.testLoggedIn()
+            .sink { [weak self] completion in
+                guard let self else { return }
+                
+                switch completion {
+                case .finished:
+                    self.finishDelegate?.coordinatorDidFinish(childCoordinator: self)
+                case .failure(let error):
+                    switch error {
+                    case let error as PurithmAuthError:
+                        switch error {
+                        case .termsOfServiceRequired:
+                            self.pushTermsViewController()
+                        case .invalidToken, .invalidErrorType:
+                            self.pushOnboardingViewController()
+                        default:
+                            break
+                        }
+                    default:
+                        print(" invalid error Type > \(error) ")
+                        self.pushOnboardingViewController()
+                    }
+                }
+            } receiveValue: { _ in }
+            .store(in: &cancellables)
     }
     
     public func start() {
@@ -90,5 +119,17 @@ public final class LoginCoordinator: LoginCoordinatorable {
         let termsAndConditionsVC = TermsAndConditionsViewController(viewModel: viewModel)
         
         self.navigationController.pushViewController(termsAndConditionsVC, animated: true)
+    }
+    
+    public func presentWelcomeAlert() {
+        let welcomeViewController = PurithmAnimateAlert<WelcomeAnimateView>()
+        welcomeViewController.modalPresentationStyle = .overCurrentContext
+        
+        self.navigationController.present(welcomeViewController, animated: false)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            welcomeViewController.dismiss(animated: false)
+            self?.finish()
+        }
     }
 }

@@ -29,6 +29,11 @@ public struct FilterItemComponent: Component {
         self.item = item
     }
     
+    public func prepareForReuse(content: FilterItemView) {
+        content.premiumFilterView.isHidden = true
+        content.premiumBadgeView.isHidden = true
+    }
+    
     public func hash(into hasher: inout Hasher) {
         hasher.combine(item.filterImageURLString)
         hasher.combine(item.planType)
@@ -69,11 +74,12 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
     let filterImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.backgroundColor = .gray200
+        $0.kf.indicatorType = .activity
     }
-    let activityIndicator = UIActivityIndicatorView(style: .large)
     let imageTapGesture = UITapGestureRecognizer()
     
     let premiumFilterView = FilterPremiumFilterView()
+    let premiumBadgeView = FilterPremiumBadgeView()
     
     let bottomContainer = UIView()
     let filterTitleLabel = PurithmLabel(typography: Constants.titleTypo)
@@ -91,8 +97,6 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
         
         self.backgroundColor = .gray100
         topContainer.addGestureRecognizer(imageTapGesture)
-        
-        activityIndicator.color = .gray400
     }
     
     deinit {
@@ -104,11 +108,9 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
             addSubview($0)
         }
         
-        [filterImageView, premiumFilterView].forEach {
+        [filterImageView, premiumFilterView, premiumBadgeView].forEach {
             topContainer.addSubview($0)
         }
-        
-        filterImageView.addSubview(activityIndicator)
         
         [filterTitleLabel, authorLabel, likeButton, likeCountLabel].forEach {
             bottomContainer.addSubview($0)
@@ -126,12 +128,14 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
             make.edges.equalToSuperview()
         }
         
-        activityIndicator.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        
         premiumFilterView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+        
+        premiumBadgeView.snp.makeConstraints { make in
+            make.top.equalTo(filterImageView.snp.top).offset(10)
+            make.trailing.equalTo(filterImageView.snp.trailing).offset(-10)
+            make.height.equalTo(22)
         }
         
         bottomContainer.snp.makeConstraints { make in
@@ -165,16 +169,18 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
     }
     
     public func configure(with item: FilterItemModel) {
-        premiumFilterView.isHidden = item.planType == .free
-        premiumFilterView.configure(with: item.planType)
+        premiumFilterView.isHidden = item.canAccess
+        premiumBadgeView.isHidden = !item.canAccess
+        
+        if item.canAccess {
+            premiumBadgeView.configure(with: item.planType)
+        } else {
+            premiumFilterView.isHidden = item.planType == .free
+            premiumFilterView.configure(with: item.planType)
+        }
         
         if let url = URL(string: item.filterImageURLString) {
-            activityIndicator.startAnimating()
-            
-            filterImageView.kf.setImage(with: url, options: nil) { [weak self] result in
-                self?.activityIndicator.stopAnimating()
-                self?.activityIndicator.removeFromSuperview()
-            }
+            filterImageView.kf.setImage(with: url, placeholder: UIImage.placeholderSquareLg)
         }
         
         filterTitleLabel.text = item.filterTitle

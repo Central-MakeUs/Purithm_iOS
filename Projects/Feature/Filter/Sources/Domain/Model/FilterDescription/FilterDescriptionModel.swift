@@ -8,9 +8,17 @@
 import Foundation
 
 struct FilterDescriptionModel {
-    let type: FilterDescriptionType
-    let headerTitle: String?
-    let contentImageURLString: String
-    let contentTitle: String
-    let contentDescription: String
+    let authorID: String
+    let authorName: String
+    let authorProfileImageURLString: String
+    let authorDescription: String
+    let photos: [PhotoDescription]
+    let tags: [String]
+    
+    struct PhotoDescription {
+        let title: String
+        let description: String
+        let imageURLString: String
+    }
 }
+

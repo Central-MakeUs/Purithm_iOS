@@ -59,6 +59,13 @@ public final class FiltersViewController: ViewController<FiltersView> {
             }
             .store(in: &cancellables)
         
+        output.sectionEmptyPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEmpty in
+                self?.contentView.showEmptyViewIfNeeded(with: isEmpty)
+            }
+            .store(in: &cancellables)
+        
         output.chipSections
             .receive(on: DispatchQueue.main)
             .sink { [weak self] sections in

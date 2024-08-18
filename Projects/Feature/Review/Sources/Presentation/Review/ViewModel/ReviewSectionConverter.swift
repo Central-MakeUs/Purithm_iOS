@@ -94,9 +94,10 @@ extension ReviewSectionConverter {
     private func createReviewContentCollectionLayout() -> CompositionalLayoutModelType {
         CompositionalLayoutModel(
             itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
-                                heightDimension: .absolute(240 + 60)),
+                                heightDimension: .absolute(240 + 60 + 32)),
             groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
-                                 heightDimension: .absolute(240 + 60)),
+                                 heightDimension: .absolute(240 + 60 + 32)),
+            sectionInset: NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0),
             scrollBehavior: .none
         )
     }
@@ -112,9 +113,12 @@ extension ReviewSectionConverter {
             )
         }
         
+        let headerComponent = ReviewUploadImageContainerHeaderComponent(identifier: "image_header")
+        
         let section = SectionModel(
             identifier: "image_upload_container_section",
             collectionLayout: createReviewImageContentCollectionLayout(),
+            header: headerComponent,
             itemModels: components
         )
         
@@ -124,9 +128,11 @@ extension ReviewSectionConverter {
     private func createReviewImageContentCollectionLayout() -> CompositionalLayoutModelType {
         CompositionalLayoutModel(
             itemStrategy: .item(widthDimension: .fractionalWidth(1/3),
-                                heightDimension: .estimated(100)),
+                                heightDimension: .estimated(132)),
             groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
-                                 heightDimension: .estimated(100)),
+                                 heightDimension: .estimated(132)),
+            headerStrategy: .header(widthDimension: .fractionalWidth(1.0),
+                                    heightDimension: .absolute(22)),
             isHorizontalGroup: true,
             itemSpacing: 20,
             sectionInset: NSDirectionalEdgeInsets(top: 20, leading: 20, bottom: 60, trailing: 20),

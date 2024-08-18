@@ -33,7 +33,7 @@ final class PostedReviewViewModel {
             identifier: UUID().uuidString,
             imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
             author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", satisfactionValue: 100,
             satisfactionLevel: .high,
             content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
         )

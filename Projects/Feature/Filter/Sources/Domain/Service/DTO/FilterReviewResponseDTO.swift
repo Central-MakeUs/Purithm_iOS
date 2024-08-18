@@ -38,7 +38,7 @@ public struct FilterReviewResponseDTO: Codable {
                 identifier: "\(review.id)",
                 imageURLStrings: review.pictures,
                 author: review.user,
-                authorProfileURL: review.profile,
+                authorProfileURL: review.profile, satisfactionValue: review.pureDegree,
                 satisfactionLevel: SatisfactionLevel(rawValue: review.pureDegree) ?? .none,
                 content: review.content
             )

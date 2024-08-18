@@ -42,7 +42,9 @@ public final class ReviewView: BaseView {
     
     public override func setupConstraints() {
         container.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(keyboardLayoutGuide.snp.top)
         }
         
         collectionView.snp.makeConstraints { make in
@@ -53,7 +55,7 @@ public final class ReviewView: BaseView {
         
         conformButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
         }
     }
     

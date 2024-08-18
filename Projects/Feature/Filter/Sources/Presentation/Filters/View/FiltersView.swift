@@ -50,6 +50,9 @@ public final class FiltersView: BaseView {
         [chipLeftGradientView, chipRightGradientView, filterTopGradientView, filterBottomGradientView].forEach {
             addSubview($0)
         }
+        
+        filterCollectionView.backgroundView = FilterEmptyView()
+        filterCollectionView.backgroundView?.isHidden = true
     }
     
     public override func setupConstraints() {
@@ -75,6 +78,10 @@ public final class FiltersView: BaseView {
     
     func configure(with type: PurithmHeaderType) {
         headerView.configure(with: type)
+    }
+    
+    func showEmptyViewIfNeeded(with isEmpty: Bool) {
+        filterCollectionView.backgroundView?.isHidden = !isEmpty
     }
     
     private func setupConstraintChipGradient() {

@@ -21,6 +21,12 @@ extension FiltersViewModel {
         var sections: AnyPublisher<[SectionModelType], Never> {
             sectionItems.compactMap { $0 }.eraseToAnyPublisher()
         }
+        
+        fileprivate let sectionEmptySubject = PassthroughSubject<Bool, Never>()
+        var sectionEmptyPublisher: AnyPublisher<Bool, Never> {
+            sectionEmptySubject.eraseToAnyPublisher()
+        }
+        
         fileprivate let chipSectionItems = CurrentValueSubject<[SectionModelType], Never>([])
         var chipSections: AnyPublisher<[SectionModelType], Never> {
             chipSectionItems.compactMap { $0 }.eraseToAnyPublisher()
@@ -101,6 +107,9 @@ public final class FiltersViewModel {
             .store(in: &cancellabels)
         
         orderOptionModels
+            .filter { [weak self] _ in
+                !(self?.filters.isEmpty ?? true)
+            }
             .compactMap { $0 }
             .sink { [weak self] options in
                 guard let self,
@@ -110,6 +119,7 @@ public final class FiltersViewModel {
                     filters: self.filters
                 )
                 
+                output.sectionEmptySubject.send(self.filters.isEmpty)
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellabels)
@@ -125,6 +135,7 @@ public final class FiltersViewModel {
                     filters: filters
                 )
                 
+                output.sectionEmptySubject.send(filters.isEmpty)
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellabels)

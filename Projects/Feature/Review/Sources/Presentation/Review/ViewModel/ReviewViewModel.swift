@@ -255,10 +255,19 @@ extension ReviewViewModel {
             .compactMap { $0 as? ReviewTextViewAction }
             .eraseToAnyPublisher()
         
-        Publishers.CombineLatest(termsItems, textChangeActionEventPublisher)
-            .map { termsItems, action in
+        Publishers.CombineLatest4(
+            headerModel,
+            willUploadImages,
+            termsItems,
+            textChangeActionEventPublisher
+        )
+            .map { header, willUploadImages, termsItems, action in
                 let termsAllAgree = !termsItems.contains { !$0.isSelected }
-                return action.text.count >= 20 && termsAllAgree
+                let isSetIntensity = header.intensity >= 20
+                let isSetTextCount = action.text.count >= 20
+                let isUploaded = willUploadImages.filter { $0.selectedImage != nil }.count >= 1
+                
+                return termsAllAgree && isSetIntensity && isSetTextCount && isUploaded
             }
             .sink { [weak self] isEnabled in
                 self?.conformState.send(isEnabled)

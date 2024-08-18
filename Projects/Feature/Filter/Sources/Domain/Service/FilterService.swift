@@ -40,6 +40,14 @@ public final class FilterService: FiltersServiceManageable {
             .eraseToAnyPublisher()
     }
     
+    public func requestFilterDescription(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterDescriptionResponseDTO>, Error> {
+        provider.requestPublisher(.fetchFilterDescription(filterID: filterID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<FilterDescriptionResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
     public func requestReviewsFromFilter(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterReviewResponseDTO>, Error> {
         provider.requestPublisher(.fetchReviewsFromFilter(filterID: filterID))
             .tryMap { response in

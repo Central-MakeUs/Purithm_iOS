@@ -36,6 +36,8 @@ extension ArtistDetailViewModel {
 
 final class ArtistDetailViewModel {
     weak var coordinator: ArtistCoordinatorable?
+    weak var usecase: AuthorUsecase?
+    
     private var cancellables = Set<AnyCancellable>()
     private let converter = ArtistDetailSectionConverter()
     
@@ -157,8 +159,9 @@ final class ArtistDetailViewModel {
         ),
     ])
     
-    init(coordinator: ArtistCoordinatorable) {
+    init(coordinator: ArtistCoordinatorable, usecase: AuthorUsecase) {
         self.coordinator = coordinator
+        self.usecase = usecase
     }
     
     func transform(input: Input) -> Output {

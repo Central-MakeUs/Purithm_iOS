@@ -33,6 +33,8 @@ extension ArtistsViewModel {
 
 final class ArtistsViewModel {
     weak var coordinator: ArtistCoordinatorable?
+    weak var usecase: AuthorUsecase?
+    
     var cancellables = Set<AnyCancellable>()
     let converter = ArtistsSectionConverter()
     
@@ -44,46 +46,21 @@ final class ArtistsViewModel {
         orderOptionModels.value
     }
     
-    private var artistModels = CurrentValueSubject<[ArtistScrapModel], Never>([
-        ArtistScrapModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            artist: "Mumu",
-            artistProfileURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            content: "순간의 풍경을 담는 작가, 이화입니다."
-        ),
-        ArtistScrapModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-                              "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-                              "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            artist: "Mumu",
-            artistProfileURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            content: "순간의 풍경을 담는 작가, 이화입니다."
-        ),
-        ArtistScrapModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            artist: "Mumu",
-            artistProfileURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            content: "순간의 풍경을 담는 작가, 이화입니다."
-        ),
-        ArtistScrapModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            artist: "Mumu",
-            artistProfileURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            content: "순간의 풍경을 담는 작가, 이화입니다."
-        ),
-    ])
+    //Data
+    private var artistsRequestDTO = CurrentValueSubject<AuthorsRequestDTO, Never>(
+        AuthorsRequestDTO(sorted: .earliest)
+    )
+    
+    private var artistModels = CurrentValueSubject<[ArtistScrapModel], Never>([])
     
     var artists: AnyPublisher<[ArtistScrapModel], Never> {
         artistModels.eraseToAnyPublisher()
     }
     
     
-    init(coordinator: ArtistCoordinatorable) {
+    init(coordinator: ArtistCoordinatorable, usecase: AuthorUsecase) {
         self.coordinator = coordinator
+        self.usecase = usecase
     }
     
     func transform(input: Input) -> Output {
@@ -147,6 +124,19 @@ final class ArtistsViewModel {
             tempOrderOptions[targetIndex].isSelected.toggle()
             
             orderOptionModels.send(tempOrderOptions)
+            
+            artistsRequestDTO.value.sorted = {
+                switch tempOrderOptions[targetIndex].option {
+                case .earliest:
+                    return AuthorsRequestDTO.Sort.earliest
+                case .latest:
+                    return AuthorsRequestDTO.Sort.latest
+                case .filterCountHigh:
+                    return AuthorsRequestDTO.Sort.filterCountHigh
+                }
+            }()
+            
+            requestArtists()
         }
     }
 }
@@ -157,6 +147,7 @@ extension ArtistsViewModel {
         input.viewWillAppearEvent
             .sink { [weak self] _ in
                 self?.setupOrderOption()
+                self?.requestArtists()
             }
             .store(in: &cancellables)
     }
@@ -180,4 +171,23 @@ extension ArtistsViewModel {
             .store(in: &cancellables)
     }
 }
+
+extension ArtistsViewModel {
+    private func requestArtists() {
+        usecase?.requestAuthors(with: artistsRequestDTO.value)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                let convertedResponse = response.map { $0.convertModel() }
+                
+                self?.artistModels.send(convertedResponse)
+                let targetIdentifier = self?.selectedOrderOption?.identifier ?? ""
+                if let targetIndex = self?.orderOptionModels.value.firstIndex(where: {
+                    $0.identifier == targetIdentifier
+                }) {
+                    self?.orderOptionModels.value[targetIndex].artistCount = convertedResponse.count
+                }
+            })
+            .store(in: &cancellables)
+    }
+}
+
 

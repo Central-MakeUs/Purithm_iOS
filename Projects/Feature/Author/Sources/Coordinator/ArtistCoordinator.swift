@@ -15,20 +15,28 @@ public final class ArtistCoordinator: ArtistCoordinatorable {
     public var childCoordinators: [Coordinator] = []
     public var type: CoordinatorType { .filters }
     
+    private let artistUsecase = AuthorUsecase(authorService: AuthorService())
+    
     public init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
         navigationController.setNavigationBarHidden(true, animated: false)
     }
     
     public func start() {
-        let viewModel = ArtistsViewModel(coordinator: self)
+        let viewModel = ArtistsViewModel(
+            coordinator: self,
+            usecase: artistUsecase
+        )
         let artistsViewController = ArtistsViewController(viewModel: viewModel)
         
         self.navigationController.viewControllers = [artistsViewController]
     }
     
     public func pushArtistDetail(with artistID: String) {
-        let viewModel = ArtistDetailViewModel(coordinator: self)
+        let viewModel = ArtistDetailViewModel(
+            coordinator: self,
+            usecase: artistUsecase
+        )
         let detailViewController = ArtistDetailViewController(viewModel: viewModel)
         
         self.navigationController.pushViewController(detailViewController, animated: true)

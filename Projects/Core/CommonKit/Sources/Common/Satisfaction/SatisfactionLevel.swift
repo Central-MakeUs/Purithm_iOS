@@ -95,4 +95,21 @@ public enum SatisfactionLevel: Int, CaseIterable {
             return .bgReview0
         }
     }
+    
+    public static func calculateSatisfactionLevel(with averageValue: Int) -> SatisfactionLevel {
+        switch averageValue {
+        case 20...30:
+            return SatisfactionLevel.low
+        case 31...50:
+            return SatisfactionLevel.medium
+        case 51...70:
+            return SatisfactionLevel.mediumHigh
+        case 71...90:
+            return SatisfactionLevel.high
+        case 91...100:
+            return SatisfactionLevel.veryHigh
+        default:
+            return SatisfactionLevel.none
+        }
+    }
 }

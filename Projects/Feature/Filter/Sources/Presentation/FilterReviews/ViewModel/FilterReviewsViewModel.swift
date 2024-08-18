@@ -97,11 +97,12 @@ extension FilterReviewsViewModel {
         filtersUsecase?.requestReviewsFromFilter(with: filterID)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
                 // 평균 만족도 설정
-                let satisfactionLevel = self?.calculateSatisfactionLevel(with: response.avg)
+                
+                let satisfactionLevel = SatisfactionLevel.calculateSatisfactionLevel(with: response.avg)
               
                 let satisfaction = FilterSatisfactionModel(
                     identifier: UUID().uuidString,
-                    satisfactionLevel: satisfactionLevel ?? .none,
+                    satisfactionLevel: satisfactionLevel,
                     averageValue: response.avg
                 )
                 self?.satisfactionModel = satisfaction
@@ -111,22 +112,5 @@ extension FilterReviewsViewModel {
                 self?.reviews.send(reviewItems)
             })
             .store(in: &cancellables)
-    }
-    
-    private func calculateSatisfactionLevel(with averageValue: Int) -> SatisfactionLevel {
-        switch averageValue {
-        case 20...30:
-            return SatisfactionLevel.low
-        case 31...50:
-            return SatisfactionLevel.medium
-        case 51...70:
-            return SatisfactionLevel.mediumHigh
-        case 71...90:
-            return SatisfactionLevel.high
-        case 91...100:
-            return SatisfactionLevel.veryHigh
-        default:
-            return SatisfactionLevel.none
-        }
     }
 }

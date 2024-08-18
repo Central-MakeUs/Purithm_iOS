@@ -37,7 +37,8 @@ final class ArtistDetailViewController: ViewController<ArtistDetailView> {
     private func bindViewModel() {
         let input = ArtistDetailViewModel.Input(
             viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
-            adapterActionEvent: adapter.actionEventPublisher
+            adapterActionEvent: adapter.actionEventPublisher,
+            adapterWillDisplayCellEvent: adapter.willDisplayCellPublisher
         )
         
         let output = viewModel.transform(input: input)

@@ -39,6 +39,7 @@ public final class ArtistCoordinator: ArtistCoordinatorable {
             authorID: artistID
         )
         let detailViewController = ArtistDetailViewController(viewModel: viewModel)
+        detailViewController.hidesBottomBarWhenPushed = true
         
         self.navigationController.pushViewController(detailViewController, animated: true)
     }

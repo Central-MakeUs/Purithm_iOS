@@ -226,6 +226,7 @@ extension PurithmBlurButton {
 extension PurithmBlurButton {
     private func updateText() {
         titleLabel.text = text
+        titleLabel.font = UIFont.EBGaramond.semiBold.font(size: 18)
         titleLabel.isHidden = text == nil
     }
     

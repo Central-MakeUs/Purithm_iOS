@@ -9,10 +9,14 @@ import Foundation
 import CoreUIKit
 
 final class FeedsSectionConverter {
-    func createSections(with reviews: [FeedReviewModel], orderOption: FeedOrderOptionModel?) -> [SectionModelType] {
+    func createSections(
+        with reviews: [FeedReviewModel],
+        filterInfo: [(name: String, thumbnail: String)],
+        orderOption: FeedOrderOptionModel?
+    ) -> [SectionModelType] {
         [
             createOrderSection(with: orderOption),
-            createFeedsSection(with: reviews)
+            createFeedsSection(with: reviews, filterInfo: filterInfo)
         ]
         .flatMap { $0 }
     }
@@ -20,11 +24,15 @@ final class FeedsSectionConverter {
 
 //MARK: Feed
 extension FeedsSectionConverter {
-    private func createFeedsSection(with reviews: [FeedReviewModel]) -> [SectionModelType] {
-        let components = reviews.map { review in
+    private func createFeedsSection(
+        with reviews: [FeedReviewModel],
+        filterInfo: [(name: String, thumbnail: String)]
+    ) -> [SectionModelType] {
+        let components = zip(reviews, filterInfo).map { review, info in
             FeedDetailImageContainerComponent(
                 identifier: review.identifier,
-                review: review
+                review: review,
+                filterInformation: info
             )
         }
         

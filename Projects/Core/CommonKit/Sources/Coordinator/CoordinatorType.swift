@@ -12,4 +12,5 @@ public enum CoordinatorType {
     case filters, filterDetail
     case feeds
     case review
+    case profile
 }

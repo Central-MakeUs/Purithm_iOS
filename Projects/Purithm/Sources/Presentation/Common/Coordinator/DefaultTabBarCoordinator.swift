@@ -11,6 +11,7 @@ import CoreCommonKit
 import Filter
 import Feed
 import Author
+import Profile
 
 final class DefaultTabBarCoordinator: TabBarCoordinator {
     weak var finishDelegate: CoordinatorFinishDelegate?
@@ -93,14 +94,10 @@ extension DefaultTabBarCoordinator {
             self.childCoordinators.append(feedCoordinator)
             feedCoordinator.start()
         case .mypage:
-            // TODO: 각 피처별 코디네이터 할당 필요함.
-            let mypageVC = UIViewController()
-            mypageVC.view.backgroundColor = .purple400
-            tabNavigationController.viewControllers = [mypageVC]
+            let profileCoordinator = ProfileCoordinator(tabNavigationController)
+            profileCoordinator.finishDelegate = self.finishDelegate
+            self.childCoordinators.append(profileCoordinator)
+            profileCoordinator.start()
         }
     }
-}
-
-extension DefaultTabBarCoordinator: CoordinatorFinishDelegate {
-    func coordinatorDidFinish(childCoordinator: Coordinator) { }
 }

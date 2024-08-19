@@ -13,6 +13,13 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
     public var finishDelegate: CoordinatorFinishDelegate?
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
+    
+    private let reviewUsecase = ReviewUsecase(
+        reviewService: ReviewService()
+    )
+    
+    public var filterID: String = ""
+    
     public var type: CoordinatorType { .review }
     
     public init(_ navigationController: UINavigationController) {
@@ -21,7 +28,11 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
     }
     
     public func start() {
-        let viewModel = ReviewViewModel(coordinator: self)
+        let viewModel = ReviewViewModel(
+            coordinator: self,
+            usecase: reviewUsecase,
+            filterID: filterID
+        )
         let reviewViewController = ReviewViewController(viewModel: viewModel)
         self.navigationController.setNavigationBarHidden(false, animated: false)
         

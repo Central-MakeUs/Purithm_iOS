@@ -36,8 +36,14 @@ extension ReviewViewModel {
 
 public final class ReviewViewModel {
     private var cancellables = Set<AnyCancellable>()
+
     weak var coordinator: ReviewCoordinatorable?
+    weak var usecase: ReviewUsecase?
+    private let filterID: String
+    
     private let converter = ReviewSectionConverter()
+    
+    private let requestDTO: CurrentValueSubject<ReviewRequestDTO, Never>
     
     // 선택된 이미지 저장 Subject
     var didFinishPickingImageSubject = PassthroughSubject<UIImage, Never>()
@@ -61,6 +67,9 @@ public final class ReviewViewModel {
         )
     ])
     
+    /// 각 컴포넌트의 id: url
+    var willUploadURLString: [String: String] = [:] // identifier: url
+    
     private var termsItems = CurrentValueSubject<[ReviewTermsItemComponentModel], Never>(
         ReviewTerms.allCases.map { term in
             ReviewTermsItemComponentModel(
@@ -74,8 +83,22 @@ public final class ReviewViewModel {
     //TODO: 추후 서버에 요청할 도메인 모델로 사용할 거임.. 일단 변수로 두자
     private var conformState = CurrentValueSubject<Bool, Never>(false)
     
-    public init(coordinator: ReviewCoordinatorable) {
+    public init(
+        coordinator: ReviewCoordinatorable,
+        usecase: ReviewUsecase,
+        filterID: String
+    ) {
         self.coordinator = coordinator
+        self.usecase = usecase
+        self.filterID = filterID
+        
+        let initalizedDTO = ReviewRequestDTO(
+            filterID: filterID,
+            satisfactionValue: 0,
+            description: "",
+            uploadedURLStrings: []
+        )
+        requestDTO = CurrentValueSubject<ReviewRequestDTO, Never>(initalizedDTO)
     }
     
     func transform(input: Input) -> Output {
@@ -101,9 +124,11 @@ public final class ReviewViewModel {
                     headerModel: model,
                     willUploadImageModels: self.willUploadImages.value,
                     termsItemModels: self.termsItems.value
-                    )
+                )
                 
                 output.sectionItems.send(sections)
+                
+                requestDTO.value.satisfactionValue = Int(model.intensity)
             }
             .store(in: &cancellables)
         
@@ -125,6 +150,13 @@ public final class ReviewViewModel {
                 guard let identifier = self?.selectedImageComponentIdentifier.value,
                       !identifier.isEmpty else {
                     return nil
+                }
+                if let urlString = self?.willUploadURLString[identifier], !urlString.isEmpty {
+                    self?.requestUploadImage(
+                        identifier: identifier,
+                        urlString: urlString,
+                        image: image
+                    )
                 }
                 
                 return (identifier, image)
@@ -205,12 +237,18 @@ extension ReviewViewModel {
                 guard let self else { return }
                 
                 switch actionItem {
+                case let action as ReviewTextViewAction:
+                    requestDTO.value.description = action.text
                 case let action as ReviewSliderAction:
                     headerModel.value.updateIntensity(with: action.intensity)
                 case let action as ReviewUploadImageAction:
+                    self.requestPrepareUploadReview(with: action.identifier)
                     self.selectedImageComponentIdentifier.send(action.identifier)
                     output.galleryOpenEvent.send(Void())
                 case let action as ReviewCancelUploadImageAction:
+                    // 삭제한 이미지를 담고있는 컴포넌트의 id, url을 삭제
+                    self.willUploadURLString.removeValue(forKey: action.identifier)
+                    
                     if let targetIndex = self.willUploadImages.value.firstIndex(where: { $0.identifier == action.identifier }) {
                         guard self.willUploadImages.value[safe: targetIndex] != nil else {
                             return
@@ -244,8 +282,7 @@ extension ReviewViewModel {
     private func handleConformActionEvent(input: Input, output: Output) {
         input.conformButtonTapEvent
             .sink { [weak self] _ in
-                //TODO: 필더 후기 작성 API Request
-                self?.coordinator?.presentCompleteAlert()
+                self?.requestCreateReview()
             }
             .store(in: &cancellables)
     }
@@ -272,6 +309,42 @@ extension ReviewViewModel {
             .sink { [weak self] isEnabled in
                 self?.conformState.send(isEnabled)
             }
+            .store(in: &cancellables)
+    }
+}
+
+extension ReviewViewModel {
+    private func requestCreateReview() {
+        requestDTO.value.uploadedURLStrings = Array(willUploadURLString.values).filter { !$0.isEmpty }
+        usecase?.requestCreateReview(with: requestDTO.value)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                //TODO: 넘어갈때 reviewID 를 코디네이터에 넘겨야함.
+//                response.reviewID
+                self?.coordinator?.presentCompleteAlert()
+            })
+            .store(in: &cancellables)
+    }
+    
+    private func requestPrepareUploadReview(with identifier: String) {
+        usecase?.requestPrepareUpload()
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                self?.willUploadURLString[identifier] = response.url
+            })
+            .store(in: &cancellables)
+    }
+    
+    private func requestUploadImage(identifier: String, urlString: String, image: UIImage) {
+        guard let imageData = image.jpegData(compressionQuality: 1.0) ?? image.pngData() else {
+            print("Error converting image to Data")
+            return
+        }
+        
+        usecase?.requestUploadImage(urlString: urlString, imageData: imageData)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] url in
+                // 업로드 성공 이후, 쿼리파라미터를 제거한 url을 requestDTO에 추가
+                let baseURL = String(urlString.split(separator: "?", maxSplits: 1, omittingEmptySubsequences: true).first ?? "")
+                self?.willUploadURLString.updateValue(baseURL, forKey: identifier)
+            })
             .store(in: &cancellables)
     }
 }

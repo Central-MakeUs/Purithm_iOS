@@ -103,6 +103,7 @@ extension FilterDetailCoordinator {
     public func pushReviewViewController() {
         let coordinator = ReviewCoordinator(self.navigationController)
         coordinator.finishDelegate = self
+        coordinator.filterID = filterID
         self.childCoordinators.append(coordinator)
         coordinator.start()
     }

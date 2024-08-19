@@ -63,9 +63,11 @@ public final class ReviewViewModel {
     private var willUploadImages = CurrentValueSubject<[ReviewUploadImageContainerComponentModel], Never>([
         ReviewUploadImageContainerComponentModel(
             identifier: UUID().uuidString,
-            selectedImage: nil
+            selectedImage: nil,
+            isUploadContinue: false
         )
     ])
+    private let isUploadState = CurrentValueSubject<[String: Bool], Never>([:]) //Identifier : uploadState
     
     /// 각 컴포넌트의 id: url
     var willUploadURLString: [String: String] = [:] // identifier: url
@@ -175,7 +177,8 @@ public final class ReviewViewModel {
                 if !isMaxLenght && isEmptyComponent  {
                     let willUploadImageItem = ReviewUploadImageContainerComponentModel(
                         identifier: UUID().uuidString,
-                        selectedImage: nil
+                        selectedImage: nil,
+                        isUploadContinue: false
                     )
                     self.willUploadImages.value.append(willUploadImageItem)
                 }
@@ -260,7 +263,8 @@ extension ReviewViewModel {
                         if !isContainEmptyComponent {
                             let willUploadImageItem = ReviewUploadImageContainerComponentModel(
                                 identifier: UUID().uuidString,
-                                selectedImage: nil
+                                selectedImage: nil, 
+                                isUploadContinue: false
                             )
                             self.willUploadImages.value.append(willUploadImageItem)
                         }
@@ -291,20 +295,27 @@ extension ReviewViewModel {
         let textChangeActionEventPublisher = input.adapterActionEvent
             .compactMap { $0 as? ReviewTextViewAction }
             .eraseToAnyPublisher()
-        
-        Publishers.CombineLatest4(
+        let contentConformStatePublisher = Publishers.CombineLatest4(
             headerModel,
             willUploadImages,
             termsItems,
             textChangeActionEventPublisher
         )
-            .map { header, willUploadImages, termsItems, action in
-                let termsAllAgree = !termsItems.contains { !$0.isSelected }
-                let isSetIntensity = header.intensity >= 20
-                let isSetTextCount = action.text.count >= 20
-                let isUploaded = willUploadImages.filter { $0.selectedImage != nil }.count >= 1
+        
+        Publishers.CombineLatest(contentConformStatePublisher,isUploadState)
+            .map { contentConformState, uploadState -> (header: ReviewHeaderComponentModel, willUploadImages: [ReviewUploadImageContainerComponentModel], termsItems: [ReviewTermsItemComponentModel], text: String, isUploadState: [String: Bool]) in
                 
-                return termsAllAgree && isSetIntensity && isSetTextCount && isUploaded
+                return (contentConformState.0, contentConformState.1, contentConformState.2, contentConformState.3.text, uploadState)
+            }
+            .map { contentConformState in
+
+                let termsAllAgree = !contentConformState.termsItems.contains { !$0.isSelected }
+                let isSetIntensity = contentConformState.header.intensity >= 20
+                let isSetTextCount = contentConformState.text.count >= 20
+                let isUploaded = contentConformState.willUploadImages.filter { $0.selectedImage != nil }.count >= 1
+                let isUploadContinue = !Array(contentConformState.isUploadState.values).contains(false)
+                
+                return termsAllAgree && isSetIntensity && isSetTextCount && isUploaded && isUploadContinue
             }
             .sink { [weak self] isEnabled in
                 self?.conformState.send(isEnabled)
@@ -337,12 +348,23 @@ extension ReviewViewModel {
             print("Error converting image to Data")
             return
         }
+        //TODO: 1. 업로드 시작 - 인디케이터 돌리기, 올리기 버튼 비활성화
+        if let targetIndex = willUploadImages.value.firstIndex(where: { $0.identifier == identifier }) {
+            willUploadImages.value[targetIndex].isUploadContinue = true
+            isUploadState.value[identifier] = false
+        }
         
         usecase?.requestUploadImage(urlString: urlString, imageData: imageData)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] url in
                 // 업로드 성공 이후, 쿼리파라미터를 제거한 url을 requestDTO에 추가
                 let baseURL = String(urlString.split(separator: "?", maxSplits: 1, omittingEmptySubsequences: true).first ?? "")
                 self?.willUploadURLString.updateValue(baseURL, forKey: identifier)
+                
+                //TODO: 2. 업로드 끝 - 인디케이터 끄기, 올리기 버튼 활성화
+                if let targetIndex = self?.willUploadImages.value.firstIndex(where: { $0.identifier == identifier }) {
+                    self?.willUploadImages.value[targetIndex].isUploadContinue = false
+                    self?.isUploadState.value.removeValue(forKey: identifier)
+                }
             })
             .store(in: &cancellables)
     }

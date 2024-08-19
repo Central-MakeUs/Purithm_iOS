@@ -14,6 +14,7 @@ extension FiltersViewModel {
         let viewWillAppearEvent: AnyPublisher<Bool, Never>
         let chipDidTapEvent: AnyPublisher<ItemModelType, Never>
         let adapterItemTapEvent: AnyPublisher<ActionEventItem, Never>
+        let adapterWillDisplayCellEvent: AnyPublisher<IndexPath, Never>
     }
     
     struct Output {
@@ -48,9 +49,11 @@ public final class FiltersViewModel {
     
     weak var coordinator: FiltersCoordinatorable?
     weak var usecase: FiltersUseCase?
+    
     private let sectionConverter = FiltersViewSectionConverter()
     private let chipSectionConverter = FiltersChipSectionConverter()
     
+    private let sectionItemsSubject = CurrentValueSubject<[SectionModelType], Never>([])
     private var chipModels = CurrentValueSubject<[FilterChipModel], Never>([])
     private var orderOptionModels = CurrentValueSubject<[FilterOrderOptionModel], Never>([])
     private var selectedOrderOption: FilterOrderOptionModel? {
@@ -74,6 +77,7 @@ public final class FiltersViewModel {
             size: 20
         )
     )
+    private let loadMoreEvent = PassthroughSubject<Void, Never>()
     
     private var filters: [FilterItemModel] = []
     private var filtersSubject = CurrentValueSubject<[FilterItemModel], Never>([])
@@ -92,11 +96,18 @@ public final class FiltersViewModel {
         handleViewWillAppearEvent(input: input, output: output)
         handleChipDidTapEvent(input: input, output: output)
         handleAdapterItemTapEvent(input: input, output: output)
+        handleAdapterVisibleItemEvent(input: input, output: output)
         
         return output
     }
     
     private func bind(output: Output) {
+        sectionItemsSubject
+            .sink { sections in
+                output.sectionItems.send(sections)
+            }
+            .store(in: &cancellabels)
+
         chipModels
             .compactMap { $0 }
             .sink { [weak self] chips in
@@ -116,11 +127,12 @@ public final class FiltersViewModel {
                       let selectedOrderOption = self.selectedOrderOption else { return }
                 let sections = self.sectionConverter.createSections(
                     orderOption: selectedOrderOption,
-                    filters: self.filters
+                    filters: self.filters,
+                    isLast: self.isLast
                 )
                 
                 output.sectionEmptySubject.send(self.filters.isEmpty)
-                output.sectionItems.send(sections)
+                self.sectionItemsSubject.send(sections)
             }
             .store(in: &cancellabels)
         
@@ -132,14 +144,22 @@ public final class FiltersViewModel {
                 
                 let sections = self.sectionConverter.createSections(
                     orderOption: selectedOrderOption,
-                    filters: filters
+                    filters: filters, 
+                    isLast: self.isLast
                 )
                 
                 output.sectionEmptySubject.send(filters.isEmpty)
-                output.sectionItems.send(sections)
+                self.sectionItemsSubject.send(sections)
             }
             .store(in: &cancellabels)
             
+        loadMoreEvent
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .sink { [weak self] in
+                self?.filtersRequestDTO.value.page += 1
+                self?.requestFilters()
+            }
+            .store(in: &cancellabels)
     }
     
     private func handleViewWillAppearEvent(input: Input, output: Output) {
@@ -220,7 +240,17 @@ extension FiltersViewModel {
                     tempChipModels[targetIndex].isSelected.toggle()
                     
                     self.chipModels.send(tempChipModels)
+                    
                     filtersRequestDTO.value.tag = tempChipModels[targetIndex].chipType
+                    filtersRequestDTO.value.page = 0
+                    filtersRequestDTO.value.sortedBy = .earliest
+                    
+                    var tempOrderOptions = orderOptionModels.value
+                    for index in tempOrderOptions.indices {
+                        tempOrderOptions[index].isSelected = tempOrderOptions[index].option == .earliest ? true : false
+                    }
+                    orderOptionModels.send(tempOrderOptions)
+                    
                     self.requestFilters()
                 }
             }
@@ -271,16 +301,51 @@ extension FiltersViewModel {
     }
 }
 
+//MARK: - HandleVisibleItem
+extension FiltersViewModel {
+    private func handleAdapterVisibleItemEvent(input: Input, output: Output) {
+        input.adapterWillDisplayCellEvent
+            .sink { [weak self] indexPath in
+                guard let section = self?.sectionItemsSubject.value[safe: indexPath.section] else {
+                    return
+                }
+                //TODO: 이건 상수화 해야할듯
+                if section.identifier == "load_more_section" {
+                    // 최대 페이지와 isLast값 비교 후
+                    if !(self?.isLast ?? true) {
+                        self?.loadMoreEvent.send(Void())
+                    }
+                }
+            }
+            .store(in: &cancellabels)
+    }
+}
+
 //MARK: - Filter List Request
 extension FiltersViewModel {
     private func requestFilters() {
         usecase?.requestFilterList(with: filtersRequestDTO.value)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
-                let filters = response.filters.map { $0.convertModel() }
-                self?.isLast = response.isLast
+                guard let self else { return }
                 
-                self?.filters = filters
-                self?.filtersSubject.send(filters)
+                let filters = response.filters.map { $0.convertModel() }
+                self.isLast = response.isLast
+                
+                // 첫 페이지인 경우
+                if self.filtersRequestDTO.value.page == .zero {
+                    let filters = response.filters.map { $0.convertModel() }
+                    self.isLast = response.isLast
+                    
+                    self.filters = filters
+                    self.filtersSubject.send(filters)
+                } else { // 다음 페이지인 경우
+                    var newFilters = self.filters
+                    
+                    newFilters.append(contentsOf: filters)
+                    
+                    self.filters = newFilters
+                    self.filtersSubject.send(newFilters)
+                }
             })
             .store(in: &cancellabels)
     }

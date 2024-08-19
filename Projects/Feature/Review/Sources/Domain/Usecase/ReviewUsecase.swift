@@ -1,6 +1,6 @@
 //
-//  AuthorUsecase.swift
-//  Author
+//  ReviewUsecase.swift
+//  Review
 //
 //  Created by 이숭인 on 8/18/24.
 //
@@ -10,20 +10,20 @@ import Combine
 import CoreCommonKit
 import CombineExt
 
-public final class AuthorUsecase {
+public final class ReviewUsecase {
     private var cancellables = Set<AnyCancellable>()
     
-    private let authorService: AuthorServiceManageable
+    private let reviewService: ReviewServiceManageable
     
-    public init(authorService: AuthorServiceManageable) {
-        self.authorService = authorService
+    public init(reviewService: ReviewServiceManageable) {
+        self.reviewService = reviewService
     }
     
-    public func requestAuthors(with parameter: AuthorsRequestDTO) -> AnyPublisher<[AuthorsResponseDTO], Error> {
+    public func requestCreateReview(with parameter: ReviewCreateRequestDTO) -> AnyPublisher<ReviewCreateResponseDTO, Error> {
         return Future { [weak self] promise in
             guard let self else { return }
             
-            let publisher = authorService.requestAuthors(with: parameter)
+            let publisher = reviewService.requestCreateReview(with: parameter)
                 .share()
                 .materialize()
             
@@ -43,11 +43,11 @@ public final class AuthorUsecase {
         .eraseToAnyPublisher()
     }
     
-    public func requestAuthor(with authorID: String) -> AnyPublisher<AuthorResponseDTO, Error> {
+    public func requestPrepareUpload() -> AnyPublisher<PrepareUploadResponseDTO, Error> {
         return Future { [weak self] promise in
             guard let self else { return }
             
-            let publisher = authorService.requestAuthor(with: authorID)
+            let publisher = reviewService.requestPrepareUploadURL()
                 .share()
                 .materialize()
             
@@ -67,11 +67,37 @@ public final class AuthorUsecase {
         .eraseToAnyPublisher()
     }
     
-    public func requestFiltersByAuthor(with parameter: AuthorFiltersRequestDTO) -> AnyPublisher<AuthorFiltersResponseDTO, Error> {
+    public func requestUploadImage(urlString: String, imageData: Data) -> AnyPublisher<Void, Error> {
         return Future { [weak self] promise in
             guard let self else { return }
             
-            let publisher = authorService.requestFiltersByAuthor(with: parameter)
+            let publisher = reviewService.requestUploadImage(
+                urlString: urlString,
+                imageData: imageData
+            )
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    return promise(.success(response))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func requestLoadReview(with reviewID: String) -> AnyPublisher<ReviewLoadResponseDTO, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = reviewService.requestLoadReview(with: reviewID)
                 .share()
                 .materialize()
             
@@ -91,58 +117,26 @@ public final class AuthorUsecase {
         .eraseToAnyPublisher()
     }
     
-    public func requestLike(with filterID: String) -> AnyPublisher<Bool, Error> {
+    public func requestRemoveReview(with reviewID: String) -> AnyPublisher<EmptyResponseType?, Error> {
         return Future { [weak self] promise in
             guard let self else { return }
             
-            let publisher = authorService.requestLike(with: filterID)
+            let publisher = reviewService.requestRemoveReview(with: reviewID)
                 .share()
                 .materialize()
             
             publisher.values()
                 .sink { response in
-                    guard let data = response.data else { return }
-                    
-                    return promise(.success(data))
+                    return promise(.success(response.data))
                 }
                 .store(in: &cancellables)
             
             publisher.failures()
-                .sink { _ in } receiveValue: { error in
+                .sink { error in
                     return promise(.failure(error))
                 }
                 .store(in: &cancellables)
-
-            
         }
         .eraseToAnyPublisher()
     }
-    
-    public func requestUnlike(with filterID: String) -> AnyPublisher<Bool, Error> {
-        return Future { [weak self] promise in
-            guard let self else { return }
-            
-            let publisher = authorService.requestUnlike(with: filterID)
-                .share()
-                .materialize()
-            
-            publisher.values()
-                .sink { response in
-                    guard let data = response.data else { return }
-                    
-                    return promise(.success(data))
-                }
-                .store(in: &cancellables)
-            
-            publisher.failures()
-                .sink { _ in } receiveValue: { error in
-                    return promise(.failure(error))
-                }
-                .store(in: &cancellables)
-
-            
-        }
-        .eraseToAnyPublisher()
-    }
-
 }

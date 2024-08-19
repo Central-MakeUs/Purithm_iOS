@@ -20,6 +20,13 @@ public struct FilterReviewResponseDTO: Codable {
         case reviews
     }
     
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.avg = try container.decode(Int.self, forKey: .avg)
+        self.hasViewed = try container.decode(Bool.self, forKey: .hasViewed)
+        self.reviews = try container.decodeIfPresent([ReviewDTO].self, forKey: .reviews) ?? []
+    }
+    
     func convertReviewItemModel() -> [FilterReviewItemModel] {
         reviews.map { review in
             FilterReviewItemModel(
@@ -66,6 +73,16 @@ extension FilterReviewResponseDTO {
             case createdAt
             case pictures
         }
+        
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.id = try container.decode(Int.self, forKey: .id)
+            self.pureDegree = try container.decode(Int.self, forKey: .pureDegree)
+            self.user = try container.decode(String.self, forKey: .user)
+            self.profile = try container.decodeIfPresent(String.self, forKey: .profile) ?? ""
+            self.content = try container.decode(String.self, forKey: .content)
+            self.createdAt = try container.decode(String.self, forKey: .createdAt)
+            self.pictures = try container.decode([String].self, forKey: .pictures)
+        }
     }
-
 }

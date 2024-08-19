@@ -13,6 +13,13 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
     public var finishDelegate: CoordinatorFinishDelegate?
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
+    
+    private let reviewUsecase = ReviewUsecase(
+        reviewService: ReviewService()
+    )
+    
+    public var filterID: String = ""
+    
     public var type: CoordinatorType { .review }
     
     public init(_ navigationController: UINavigationController) {
@@ -21,14 +28,18 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
     }
     
     public func start() {
-        let viewModel = ReviewViewModel(coordinator: self)
+        let viewModel = ReviewViewModel(
+            coordinator: self,
+            usecase: reviewUsecase,
+            filterID: filterID
+        )
         let reviewViewController = ReviewViewController(viewModel: viewModel)
         self.navigationController.setNavigationBarHidden(false, animated: false)
         
         self.navigationController.pushViewController(reviewViewController, animated: true)
     }
     
-    public func presentCompleteAlert() {
+    public func presentCompleteAlert(with reviewID: String) {
         let stampViewController  = PurithmAnimateAlert<StampAnimateView>()
         stampViewController.modalPresentationStyle = .overCurrentContext
         
@@ -37,15 +48,18 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
             stampViewController.dismiss(animated: false)
             self?.navigationController.popViewController(animated: false)
-            self?.presentWrittenReviewViewController()
+            self?.presentWrittenReviewViewController(with: reviewID)
         }
     }
     
-    public func presentWrittenReviewViewController() {
-        let viewModel = PostedReviewViewModel(coordinator: self)
+    public func presentWrittenReviewViewController(with reviewID: String) {
+        let viewModel = PostedReviewViewModel(
+            coordinator: self,
+            usecase: reviewUsecase,
+            reviewID: reviewID
+        )
         let postedReviewController = UINavigationController(rootViewController: PostedReviewController(viewModel: viewModel))
         postedReviewController.modalPresentationStyle = .overFullScreen
-        
         self.navigationController.present(postedReviewController, animated: false)
     }
 }

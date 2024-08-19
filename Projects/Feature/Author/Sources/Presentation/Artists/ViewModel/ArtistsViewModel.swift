@@ -107,7 +107,7 @@ final class ArtistsViewModel {
             ArtistOrderOptionModel(
                 identifier: option.identifier,
                 option: option,
-                artistCount: 20, //TODO: ??? 어떤 데이터로 주입하나?
+                artistCount: 0,
                 isSelected: option == .filterCountHigh ? true : false)
         }
         
@@ -176,8 +176,8 @@ extension ArtistsViewModel {
         usecase?.requestAuthors(with: artistsRequestDTO.value)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
                 let convertedResponse = response.map { $0.convertModel() }
-                
                 self?.artistModels.send(convertedResponse)
+                
                 let targetIdentifier = self?.selectedOrderOption?.identifier ?? ""
                 if let targetIndex = self?.orderOptionModels.value.firstIndex(where: {
                     $0.identifier == targetIdentifier

@@ -15,6 +15,8 @@ public protocol AuthorServiceManageable {
     func requestAuthors(with sorted: AuthorsRequestDTO) -> AnyPublisher<ResponseWrapper<[AuthorsResponseDTO]>, Error>
     func requestAuthor(with authorID: String) -> AnyPublisher<ResponseWrapper<AuthorResponseDTO>, Error>
     func requestFiltersByAuthor(with parameter: AuthorFiltersRequestDTO) -> AnyPublisher<ResponseWrapper<AuthorFiltersResponseDTO>, Error>
+    func requestLike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error>
+    func requestUnlike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error>
 }
 
 public final class AuthorService: AuthorServiceManageable {
@@ -42,6 +44,22 @@ public final class AuthorService: AuthorServiceManageable {
         provider.requestPublisher(.fetchReviewsByAuthor(parameter: parameter))
             .tryMap { response in
                 return try response.map(ResponseWrapper<AuthorFiltersResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestLike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error> {
+        provider.requestPublisher(.likeFilter(filterID: filterID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<Bool>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestUnlike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error> {
+        provider.requestPublisher(.unlikeFilter(filterID: filterID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<Bool>.self)
             }
             .eraseToAnyPublisher()
     }

@@ -24,6 +24,11 @@ public final class CollectionViewAdapter: NSObject {
         didSelectItemSubject.eraseToAnyPublisher()
     }
     
+    private let willDisplayCellSubject = PassthroughSubject<IndexPath, Never>()
+    public var willDisplayCellPublisher: AnyPublisher<IndexPath, Never> {
+        willDisplayCellSubject.eraseToAnyPublisher()
+    }
+    
     private let visibleItemSubject = PassthroughSubject<IndexPath, Never>()
     public var visibleItemPublisher: AnyPublisher<IndexPath, Never> {
         visibleItemSubject.eraseToAnyPublisher()
@@ -162,6 +167,12 @@ extension CollectionViewAdapter {
                 }
                 
                 self?.didSelectItemSubject.send(itemModel)
+            })
+            .store(in: &cancellables)
+        
+        collectionView?.willDisplayCellPublisher
+            .sink(receiveValue: { [weak self] cell, indexPath in
+                self?.willDisplayCellSubject.send(indexPath)
             })
             .store(in: &cancellables)
     }

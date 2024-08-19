@@ -25,22 +25,27 @@ extension PostedReviewViewModel {
 
 final class PostedReviewViewModel {
     weak var coordinator: ReviewCoordinatorable?
+    weak var usecase: ReviewUsecase?
+    private let reviewID: String
+    
     private let converter = PostedReviewSectionConverter()
     private var cancellables = Set<AnyCancellable>()
     
-    private var reviewModel = CurrentValueSubject<FeedReviewModel, Never>(
-        FeedReviewModel(
-            identifier: UUID().uuidString,
-            imageURLStrings: ["https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"],
-            author: "Hanna",
-            authorProfileURL: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0", satisfactionValue: 100,
-            satisfactionLevel: .high,
-            content: "내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. 내용입니다. "
-        )
-    )
+    private let completeRemoveEvent = PassthroughSubject<Void, Never>()
+    var completeRemovePublisher: AnyPublisher<Void, Never> {
+        completeRemoveEvent.eraseToAnyPublisher()
+    }
     
-    init(coordinator: ReviewCoordinatorable) {
+    private var reviewModel = CurrentValueSubject<FeedReviewModel?, Never>(nil)
+    
+    init(
+        coordinator: ReviewCoordinatorable,
+        usecase: ReviewUsecase,
+        reviewID: String
+    ) {
         self.coordinator = coordinator
+        self.usecase = usecase
+        self.reviewID = reviewID
     }
     
     func transform(input: Input) -> Output {
@@ -56,6 +61,7 @@ final class PostedReviewViewModel {
     
     private func bind(output: Output) {
         reviewModel
+            .compactMap { $0 }
             .sink { [weak self] review in
                 guard let self else { return }
                 let sections = self.converter.createSections(review: review)
@@ -69,22 +75,47 @@ final class PostedReviewViewModel {
 extension PostedReviewViewModel {
     private func handleViewWillAppearEvent(input: Input, output: Output) {
         input.viewWillAppearEvent
-            .sink { _ in
+            .sink { [weak self] _ in
+                guard let reviewID = self?.reviewID else { return }
                 
+                self?.requestReviewLoad(with: reviewID)
             }
             .store(in: &cancellables)
     }
     
     private func handleAdapterItemTapEvent(input: Input, output: Output) {
         input.adapterActionEvent
-            .sink { actionItem in
+            .sink { [weak self] actionItem in
                 switch actionItem {
-                case let action as ReviewRemoveButtonAction:
-                    print("ReviewRemoveButtonAction")
+                case _ as ReviewRemoveButtonAction:
+                    guard let reviewID = self?.reviewID else { return }
+                    self?.requestReviewRemove(with: reviewID)
                 default:
                     break
                 }
             }
+            .store(in: &cancellables)
+    }
+}
+
+extension PostedReviewViewModel {
+    private func requestReviewLoad(with reviewID: String) {
+        usecase?.requestLoadReview(with: reviewID)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                var convertedResponse = response.convertModel()
+                convertedResponse.identifier = reviewID
+                
+                self?.reviewModel.send(convertedResponse)
+            })
+            .store(in: &cancellables)
+    }
+    
+    private func requestReviewRemove(with reviewID: String) {
+        usecase?.requestRemoveReview(with: reviewID)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] _ in
+                self?.completeRemoveEvent.send(Void())
+            })
             .store(in: &cancellables)
     }
 }

@@ -53,6 +53,8 @@ final class FeedsViewModel {
         reviewsModels.eraseToAnyPublisher()
     }
     
+    private var filterInformations = CurrentValueSubject<[(name: String, thumbnail: String)], Never>([])
+    
     init(coordinator: FeedsCoordinatorable, usecase: FeedUsecase) {
         self.coordinator = coordinator
         self.usecase = usecase
@@ -75,7 +77,8 @@ final class FeedsViewModel {
                 guard let self,
                       let selectedOrderOption = self.selectedOrderOption else { return }
                 let sections = self.converter.createSections(
-                    with: self.reviewsModels.value,
+                    with: self.reviewsModels.value, 
+                    filterInfo: self.filterInformations.value,
                     orderOption: selectedOrderOption
                 )
                 
@@ -89,6 +92,7 @@ final class FeedsViewModel {
                       let selectedOrderOption = self.selectedOrderOption else { return }
                 let sections = self.converter.createSections(
                     with: self.reviewsModels.value,
+                    filterInfo: self.filterInformations.value,
                     orderOption: selectedOrderOption
                 )
                 
@@ -169,7 +173,9 @@ extension FeedsViewModel {
         usecase?.reqeustFeeds(with: feedRequestDTO.value)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
                 let convertedResponse = response.map { $0.convertModel() }
+                let informations = response.map { $0.retriveFilterInformation() }
                 
+                self?.filterInformations.send(informations)
                 self?.reviewsModels.send(convertedResponse)
                 
                 // 선택한 옵션의 리스트 개수를 계산

@@ -9,6 +9,6 @@ import Foundation
 import CoreCommonKit
 
 public protocol ReviewCoordinatorable: Coordinator {
-    func presentCompleteAlert()
-    func presentWrittenReviewViewController()
+    func presentCompleteAlert(with reviewID: String)
+    func presentWrittenReviewViewController(with reviewID: String)
 }

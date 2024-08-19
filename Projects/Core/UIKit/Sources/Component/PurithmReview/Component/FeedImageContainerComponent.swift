@@ -10,6 +10,7 @@ import Combine
 import CoreCommonKit
 import Then
 import SnapKit
+import Kingfisher
 
 public struct FeedToDetailMoveAction: ActionEventItem {
     public let identifier: String
@@ -18,10 +19,16 @@ public struct FeedToDetailMoveAction: ActionEventItem {
 public struct FeedDetailImageContainerComponent: Component {
     public var identifier: String
     let review: FeedReviewModel
+    let filterInformation: (name: String, thumbnail: String)?
     
-    public init(identifier: String, review: FeedReviewModel) {
+    public init(
+        identifier: String,
+        review: FeedReviewModel,
+        filterInformation: (name: String, thumbnail: String)? = nil
+    ) {
         self.identifier = identifier
         self.review = review
+        self.filterInformation = filterInformation
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -30,6 +37,8 @@ public struct FeedDetailImageContainerComponent: Component {
         hasher.combine(review.author)
         hasher.combine(review.content)
         hasher.combine(review.satisfactionLevel)
+        hasher.combine(filterInformation?.name)
+        hasher.combine(filterInformation?.thumbnail)
     }
     
     public func prepareForReuse(content: FilterDetailImageContainerView) {
@@ -41,7 +50,10 @@ extension FeedDetailImageContainerComponent {
     public typealias ContentType = FilterDetailImageContainerView
     
     public func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
-        content.configure(with: context.review)
+        content.configure(
+            with: context.review,
+            information: context.filterInformation
+        )
         
         content.blurButton.tap
             .sink { [weak content] _ in
@@ -61,8 +73,6 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
     }
     
     let blurButton = PurithmBlurButton(size: .normal).then {
-        $0.image = .icCheckboxPressed
-        $0.text = "Blueming"
         $0.additionalImage = .icMove.withTintColor(.white)
         $0.shape = .circle
         $0.hasContentShdaow = true
@@ -109,7 +119,10 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         }
     }
     
-    public func configure(with review: FeedReviewModel) {
+    public func configure(
+        with review: FeedReviewModel,
+        information: (name: String, thumbnail: String)?
+    ) {
         imageContainer = ImageContainerPageViewController(imageURLs: review.imageURLStrings)
         contentLabel.text = review.content
         
@@ -122,6 +135,34 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         
         setupSubviews()
         setupConstraints()
+        
+        guard let info = information else {
+            blurButton.isHidden = true
+            return
+        }
+        
+        blurButton.isHidden = false
+        blurButton.text = info.name
+        
+        if let url = URL(string: info.thumbnail) {
+            blurButton.image = .placeholderSquareLg
+            downloadImageToUIImage(url: url) { [weak self] image in
+                self?.blurButton.image = image
+            }
+        }
+    }
+    
+    private func downloadImageToUIImage(url: URL, completion: @escaping (UIImage?) -> Void) {
+        // Kingfisher의 ImageDownloader를 사용하여 이미지를 다운로드
+        ImageDownloader.default.downloadImage(with: url) { result in
+            switch result {
+            case .success(let value):
+                completion(value.image)
+            case .failure(let error):
+                print("Error downloading image: \(error)")
+                completion(nil)
+            }
+        }
     }
 }
 

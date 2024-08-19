@@ -9,7 +9,7 @@ import Foundation
 import CoreCommonKit
 
 public struct FeedReviewModel {
-    public let identifier: String
+    public var identifier: String
     public let imageURLStrings: [String]
     public let author: String
     public let authorProfileURL: String

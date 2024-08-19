@@ -39,7 +39,7 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
         self.navigationController.pushViewController(reviewViewController, animated: true)
     }
     
-    public func presentCompleteAlert() {
+    public func presentCompleteAlert(with reviewID: String) {
         let stampViewController  = PurithmAnimateAlert<StampAnimateView>()
         stampViewController.modalPresentationStyle = .overCurrentContext
         
@@ -48,15 +48,18 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
             stampViewController.dismiss(animated: false)
             self?.navigationController.popViewController(animated: false)
-            self?.presentWrittenReviewViewController()
+            self?.presentWrittenReviewViewController(with: reviewID)
         }
     }
     
-    public func presentWrittenReviewViewController() {
-        let viewModel = PostedReviewViewModel(coordinator: self)
+    public func presentWrittenReviewViewController(with reviewID: String) {
+        let viewModel = PostedReviewViewModel(
+            coordinator: self,
+            usecase: reviewUsecase,
+            reviewID: reviewID
+        )
         let postedReviewController = UINavigationController(rootViewController: PostedReviewController(viewModel: viewModel))
         postedReviewController.modalPresentationStyle = .overFullScreen
-        
         self.navigationController.present(postedReviewController, animated: false)
     }
 }

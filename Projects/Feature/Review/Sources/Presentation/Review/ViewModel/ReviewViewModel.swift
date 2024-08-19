@@ -43,7 +43,7 @@ public final class ReviewViewModel {
     
     private let converter = ReviewSectionConverter()
     
-    private let requestDTO: CurrentValueSubject<ReviewRequestDTO, Never>
+    private let requestDTO: CurrentValueSubject<ReviewCreateRequestDTO, Never>
     
     // 선택된 이미지 저장 Subject
     var didFinishPickingImageSubject = PassthroughSubject<UIImage, Never>()
@@ -92,13 +92,13 @@ public final class ReviewViewModel {
         self.usecase = usecase
         self.filterID = filterID
         
-        let initalizedDTO = ReviewRequestDTO(
+        let initalizedDTO = ReviewCreateRequestDTO(
             filterID: filterID,
             satisfactionValue: 0,
             description: "",
             uploadedURLStrings: []
         )
-        requestDTO = CurrentValueSubject<ReviewRequestDTO, Never>(initalizedDTO)
+        requestDTO = CurrentValueSubject<ReviewCreateRequestDTO, Never>(initalizedDTO)
     }
     
     func transform(input: Input) -> Output {
@@ -318,9 +318,8 @@ extension ReviewViewModel {
         requestDTO.value.uploadedURLStrings = Array(willUploadURLString.values).filter { !$0.isEmpty }
         usecase?.requestCreateReview(with: requestDTO.value)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
-                //TODO: 넘어갈때 reviewID 를 코디네이터에 넘겨야함.
-//                response.reviewID
-                self?.coordinator?.presentCompleteAlert()
+                let reviewID = String(response.reviewID)
+                self?.coordinator?.presentCompleteAlert(with: reviewID)
             })
             .store(in: &cancellables)
     }

@@ -45,6 +45,34 @@ final class PostedReviewController: ViewController<PostedReviewView> {
                 _ = self?.adapter.receive(sections)
             }
             .store(in: &cancellables)
+        
+        viewModel.completeRemovePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.presentCompletePopup()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+extension PostedReviewController {
+    private func presentCompletePopup() {
+        let alert = PurithmAlert(with:
+                .withOneButton(
+                    title: "삭제가 완료되었습니다.",
+                    conformTitle: "확인"
+                )
+        )
+        alert.conformTapEventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                alert.hide()
+                self?.dismiss(animated: false)
+            }
+            .store(in: &cancellables)
+        
+        
+        alert.show(animated: false)
     }
 }
 
@@ -52,7 +80,7 @@ extension PostedReviewController: NavigationBarApplicable {
     func handleNavigationButtonAction(with identifier: String) {
         switch identifier {
         case "close_image":
-            self.dismiss(animated: true)
+            dismiss(animated: false)
         default:
             break
         }

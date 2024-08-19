@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ReviewResponseDTO: Codable {
+public struct ReviewCreateResponseDTO: Codable {
     let reviewID: Int
     
     enum CodingKeys: String, CodingKey {

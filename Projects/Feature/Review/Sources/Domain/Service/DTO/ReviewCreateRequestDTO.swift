@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ReviewRequestDTO {
+public struct ReviewCreateRequestDTO {
     let filterID: String
     var satisfactionValue: Int
     var description: String

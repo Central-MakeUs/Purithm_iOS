@@ -10,9 +10,11 @@ import Moya
 import CoreKeychain
 
 enum ReviewAPI {
-    case createReview(parameter: ReviewRequestDTO)
+    case createReview(parameter: ReviewCreateRequestDTO)
     case prepareUpload
     case uploadImage(urlString: String, imageData: Data)
+    case fetchReview(reviewID: String)
+    case removeReview(reviewID: String)
 }
 
 extension ReviewAPI: TargetType {
@@ -34,12 +36,16 @@ extension ReviewAPI: TargetType {
     
     var path: String {
         switch self {
-        case .createReview(let parameter):
+        case .createReview:
             return "api/reviews"
         case .prepareUpload:
             return "api/file"
         case .uploadImage:
             return ""
+        case .fetchReview(let reviewID):
+            return "api/reviews/\(reviewID)"
+        case .removeReview(let reviewID):
+            return "api/users/reviews/\(reviewID)"
         }
     }
     
@@ -51,6 +57,10 @@ extension ReviewAPI: TargetType {
             return .post
         case .uploadImage:
             return .put
+        case .fetchReview:
+            return .get
+        case .removeReview:
+            return .delete
         }
     }
     
@@ -68,6 +78,16 @@ extension ReviewAPI: TargetType {
             )
         case .uploadImage(_, let imageData):
             return .requestData(imageData)
+        case .fetchReview(let reviewID):
+            return .requestParameters(
+                parameters: ["reviewId": reviewID],
+                encoding: URLEncoding.queryString
+            )
+        case .removeReview(let reviewID):
+            return .requestParameters(
+                parameters: ["reviewId": reviewID],
+                encoding: JSONEncoding.default
+            )
         }
     }
     

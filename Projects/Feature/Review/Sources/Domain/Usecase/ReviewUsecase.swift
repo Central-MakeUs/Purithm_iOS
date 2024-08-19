@@ -19,7 +19,7 @@ public final class ReviewUsecase {
         self.reviewService = reviewService
     }
     
-    public func requestCreateReview(with parameter: ReviewRequestDTO) -> AnyPublisher<ReviewResponseDTO, Error> {
+    public func requestCreateReview(with parameter: ReviewCreateRequestDTO) -> AnyPublisher<ReviewCreateResponseDTO, Error> {
         return Future { [weak self] promise in
             guard let self else { return }
             
@@ -81,6 +81,53 @@ public final class ReviewUsecase {
             publisher.values()
                 .sink { response in
                     return promise(.success(response))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func requestLoadReview(with reviewID: String) -> AnyPublisher<ReviewLoadResponseDTO, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = reviewService.requestLoadReview(with: reviewID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func requestRemoveReview(with reviewID: String) -> AnyPublisher<EmptyResponseType?, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = reviewService.requestRemoveReview(with: reviewID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    return promise(.success(response.data))
                 }
                 .store(in: &cancellables)
             

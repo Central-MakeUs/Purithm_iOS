@@ -12,9 +12,11 @@ import CombineMoya
 import CoreCommonKit
 
 public protocol ReviewServiceManageable {
-    func requestCreateReview(with parameter: ReviewRequestDTO) -> AnyPublisher<ResponseWrapper<ReviewResponseDTO>, Error>
+    func requestCreateReview(with parameter: ReviewCreateRequestDTO) -> AnyPublisher<ResponseWrapper<ReviewCreateResponseDTO>, Error>
     func requestPrepareUploadURL() -> AnyPublisher<ResponseWrapper<PrepareUploadResponseDTO>, Error>
     func requestUploadImage(urlString: String, imageData: Data) -> AnyPublisher<Void, Error>
+    func requestLoadReview(with reviewID: String) -> AnyPublisher<ResponseWrapper<ReviewLoadResponseDTO>, Error>
+    func requestRemoveReview(with reviewID: String) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error>
 }
 
 public final class ReviewService: ReviewServiceManageable {
@@ -22,10 +24,10 @@ public final class ReviewService: ReviewServiceManageable {
     
     public init() { }
     
-    public func requestCreateReview(with parameter: ReviewRequestDTO) -> AnyPublisher<ResponseWrapper<ReviewResponseDTO>, Error> {
+    public func requestCreateReview(with parameter: ReviewCreateRequestDTO) -> AnyPublisher<ResponseWrapper<ReviewCreateResponseDTO>, Error> {
         provider.requestPublisher(.createReview(parameter: parameter))
             .tryMap { response in
-                return try response.map(ResponseWrapper<ReviewResponseDTO>.self)
+                return try response.map(ResponseWrapper<ReviewCreateResponseDTO>.self)
             }
             .eraseToAnyPublisher()
     }
@@ -43,6 +45,22 @@ public final class ReviewService: ReviewServiceManageable {
                                                imageData: imageData))
             .tryMap { response in
                 return ()
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestLoadReview(with reviewID: String) -> AnyPublisher<ResponseWrapper<ReviewLoadResponseDTO>, Error> {
+        provider.requestPublisher(.fetchReview(reviewID: reviewID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<ReviewLoadResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestRemoveReview(with reviewID: String) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error> {
+        provider.requestPublisher(.removeReview(reviewID: reviewID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<EmptyResponseType>.self)
             }
             .eraseToAnyPublisher()
     }

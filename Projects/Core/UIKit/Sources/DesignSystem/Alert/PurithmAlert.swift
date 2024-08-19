@@ -9,8 +9,8 @@ import UIKit
 import Combine
 
 public enum PurithmAlertType {
-    case withOneButton(title: String, conformTitle: String)
-    case withTwoButton(title: String, conformTitle: String, cancelTitle: String)
+    case withOneButton(title: String, content: String = "", conformTitle: String)
+    case withTwoButton(title: String, content: String = "", conformTitle: String, cancelTitle: String)
 }
 
 public final class PurithmAlert: ViewController<PurithmAlertView> {
@@ -29,10 +29,19 @@ public final class PurithmAlert: ViewController<PurithmAlertView> {
         view.backgroundColor = UIColor.black.withAlphaComponent(0.8)
         
         switch type {
-        case .withOneButton(let title, let conformTitle):
-            contentView.configure(title: title, conformTitle: conformTitle)
-        case .withTwoButton(let title, let conformTitle, let cancelTitle):
-            contentView.configure(title: title, conformTitle: conformTitle, cancelTitle: cancelTitle)
+        case .withOneButton(let title, let content, let conformTitle):
+            contentView.configure(
+                title: title,
+                content: content,
+                conformTitle: conformTitle
+            )
+        case .withTwoButton(let title, let content, let conformTitle, let cancelTitle):
+            contentView.configure(
+                title: title,
+                content: content,
+                conformTitle: conformTitle,
+                cancelTitle: cancelTitle
+            )
         }
     }
     

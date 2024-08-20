@@ -25,7 +25,7 @@ public struct FeedsResponseDTO: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.filterId = try container.decode(Int.self, forKey: .filterId)
         self.filterName = try container.decode(String.self, forKey: .filterName)
-        self.writer = try container.decode(String.self, forKey: .writer)
+        self.writer = try container.decodeIfPresent(String.self, forKey: .writer) ?? ""
         self.profile = try container.decodeIfPresent(String.self, forKey: .profile) ?? ""
         self.pureDegree = try container.decode(Int.self, forKey: .pureDegree)
         self.content = try container.decode(String.self, forKey: .content)

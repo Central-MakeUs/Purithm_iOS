@@ -57,6 +57,10 @@ extension DefaultAppCoordinator: CoordinatorFinishDelegate {
         case .login:
             self.navigationController.setNavigationBarHidden(true, animated: false)
             self.showTabBarFlow()
+        case .profile:
+            //TODO: 탭.. 종료 이벤트로 변경해보자 나중에 ..
+            self.navigationController.setNavigationBarHidden(true, animated: false)
+            self.showLoginFlow()
         default:
             break
         }

@@ -31,8 +31,8 @@ public struct ReviewLoadResponseDTO: Codable {
     
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.content = try container.decode(String.self, forKey: .content)
-        self.username = try container.decode(String.self, forKey: .username)
+        self.content = try container.decodeIfPresent(String.self, forKey: .content) ?? ""
+        self.username = try container.decodeIfPresent(String.self, forKey: .username) ?? ""
         self.createdAt = try container.decode(String.self, forKey: .createdAt)
         self.userProfile = try container.decodeIfPresent(String.self, forKey: .userProfile) ?? ""
         self.pictures = try container.decode([String].self, forKey: .pictures)

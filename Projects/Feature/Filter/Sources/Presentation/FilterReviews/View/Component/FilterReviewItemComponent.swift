@@ -36,6 +36,7 @@ extension FilterReviewItemComponent {
 
 final class FilterReviewItemView: BaseView {
     let thumbnailImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
         $0.backgroundColor = .gray300
         $0.layer.cornerRadius = 12
         $0.clipsToBounds = true

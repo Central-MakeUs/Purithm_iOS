@@ -8,10 +8,13 @@
 import UIKit
 import SnapKit
 import Then
+import CoreCommonKit
 
 extension PurithmAlertView {
     enum Constants {
         static let alertLabelTypo = Typography(size: .size18, weight: .semibold, alignment: .center, color: .gray500, applyLineHeight: true)
+        
+        static let contentTypo = Typography(size: .size16, weight: .medium, alignment: .center, color: .gray400, applyLineHeight: true)
     }
 }
 
@@ -27,6 +30,9 @@ public final class PurithmAlertView: BaseView {
     private let alertLabel = PurithmLabel(typography: Constants.alertLabelTypo).then {
         $0.numberOfLines = 0
     }
+    private let alertContentLabel = PurithmLabel(typography: Constants.contentTypo).then {
+        $0.numberOfLines = 0
+    }
     private let buttonStackView = UIStackView().then {
         $0.axis = .horizontal
         $0.spacing = 0
@@ -40,7 +46,7 @@ public final class PurithmAlertView: BaseView {
         addSubview(backgroundView)
         addSubview(container)
         
-        [alertLabel, buttonStackView].forEach {
+        [alertLabel, alertContentLabel, buttonStackView].forEach {
             container.addSubview($0)
         }
         
@@ -63,15 +69,26 @@ public final class PurithmAlertView: BaseView {
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         
-        buttonStackView.snp.makeConstraints { make in
+        alertContentLabel.snp.makeConstraints { make in
             make.top.equalTo(alertLabel.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview()
+        }
+        
+        buttonStackView.snp.makeConstraints { make in
+            make.top.equalTo(alertContentLabel.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview()
         }
     }
     
-    func configure(title: String, conformTitle: String, cancelTitle: String = "") {
+    func configure(
+        title: String,
+        content: String = "",
+        conformTitle: String,
+        cancelTitle: String = ""
+    ) {
         alertLabel.text = title
+        alertContentLabel.text = content
         conformButton.text = conformTitle
         cancelButton.text = cancelTitle
         

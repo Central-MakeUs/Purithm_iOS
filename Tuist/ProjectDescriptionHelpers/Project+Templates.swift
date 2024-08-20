@@ -37,6 +37,12 @@ extension Project {
                                 [
                                     "CFBundleURLSchemes": [ "kakao0d6fbb90fdd3615fa419c28d59c290b7" ]
                                 ]
+                            ],
+                            "UISupportedInterfaceOrientations": [
+                                "UIInterfaceOrientationPortrait"
+                            ],
+                            "UIDeviceFamily": [
+                                1 // Only iPhone
                             ]
                         ]
                     ),

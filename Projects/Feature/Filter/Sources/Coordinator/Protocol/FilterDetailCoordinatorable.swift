@@ -16,4 +16,6 @@ public protocol FilterDetailCoordinatorable: Coordinator {
     func popViewController(animated: Bool)
     
     func pushReviewViewController()
+    func pushPostedReviewViewController(with reviewID: String)
+    func moveToFilterDetailFromFilterReviews(with filterName: String)
 }

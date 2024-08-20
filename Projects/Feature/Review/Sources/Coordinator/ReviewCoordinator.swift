@@ -19,6 +19,7 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
     )
     
     public var filterID: String = ""
+    public var isDirectPostedReview: (reviewID: String, isDirectMove: Bool) = ("", false)
     
     public var type: CoordinatorType { .review }
     
@@ -28,6 +29,21 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
     }
     
     public func start() {
+        if isDirectPostedReview.isDirectMove {
+            presentWrittenReviewViewController(with: isDirectPostedReview.reviewID)
+        } else {
+            pushReviewCreateViewController()
+        }
+    }
+    
+    public func finish() {
+        childCoordinators.removeAll()
+        finishDelegate?.coordinatorDidFinish(childCoordinator: self)
+        
+        self.navigationController.popViewController(animated: false)
+    }
+    
+    private func pushReviewCreateViewController() {
         let viewModel = ReviewViewModel(
             coordinator: self,
             usecase: reviewUsecase,
@@ -58,8 +74,8 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
             usecase: reviewUsecase,
             reviewID: reviewID
         )
-        let postedReviewController = UINavigationController(rootViewController: PostedReviewController(viewModel: viewModel))
-        postedReviewController.modalPresentationStyle = .overFullScreen
-        self.navigationController.present(postedReviewController, animated: false)
+        
+        let postedReviewController = PostedReviewController(viewModel: viewModel)
+        self.navigationController.pushViewController(postedReviewController, animated: false)
     }
 }

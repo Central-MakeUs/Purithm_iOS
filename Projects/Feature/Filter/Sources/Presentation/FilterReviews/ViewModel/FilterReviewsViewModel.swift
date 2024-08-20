@@ -35,7 +35,7 @@ final class FilterReviewsViewModel {
     
     private let filterID: String
     
-    private var reviewTotalCount = 100
+    private var reviewTotalCount = 0
     
     private var satisfactionModel: FilterSatisfactionModel?
     
@@ -106,6 +106,7 @@ extension FilterReviewsViewModel {
                     averageValue: response.avg
                 )
                 self?.satisfactionModel = satisfaction
+                self?.reviewTotalCount = response.reviews.count
                 
                 // 리뷰 리스트 설정
                 let reviewItems = response.convertReviewItemModel()

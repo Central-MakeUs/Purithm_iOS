@@ -65,16 +65,16 @@ public final class LoginView: BaseView {
             make.centerX.equalToSuperview()
         }
         
-        appleLoginButton.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.height.equalTo(48)
-            make.bottom.equalTo(kakaoLoginButton.snp.top).offset(-16)
-        }
-        
         kakaoLoginButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.height.equalTo(49)
+            make.bottom.equalTo(appleLoginButton.snp.top).offset(-16)
+        }
+
+        appleLoginButton.snp.makeConstraints { make in
             make.bottom.equalTo(safeAreaLayoutGuide).inset(32)
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.height.equalTo(48)
+            make.height.equalTo(49)
         }
     }
 }

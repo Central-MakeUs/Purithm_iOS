@@ -46,10 +46,17 @@ final class PostedReviewController: ViewController<PostedReviewView> {
             }
             .store(in: &cancellables)
         
-        viewModel.completeRemovePublisher
+        output.conformAlertPresentEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.presentCompletePopup()
+            }
+            .store(in: &cancellables)
+
+        viewModel.completeRemovePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.dismiss(animated: false)
             }
             .store(in: &cancellables)
     }
@@ -58,16 +65,24 @@ final class PostedReviewController: ViewController<PostedReviewView> {
 extension PostedReviewController {
     private func presentCompletePopup() {
         let alert = PurithmAlert(with:
-                .withOneButton(
-                    title: "삭제가 완료되었습니다.",
-                    conformTitle: "확인"
+                .withTwoButton(
+                    title: "작성된 후기를 삭제할까요?",
+                    conformTitle: "삭제하기",
+                    cancelTitle: "취소"
                 )
         )
         alert.conformTapEventPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 alert.hide()
-                self?.dismiss(animated: false)
+                self?.viewModel.removeReview()
+            }
+            .store(in: &cancellables)
+        
+        alert.cancelTapEventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+                alert.hide()
             }
             .store(in: &cancellables)
         

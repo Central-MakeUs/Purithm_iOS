@@ -20,6 +20,8 @@ extension PostedReviewViewModel {
         var sections: AnyPublisher<[SectionModelType], Never> {
             sectionItems.eraseToAnyPublisher()
         }
+        
+        let conformAlertPresentEvent = PassthroughSubject<Void, Never>()
     }
 }
 
@@ -30,6 +32,7 @@ final class PostedReviewViewModel {
     
     private let converter = PostedReviewSectionConverter()
     private var cancellables = Set<AnyCancellable>()
+    
     
     private let completeRemoveEvent = PassthroughSubject<Void, Never>()
     var completeRemovePublisher: AnyPublisher<Void, Never> {
@@ -88,13 +91,16 @@ extension PostedReviewViewModel {
             .sink { [weak self] actionItem in
                 switch actionItem {
                 case _ as ReviewRemoveButtonAction:
-                    guard let reviewID = self?.reviewID else { return }
-                    self?.requestReviewRemove(with: reviewID)
+                    output.conformAlertPresentEvent.send(Void())
                 default:
                     break
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func removeReview() {
+        requestReviewRemove(with: reviewID)
     }
 }
 

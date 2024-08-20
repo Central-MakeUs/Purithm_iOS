@@ -20,8 +20,8 @@ public final class ProfileCoordinator: ProfileCoordinatorable {
     }
     
     public func start() {
-        let viewModel = ProfileViewModel(coordinator: self)
-        let profileViewController = ProfileViewController(viewModel: viewModel)
+        let viewModel = ProfileSettingViewModel(coordinator: self)
+        let profileViewController = ProfileSettingViewController(viewModel: viewModel)
         
         self.navigationController.viewControllers = [profileViewController]
     }

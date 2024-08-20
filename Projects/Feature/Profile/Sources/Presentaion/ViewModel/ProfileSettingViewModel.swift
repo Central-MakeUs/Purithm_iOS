@@ -1,5 +1,5 @@
 //
-//  ProfileViewModel.swift
+//  ProfileSettingViewModel.swift
 //  Profile
 //
 //  Created by 이숭인 on 8/19/24.
@@ -39,7 +39,7 @@ enum ProfileSettingMenu: String, CaseIterable {
        }
 }
 
-extension ProfileViewModel {
+extension ProfileSettingViewModel {
     struct Input {
         let viewWillAppearEvent: AnyPublisher<Bool, Never>
         let didSelectItemEvent: AnyPublisher<ItemModelType, Never>
@@ -64,7 +64,7 @@ extension ProfileViewModel {
     }
 }
 
-public final class ProfileViewModel {
+public final class ProfileSettingViewModel {
     weak var coordinator: ProfileCoordinatorable?
     private let converter = ProfileSectionConverter()
     private var cancellables = Set<AnyCancellable>()
@@ -119,7 +119,7 @@ public final class ProfileViewModel {
     }
 }
 
-extension ProfileViewModel {
+extension ProfileSettingViewModel {
     private func handleDidSelectEvent(input: Input, output: Output) {
         input.didSelectItemEvent
             .sink { itemModel in

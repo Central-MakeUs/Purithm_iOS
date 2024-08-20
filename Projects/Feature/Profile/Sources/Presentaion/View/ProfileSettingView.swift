@@ -1,5 +1,5 @@
 //
-//  ProfileView.swift
+//  ProfileSettingView.swift
 //  Profile
 //
 //  Created by 이숭인 on 8/19/24.
@@ -8,7 +8,7 @@
 import UIKit
 import CoreUIKit
 
-final class ProfileView: BaseView {
+final class ProfileSettingView: BaseView {
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.backgroundColor = .gray100
     }

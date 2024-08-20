@@ -1,5 +1,5 @@
 //
-//  ProfileViewController.swift
+//  ProfileSettingViewController.swift
 //  Profile
 //
 //  Created by 이숭인 on 8/19/24.
@@ -9,13 +9,13 @@ import UIKit
 import CoreUIKit
 import Combine
 
-final class ProfileViewController: ViewController<ProfileView> {
+final class ProfileSettingViewController: ViewController<ProfileSettingView> {
     private var cancellables = Set<AnyCancellable>()
-    private let viewModel: ProfileViewModel
+    private let viewModel: ProfileSettingViewModel
     
     private lazy var adapter = CollectionViewAdapter(with: contentView.collectionView)
     
-    init(viewModel: ProfileViewModel) {
+    init(viewModel: ProfileSettingViewModel) {
         self.viewModel = viewModel
         super.init()
     }
@@ -33,7 +33,7 @@ final class ProfileViewController: ViewController<ProfileView> {
     }
     
     private func bindViewModel() {
-        let input = ProfileViewModel.Input(
+        let input = ProfileSettingViewModel.Input(
             viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
             didSelectItemEvent: adapter.didSelectItemPublisher,
             adapterActionEvent: adapter.actionEventPublisher
@@ -64,7 +64,7 @@ final class ProfileViewController: ViewController<ProfileView> {
 }
 
 //MARK: - Alery
-extension ProfileViewController {
+extension ProfileSettingViewController {
     private func presentLogoutAlert() {
         let alert = PurithmAlert(with:
                 .withTwoButton(
@@ -122,6 +122,6 @@ extension ProfileViewController {
 
 
 //MARK: - Navigation
-extension ProfileViewController: NavigationBarApplicable {
+extension ProfileSettingViewController: NavigationBarApplicable {
     
 }

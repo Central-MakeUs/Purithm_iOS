@@ -12,11 +12,15 @@ import CoreUIKit
 public struct FilterReviewResponseDTO: Codable {
     var avg: Int // 평균 퓨어지수
     var hasViewed: Bool
+    let hasReview: Bool
+    let reviewId: Int
     var reviews: [ReviewDTO]
     
     enum CodingKeys: String, CodingKey {
         case avg
         case hasViewed
+        case hasReview
+        case reviewId
         case reviews
     }
     
@@ -24,7 +28,9 @@ public struct FilterReviewResponseDTO: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.avg = try container.decode(Int.self, forKey: .avg)
         self.hasViewed = try container.decode(Bool.self, forKey: .hasViewed)
-        self.reviews = try container.decodeIfPresent([ReviewDTO].self, forKey: .reviews) ?? []
+        self.hasReview = try container.decode(Bool.self, forKey: .hasReview)
+        self.reviewId = try container.decodeIfPresent(Int.self, forKey: .reviewId) ?? .zero
+        self.reviews = try container.decode([ReviewDTO].self, forKey: .reviews)
     }
     
     func convertReviewItemModel() -> [FilterReviewItemModel] {
@@ -78,7 +84,7 @@ extension FilterReviewResponseDTO {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.id = try container.decode(Int.self, forKey: .id)
             self.pureDegree = try container.decode(Int.self, forKey: .pureDegree)
-            self.user = try container.decode(String.self, forKey: .user)
+            self.user = try container.decodeIfPresent(String.self, forKey: .user) ?? ""
             self.profile = try container.decodeIfPresent(String.self, forKey: .profile) ?? ""
             self.content = try container.decode(String.self, forKey: .content)
             self.createdAt = try container.decode(String.self, forKey: .createdAt)

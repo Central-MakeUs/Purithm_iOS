@@ -60,7 +60,6 @@ final class FilterDetailReviewListViewModel {
                 let sections = self?.converter.createSections(with: reviews) ?? []
                 output.sectionSubject.send(sections)
                 
-                //TODO: review 찾아서 거기로 이동해야함
                 if let targetIndex = reviews.firstIndex(where: { $0.identifier == (self?.reviewID ?? "") }) {
                     let indexPath = IndexPath(row: targetIndex, section: 0)
                     self?.willMoveItemIndexPath.send(indexPath)

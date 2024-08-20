@@ -26,6 +26,8 @@ final class FilterDetailReviewListView: BaseView {
     override func setup() {
         super.setup()
         self.backgroundColor = .gray100
+        
+        conformButton.isHidden = true
     }
     
     override func setupSubviews() {

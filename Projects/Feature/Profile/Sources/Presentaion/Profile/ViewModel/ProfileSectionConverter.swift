@@ -10,11 +10,13 @@ import CoreUIKit
 
 final class ProfileSectionConverter {
     func createSections(
-        with profileInfomation: ProfileUserInfomationModel
+        with profileInfomation: ProfileUserInfomationModel,
+        profileMenu: [ProfileMenu]
     ) -> [SectionModelType] {
         [
             createProfileSection(with: profileInfomation),
-            createStampSection(with: profileInfomation)
+            createStampSection(with: profileInfomation),
+            createMenuSection(with: profileMenu, userInfomationModel: profileInfomation)
         ]
         .flatMap { $0 }
     }
@@ -82,5 +84,51 @@ extension ProfileSectionConverter {
             sectionInset: .with(vertical: 20, horizontal: 20),
             scrollBehavior: .none
         )
+    }
+}
+
+//MARK: - Menu
+extension ProfileSectionConverter {
+    private func createMenuSection(with menus: [ProfileMenu], userInfomationModel: ProfileUserInfomationModel) -> [SectionModelType] {
+        
+        let components = menus.map { menu in
+            let count = retriveCount(menu: menu, userInfomationModel: userInfomationModel)
+            
+            return ProfileMenuComponent(
+                identifier: menu.identifier,
+                menu: menu,
+                count: count
+            )
+        }
+        
+        let section = SectionModel(
+            identifier: "menu_section",
+            collectionLayout: createMenuCollectionLayout(),
+            itemModels: components
+        )
+        
+        return [section]
+    }
+    
+    private func createMenuCollectionLayout() -> CompositionalLayoutModelType {
+        CompositionalLayoutModel(
+            itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                heightDimension: .absolute(60)),
+            groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                 heightDimension: .absolute(60)),
+            sectionInset: .with(horizontal: 20),
+            scrollBehavior: .none
+        )
+    }
+    
+    private func retriveCount(menu: ProfileMenu, userInfomationModel: ProfileUserInfomationModel) -> Int {
+        switch menu {
+        case .wishlist:
+            return userInfomationModel.likeCount
+        case .filterViewHistory:
+            return userInfomationModel.filterViewCount
+        case .writtenReviews:
+            return userInfomationModel.reviewCount
+        }
     }
 }

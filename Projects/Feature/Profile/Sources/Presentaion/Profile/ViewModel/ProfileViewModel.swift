@@ -38,6 +38,7 @@ final class ProfileViewModel {
     private let sectionItems = CurrentValueSubject<[SectionModelType], Never>([])
     
     private let userInfomationModel = CurrentValueSubject<ProfileUserInfomationModel?, Never>(nil)
+    private let profileMenus: [ProfileMenu] = ProfileMenu.allCases
     
     init(
         coordinator: ProfileCoordinatorable,
@@ -52,6 +53,7 @@ final class ProfileViewModel {
         
         bind(output: output)
         handleViewWillAppearEvent(input: input, output: output)
+        handleAdapterActionEvent(input: input, output: output)
         
         return output
     }
@@ -67,7 +69,7 @@ final class ProfileViewModel {
             .compactMap { $0 }
             .sink { [weak self] profileModel in
                 guard let self else { return }
-                let sections = self.converter.createSections(with: profileModel)
+                let sections = self.converter.createSections(with: profileModel, profileMenu: self.profileMenus)
                 
                 self.sectionItems.send(sections)
             }
@@ -88,6 +90,30 @@ extension ProfileViewModel {
         input.viewWillAppearEvent
             .sink { [weak self] _ in
                 self?.requestMyInfomation()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+//MARK: Handle Action Event
+extension ProfileViewModel {
+    private func handleAdapterActionEvent(input: Input, output: Output) {
+        input.adapterActionEvent
+            .sink { actionItem in
+                switch actionItem {
+                case let action as ProfileMenuSelectAction:
+                    let menuType = ProfileMenu(rawValue: action.identifier) ?? .wishlist
+                    switch menuType {
+                    case .wishlist:
+                        print("찜목록 화면으로 이동")
+                    case .filterViewHistory:
+                        print("조회한 필터 리스트 화면으로 이동")
+                    case .writtenReviews:
+                        print("작성한 리부 리스트 화면으로 이동")
+                    }
+                default:
+                    break
+                }
             }
             .store(in: &cancellables)
     }

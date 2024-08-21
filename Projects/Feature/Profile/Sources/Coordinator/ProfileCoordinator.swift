@@ -42,6 +42,15 @@ public final class ProfileCoordinator: ProfileCoordinatorable {
         
         self.navigationController.pushViewController(settingViewController, animated: true)
     }
+    
+    public func pushAccountInfomationViewController() {
+        let viewModel = ProfileAccountInfomationViewModel(
+            coordinator: self,
+            usecase: usecase)
+        let accountViewController = ProfileAccountInfomationViewController(viewModel: viewModel)
+        
+        self.navigationController.pushViewController(accountViewController, animated: true)
+    }
 }
 
 extension ProfileCoordinator: CoordinatorFinishDelegate {

@@ -131,14 +131,14 @@ public final class ProfileSettingViewModel {
 extension ProfileSettingViewModel {
     private func handleDidSelectEvent(input: Input, output: Output) {
         input.didSelectItemEvent
-            .sink { itemModel in
+            .sink { [weak self] itemModel in
                 guard let menuType = ProfileSettingMenu(rawValue: itemModel.identifier) else {
                     return
                 }
                 
                 switch menuType {
                 case .accountInfo:
-                    print("계정 정보 화면으로 이동")
+                    self?.coordinator?.pushAccountInfomationViewController()
                 case .editProfile:
                     print("프로필 편집 화면으로 이동")
                 case .termsOfService:

@@ -10,4 +10,5 @@ import CoreCommonKit
 
 public protocol ProfileCoordinatorable: Coordinator {
     func pushProfileSettingViewContriller()
+    func pushAccountInfomationViewController()
 }

@@ -14,6 +14,7 @@ import CoreCommonKit
 public protocol ProfileServiceManageable {
     func requestMyInfomation() -> AnyPublisher<ResponseWrapper<ProfileMyInformationResponseDTO>, Error>
     func requestStampInfomation() -> AnyPublisher<ResponseWrapper<ProfileStamInfomationResponseDTO>, Error>
+    func requestAccountInfomation() -> AnyPublisher<ResponseWrapper<ProfileAccountInfomationResponseDTO>, Error>
 }
 
 public final class ProfileService: ProfileServiceManageable {
@@ -25,6 +26,14 @@ public final class ProfileService: ProfileServiceManageable {
         provider.requestPublisher(.fetchMyInfomation)
             .tryMap { response in
                 return try response.map(ResponseWrapper<ProfileMyInformationResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestAccountInfomation() -> AnyPublisher<ResponseWrapper<ProfileAccountInfomationResponseDTO>, Error> {
+        provider.requestPublisher(.fetchAccountInfomation)
+            .tryMap { response in
+                return try response.map(ResponseWrapper<ProfileAccountInfomationResponseDTO>.self)
             }
             .eraseToAnyPublisher()
     }

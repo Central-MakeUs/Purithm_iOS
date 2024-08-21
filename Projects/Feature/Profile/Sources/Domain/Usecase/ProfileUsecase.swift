@@ -43,6 +43,30 @@ public final class ProfileUsecase {
         .eraseToAnyPublisher()
     }
     
+    public func requestAccountInfomation() -> AnyPublisher<ProfileAccountInfomationResponseDTO, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = profileService.requestAccountInfomation()
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
+    
     public func requestStampInfomation() -> AnyPublisher<ProfileStamInfomationResponseDTO, Error> {
         return Future { [weak self] promise in
             guard let self else { return }

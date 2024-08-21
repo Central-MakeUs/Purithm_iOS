@@ -11,6 +11,7 @@ import CoreKeychain
 
 enum ProfileAPI {
     case fetchMyInfomation
+    case fetchAccountInfomation
     case fetchStampInfomation
 }
 
@@ -30,6 +31,8 @@ extension ProfileAPI: TargetType {
         switch self {
         case .fetchMyInfomation:
             return "api/users/me"
+        case .fetchAccountInfomation:
+            return "api/users/account"
         case .fetchStampInfomation:
             return "api/users/stamps"
         }
@@ -39,6 +42,8 @@ extension ProfileAPI: TargetType {
         switch self {
         case .fetchMyInfomation:
             return .get
+        case .fetchAccountInfomation:
+            return .get
         case .fetchStampInfomation:
             return .get
         }
@@ -47,6 +52,8 @@ extension ProfileAPI: TargetType {
     var task: Moya.Task {
         switch self {
         case .fetchMyInfomation:
+            return .requestPlain
+        case .fetchAccountInfomation:
             return .requestPlain
         case .fetchStampInfomation:
             return .requestPlain

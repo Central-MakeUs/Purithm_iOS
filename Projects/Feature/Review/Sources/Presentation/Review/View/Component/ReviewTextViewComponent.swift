@@ -80,7 +80,7 @@ final class ReviewTextViewView: BaseView, ActionEventEmitable {
         $0.layer.cornerRadius = 12
         $0.font = UIFont.Pretendard.medium.font(size: 16)
         $0.textColor = .gray500
-        $0.placeholder = "텍스트 20자 이상 입력해주세요"
+        $0.placeholder = "텍스트 20자 이상 입력해주세요\n\n주의! 부적절하거나 불쾌감을 줄 수 있는 컨텐츠는 제재를 받을 수 있습니다"
         $0.placeholderColor = .gray200
         $0.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 30, right: 20)
     }

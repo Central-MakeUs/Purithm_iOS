@@ -80,7 +80,7 @@ final class ProfileSettingMenuView: BaseView {
         menuLabel.text = menu.title
         
         switch menu {
-        case .termsOfService, .privacyPolicy:
+        case .termsOfService, .privacyPolicy, .accountInfo, .editProfile:
             rightContainer.isHidden = false
             rightImageView.isHidden = false
             rightLabel.isHidden = true

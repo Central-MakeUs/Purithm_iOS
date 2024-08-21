@@ -13,6 +13,8 @@ import UIKit
 import CoreKeychain
 
 enum ProfileSettingMenu: String, CaseIterable {
+    case accountInfo         // 계정정보
+    case editProfile         // 프로필 편집
     case termsOfService
     case privacyPolicy
     case versionInfo
@@ -24,19 +26,23 @@ enum ProfileSettingMenu: String, CaseIterable {
     }
     
     var title: String {
-           switch self {
-           case .termsOfService:
-               return "이용약관"
-           case .privacyPolicy:
-               return "개인정보 처리방침"
-           case .versionInfo:
-               return "버전 정보"
-           case .logout:
-               return "로그아웃"
-           case .accountDeletion:
-               return "탈퇴"
-           }
-       }
+        switch self {
+        case .termsOfService:
+            return "이용약관"
+        case .privacyPolicy:
+            return "개인정보 처리방침"
+        case .versionInfo:
+            return "버전 정보"
+        case .logout:
+            return "로그아웃"
+        case .accountDeletion:
+            return "탈퇴"
+        case .accountInfo:
+            return "계정정보"
+        case .editProfile:
+            return "프로필 편집"
+        }
+    }
 }
 
 extension ProfileSettingViewModel {
@@ -131,6 +137,10 @@ extension ProfileSettingViewModel {
                 }
                 
                 switch menuType {
+                case .accountInfo:
+                    print("계정 정보 화면으로 이동")
+                case .editProfile:
+                    print("프로필 편집 화면으로 이동")
                 case .termsOfService:
                     if let url = URL(string: "https://palm-blizzard-691.notion.site/798f1bf6c507421584861961deb173d6") {
                         UIApplication.shared.open(url, options: [:], completionHandler: nil)

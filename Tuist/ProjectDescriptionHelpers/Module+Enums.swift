@@ -44,7 +44,7 @@ public enum Module {
                 "LSApplicationQueriesSchemes": [ "kakaokompassauth" , "kakaotalk"],
                 "CFBundleURLTypes": [
                     [
-                        "CFBundleURLSchemes": [ "kakao0d6fbb90fdd3615fa419c28d59c290b7" ]
+                        "CFBundleURLSchemes": [ "kakaoc6e355b541377b0886d546a44fc76f50" ]
                     ]
                 ]
             ]

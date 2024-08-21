@@ -123,5 +123,13 @@ extension ProfileSettingViewController {
 
 //MARK: - Navigation
 extension ProfileSettingViewController: NavigationBarApplicable {
-    
+    var leftButtonItems: [NavigationBarButtonItemType] {
+        [
+            .backImage(
+                identifier: "back_button",
+                image: .icArrowLeft,
+                color: .gray500
+            )
+        ]
+    }
 }

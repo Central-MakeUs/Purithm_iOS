@@ -33,6 +33,15 @@ public final class ProfileCoordinator: ProfileCoordinatorable {
         
         self.navigationController.viewControllers = [profileViewController]
     }
+    
+    public func pushProfileSettingViewContriller() {
+        let viewModel = ProfileSettingViewModel(
+            coordinator: self,
+            usecase: usecase)
+        let settingViewController = ProfileSettingViewController(viewModel: viewModel)
+        
+        self.navigationController.pushViewController(settingViewController, animated: true)
+    }
 }
 
 extension ProfileCoordinator: CoordinatorFinishDelegate {

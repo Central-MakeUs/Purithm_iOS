@@ -51,6 +51,15 @@ final class ProfileViewController: ViewController<ProfileView> {
 }
 
 extension ProfileViewController: NavigationBarApplicable {
+    func handleNavigationButtonAction(with identifier: String) {
+        switch identifier {
+        case "setting_button":
+            viewModel.profileSettingMoveEvent.send(())
+        default:
+            break
+        }
+    }
+    
     var rightButtonItems: [NavigationBarButtonItemType] {
         [
             .image(

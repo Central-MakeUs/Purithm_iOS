@@ -33,6 +33,8 @@ final class ProfileViewModel {
     private let converter = ProfileSectionConverter()
     private var cancellables = Set<AnyCancellable>()
     
+    let profileSettingMoveEvent = PassthroughSubject<Void, Never>()
+    
     private let sectionItems = CurrentValueSubject<[SectionModelType], Never>([])
     
     private let profileModel = CurrentValueSubject<PurithmVerticalProfileModel?, Never>(nil)
@@ -66,6 +68,13 @@ final class ProfileViewModel {
             .sink { [weak self] profileModel in
                 let sections = self?.converter.createSections(with: profileModel) ?? []
                 self?.sectionItems.send(sections)
+            }
+            .store(in: &cancellables)
+        
+        profileSettingMoveEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.coordinator?.pushProfileSettingViewContriller()
             }
             .store(in: &cancellables)
     }

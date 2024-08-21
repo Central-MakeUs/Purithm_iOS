@@ -66,6 +66,8 @@ extension ProfileSettingViewModel {
 
 public final class ProfileSettingViewModel {
     weak var coordinator: ProfileCoordinatorable?
+    weak var usecase: ProfileUsecase?
+    
     private let converter = ProfileSettingSectionConverter()
     private var cancellables = Set<AnyCancellable>()
     
@@ -76,8 +78,9 @@ public final class ProfileSettingViewModel {
     let logoutEvent = PassthroughSubject<Void, Never>()
     let terminationEvent = PassthroughSubject<Void, Never>()
     
-    init(coordinator: ProfileCoordinatorable) {
+    init(coordinator: ProfileCoordinatorable, usecase: ProfileUsecase) {
         self.coordinator = coordinator
+        self.usecase = usecase
     }
     
     func transform(input: Input) -> Output {

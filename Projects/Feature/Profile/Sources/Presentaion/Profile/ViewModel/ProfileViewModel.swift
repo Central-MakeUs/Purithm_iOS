@@ -37,7 +37,7 @@ final class ProfileViewModel {
     
     private let sectionItems = CurrentValueSubject<[SectionModelType], Never>([])
     
-    private let profileModel = CurrentValueSubject<PurithmVerticalProfileModel?, Never>(nil)
+    private let userInfomationModel = CurrentValueSubject<ProfileUserInfomationModel?, Never>(nil)
     
     init(
         coordinator: ProfileCoordinatorable,
@@ -63,11 +63,13 @@ final class ProfileViewModel {
             }
             .store(in: &cancellables)
         
-        profileModel
+        userInfomationModel
             .compactMap { $0 }
             .sink { [weak self] profileModel in
-                let sections = self?.converter.createSections(with: profileModel) ?? []
-                self?.sectionItems.send(sections)
+                guard let self else { return }
+                let sections = self.converter.createSections(with: profileModel)
+                
+                self.sectionItems.send(sections)
             }
             .store(in: &cancellables)
         
@@ -96,15 +98,16 @@ extension ProfileViewModel {
     private func requestMyInfomation() {
         usecase?.requestMyInfomation()
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] myInfomationResponse in
-                let profileModel = PurithmVerticalProfileModel(
-                    identifier: "my_profile",
-                    type: .user,
-                    name: myInfomationResponse.userName,
+                let userInfoModel = ProfileUserInfomationModel(
+                    userID: String(myInfomationResponse.userID),
+                    userName: myInfomationResponse.userName,
                     profileURLString: myInfomationResponse.profileThumbnailString,
-                    introduction: ""
+                    stampCount: myInfomationResponse.stampCount,
+                    likeCount: myInfomationResponse.likeCount,
+                    filterViewCount: myInfomationResponse.filterViewHistoryCount,
+                    reviewCount: myInfomationResponse.reviewCount
                 )
-                
-                self?.profileModel.send(profileModel)
+                self?.userInfomationModel.send(userInfoModel)
             })
             .store(in: &cancellables)
     }

@@ -10,11 +10,11 @@ import CoreUIKit
 
 final class ProfileSectionConverter {
     func createSections(
-        with profileModel: PurithmVerticalProfileModel
+        with profileInfomation: ProfileUserInfomationModel
     ) -> [SectionModelType] {
         [
-            createProfileSection(with: profileModel),
-            createStampSection(with: "")
+            createProfileSection(with: profileInfomation),
+            createStampSection(with: profileInfomation)
         ]
         .flatMap { $0 }
     }
@@ -22,10 +22,18 @@ final class ProfileSectionConverter {
 
 //MARK: - Profile
 extension ProfileSectionConverter {
-    private func createProfileSection(with profileModel: PurithmVerticalProfileModel) -> [SectionModelType] {
+    private func createProfileSection(with profileModel: ProfileUserInfomationModel) -> [SectionModelType] {
+        let verticalProfileModel = PurithmVerticalProfileModel(
+            identifier: profileModel.userID,
+            type: .user,
+            name: profileModel.userName,
+            profileURLString: profileModel.profileURLString,
+            introduction: ""
+        )
+        
         let component = ProfileUserProfileComponent(
-            identifier: profileModel.identifier,
-            profileModel: profileModel
+            identifier: profileModel.userID,
+            profileModel: verticalProfileModel
         )
         
         let section = SectionModel(
@@ -50,8 +58,11 @@ extension ProfileSectionConverter {
 
 //MARK: - Stamp
 extension ProfileSectionConverter {
-    private func createStampSection(with stampModel: String) -> [SectionModelType] {
-        let component = ProfileStampContainerComponent(identifier: "stamp_container")
+    private func createStampSection(with stampModel: ProfileUserInfomationModel) -> [SectionModelType] {
+        let component = ProfileStampContainerComponent(
+            identifier: "stamp_container",
+            stampCount: stampModel.stampCount
+        )
         
         let section = SectionModel(
             identifier: "stamp_section",

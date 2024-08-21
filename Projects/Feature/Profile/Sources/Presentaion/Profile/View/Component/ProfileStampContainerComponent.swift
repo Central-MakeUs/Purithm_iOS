@@ -12,11 +12,65 @@ import CoreUIKit
 import CoreCommonKit
 import Combine
 
+enum Stamp: Int {
+    case flower = 0
+    case cloud = 1
+    case glow = 2
+    case clover = 3
+    case heart = 4
+    case star = 5
+    case flower2 = 6
+    case premium = 7
+    
+    var lockImage: UIImage {
+        switch self {
+        case .flower:
+            return .grFlowerLock
+        case .cloud:
+            return .grCloudLock
+        case .glow:
+            return .grGlowLock
+        case .clover:
+            return .grCloverLock
+        case .heart:
+            return .grHeartLock
+        case .star:
+            return .grStarLock
+        case .flower2:
+            return .grFlower2Lock
+        case .premium:
+            return .grPremiumLock
+        }
+    }
+    
+    var unlockImage: UIImage {
+        switch self {
+        case .flower:
+            return .grFlower
+        case .cloud:
+            return .grCloud
+        case .glow:
+            return .grGlow
+        case .clover:
+            return .grClover
+        case .heart:
+            return .grHeart
+        case .star:
+            return .grStar
+        case .flower2:
+            return .grFlower2
+        case .premium:
+            return .grPremium
+        }
+    }
+}
+
 struct ProfileStampContainerComponent: Component {
     var identifier: String
+    let stampCount: Int
     
     func hash(into hasher: inout Hasher) {
-        
+        hasher.combine(stampCount)
     }
 }
 
@@ -24,7 +78,7 @@ extension ProfileStampContainerComponent {
     typealias ContentType = ProfileStampContainerView
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
-        content.configure()
+        content.configure(stampCount: context.stampCount)
     }
 }
 
@@ -70,15 +124,15 @@ final class ProfileStampContainerView: BaseView {
         $0.distribution = .equalSpacing
         $0.alignment = .fill
     }
-    let imageViews: [Int: UIImageView] = [
-        0: UIImageView(image: .grFlowerLock),
-        1: UIImageView(image: .grCloudLock),
-        2: UIImageView(image: .grGlowLock),
-        3: UIImageView(image: .grCloverLock),
-        4: UIImageView(image: .grHeartLock),
-        5: UIImageView(image: .grStarLock),
-        6: UIImageView(image: .grFlower2Lock),
-        7: UIImageView(image: .grPremiumLock),
+    let imageViews: [Stamp: UIImageView] = [
+        .flower: UIImageView(image: Stamp.flower.lockImage),
+        .cloud: UIImageView(image: Stamp.cloud.lockImage),
+        .glow: UIImageView(image: Stamp.glow.lockImage),
+        .clover: UIImageView(image: Stamp.clover.lockImage),
+        .heart: UIImageView(image: Stamp.heart.lockImage),
+        .star: UIImageView(image: Stamp.star.lockImage),
+        .flower2: UIImageView(image: Stamp.flower2.lockImage),
+        .premium: UIImageView(image: Stamp.premium.lockImage),
     ]
     
     override func setup() {
@@ -101,12 +155,13 @@ final class ProfileStampContainerView: BaseView {
         
         container.addSubview(stampContainer)
         stampContainer.addArrangedSubview(stampTopContainer)
-        imageViews.keys.sorted().prefix(4).compactMap { imageViews[$0] }.forEach {
+        
+        [Stamp.flower, Stamp.cloud, Stamp.glow, Stamp.clover].compactMap { imageViews[$0] }.forEach {
             stampTopContainer.addArrangedSubview($0)
         }
         
         stampContainer.addArrangedSubview(stampBottomContainer)
-        imageViews.keys.sorted()[4...7].compactMap { imageViews[$0] }.forEach {
+        [Stamp.heart, Stamp.star, Stamp.flower2, Stamp.premium].compactMap { imageViews[$0] }.forEach {
             stampBottomContainer.addArrangedSubview($0)
         }
     }
@@ -163,9 +218,27 @@ final class ProfileStampContainerView: BaseView {
         }
     }
     
-    func configure() {
-        stampCountLabel.text = "남은 스탬프 4"
-        descriptionLabel.text = "4개 더 모으면 premium+ 필터를 열람할 수 있어요"
+    func configure(stampCount: Int) {
+        stampCountLabel.text = "남은 스탬프 \(stampCount)"
+        unlockStamps(stampCount: stampCount)
+        
+        switch stampCount {
+        case 0...7:
+            descriptionLabel.text = "\(8-stampCount)개 더 모으면 premium 필터를 열람할 수 있어요"
+        case 8...15:
+            descriptionLabel.text = "\(8-stampCount)개 더 모으면 premium+ 필터를 열람할 수 있어요"
+        default:
+            descriptionLabel.text = "모든 스탬프를 모두 모았어요!"
+        }
+    }
+    
+    private func unlockStamps(stampCount: Int) {
+        guard stampCount < 0 else { return }
+        
+        (0...stampCount)
+            .compactMap { Stamp(rawValue: $0) }.forEach {
+                imageViews[$0]?.image = $0.unlockImage
+            }
     }
 }
 

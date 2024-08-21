@@ -55,6 +55,11 @@ final class FeedsViewModel {
     
     private var filterInformations = CurrentValueSubject<[(name: String, thumbnail: String)], Never>([])
     
+    private let reportEventSubject = PassthroughSubject<Void, Never>()
+    var reportEventPublisher: AnyPublisher<Void, Never> {
+        reportEventSubject.eraseToAnyPublisher()
+    }
+    
     init(coordinator: FeedsCoordinatorable, usecase: FeedUsecase) {
         self.coordinator = coordinator
         self.usecase = usecase
@@ -159,6 +164,8 @@ final class FeedsViewModel {
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
                 case let action as FeedToDetailMoveAction:
                     self.coordinator?.pushFilterDetail(with: action.identifier)
+                case _ as FeedReportAction:
+                    self.reportEventSubject.send(())
                 default:
                     break
                 }

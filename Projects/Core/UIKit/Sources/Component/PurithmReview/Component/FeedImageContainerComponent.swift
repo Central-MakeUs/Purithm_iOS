@@ -16,6 +16,10 @@ public struct FeedToDetailMoveAction: ActionEventItem {
     public let identifier: String
 }
 
+public struct FeedReportAction: ActionEventItem {
+    public let identifier: String
+}
+
 public struct FeedDetailImageContainerComponent: Component {
     public var identifier: String
     let review: FeedReviewModel
@@ -60,6 +64,12 @@ extension FeedDetailImageContainerComponent {
                 content?.actionEventEmitter.send(FeedToDetailMoveAction(identifier: context.identifier))
             }
             .store(in: &cancellable)
+        
+        content.reportButton.tap
+            .sink { [weak content] _ in
+                content?.actionEventEmitter.send(FeedReportAction(identifier: context.identifier))
+            }
+            .store(in: &cancellable)
     }
 }
 
@@ -70,6 +80,9 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
     let profileView = PurithmHorizontalProfileView()
     let contentLabel = PurithmLabel(typography: Constants.contentTypo).then {
         $0.numberOfLines = 0
+    }
+    let reportButton = UIButton().then {
+        $0.setImage(.icReport.withTintColor(.red), for: .normal)
     }
     
     let blurButton = PurithmBlurButton(size: .normal).then {
@@ -89,6 +102,7 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         
         addSubview(imageContainer.view)
         addSubview(profileView)
+        addSubview(reportButton)
         addSubview(contentLabel)
         addSubview(blurButton)
     }
@@ -109,7 +123,15 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         
         profileView.snp.makeConstraints { make in
             make.top.equalTo(imageContainer.view.snp.bottom).offset(10)
-            make.horizontalEdges.equalToSuperview()
+            make.leading.equalToSuperview()
+            make.trailing.equalTo(reportButton.snp.leading).offset(-16)
+        }
+        
+        reportButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
+            make.centerY.equalTo(profileView.snp.centerY)
+            make.trailing.equalToSuperview()
+            make.leading.equalTo(profileView.snp.trailing).offset(16)
         }
         
         contentLabel.snp.makeConstraints { make in

@@ -13,6 +13,7 @@ import CoreCommonKit
 extension FilterDetailReviewListViewModel {
     struct Input {
         let viewWillAppearEvent: AnyPublisher<Bool, Never>
+        let adapterActionEvent: AnyPublisher<ActionEventItem, Never>
     }
     
     struct Output {
@@ -36,6 +37,11 @@ final class FilterDetailReviewListViewModel {
     private var detailReviewsSubject = CurrentValueSubject<[FeedReviewModel], Never>([])
     var willMoveItemIndexPath = PassthroughSubject<IndexPath, Never>()
     
+    private let reportEventSubject = PassthroughSubject<Void, Never>()
+    var reportEventPublisher: AnyPublisher<Void, Never> {
+        reportEventSubject.eraseToAnyPublisher()
+    }
+    
     init(usecase: FiltersUseCase,
          coordinator: FilterDetailCoordinatorable,
          filterID: String,
@@ -55,6 +61,8 @@ final class FilterDetailReviewListViewModel {
             }
             .store(in: &cancellables)
         
+        handleAdapterItemTapEvent(input: input, output: output)
+        
         detailReviewsSubject
             .sink { [weak self] reviews in
                 let sections = self?.converter.createSections(with: reviews) ?? []
@@ -70,6 +78,25 @@ final class FilterDetailReviewListViewModel {
         return output
     }
 }
+
+extension FilterDetailReviewListViewModel {
+    private func handleAdapterItemTapEvent(input: Input, output: Output) {
+        input.adapterActionEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] actionItem in
+                guard let self else { return }
+                
+                switch actionItem {
+                case _ as FeedReportAction:
+                    self.reportEventSubject.send(())
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
+    }
+}
+
 
 extension FilterDetailReviewListViewModel {
     private func requestReviews(filterID: String) {

@@ -34,7 +34,8 @@ final class FilterDetailReviewListViewController: ViewController<FilterDetailRev
     
     private func bindViewModel() {
         let input = FilterDetailReviewListViewModel.Input(
-            viewWillAppearEvent: rx.viewWillAppear.asPublisher()
+            viewWillAppearEvent: rx.viewWillAppear.asPublisher(),
+            adapterActionEvent: adapter.actionEventPublisher
         )
         
         let output = viewModel.transform(input: input)
@@ -51,6 +52,70 @@ final class FilterDetailReviewListViewController: ViewController<FilterDetailRev
                 self?.contentView.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
             }
             .store(in: &cancellables)
+        
+        viewModel.reportEventPublisher
+            .sink { [weak self] _ in
+                self?.presentReportActionSheet()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+//MARK: Present Report Sheet
+extension FilterDetailReviewListViewController {
+    private func presentReportActionSheet() {
+        let alertController = UIAlertController(
+            title: "신고 사유를 선택해주세요.",
+            message: "사유에 맞지 않는 신고일 경우, 해당 신고가 처리되지 않을 수 있습니다.\n누적 신고 횟수가 3회 이상인 유저는 리뷰 작성을 할 수 없게 됩니다.",
+            preferredStyle: .actionSheet
+        )
+        
+        let option1 = UIAlertAction(title: "잘못된 정보", style: .default) { [weak self] (action) in
+            self?.presentReportCompleteAlert()
+        }
+        alertController.addAction(option1)
+        
+        
+        let option2 = UIAlertAction(title: "상업적 광고", style: .default) { [weak self] (action) in
+            self?.presentReportCompleteAlert()
+        }
+        alertController.addAction(option2)
+        
+        let option3 = UIAlertAction(title: "음란물", style: .default) { [weak self] (action) in
+            self?.presentReportCompleteAlert()
+        }
+        alertController.addAction(option3)
+        
+        let option4 = UIAlertAction(title: "폭력성", style: .default) { [weak self] (action) in
+            self?.presentReportCompleteAlert()
+        }
+        alertController.addAction(option4)
+        
+        let option5 = UIAlertAction(title: "기타", style: .default) { [weak self] (action) in
+            self?.presentReportCompleteAlert()
+        }
+        alertController.addAction(option5)
+        
+        // 취소 액션 추가
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { (action) in
+            
+        }
+        alertController.addAction(cancelAction)
+        
+        // 액션 시트 표시
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    private func presentReportCompleteAlert() {
+        let alertController = UIAlertController(title: "신고 접수가 완료되었습니다.", message: "검토까지는 최대 24시간이 소요됩니다.\n추가 문의사항은 아래 메일로 문의주세요.\npurithm3@gmail.com", preferredStyle: .alert)
+        
+        // 확인 액션 추가
+        let okAction = UIAlertAction(title: "확인", style: .default) { (action) in
+        }
+        alertController.addAction(okAction)
+        
+        // 알림 표시
+        present(alertController, animated: true, completion: nil)
     }
 }
 

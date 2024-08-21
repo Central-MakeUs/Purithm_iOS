@@ -66,7 +66,7 @@ extension ProfileSettingViewModel {
 
 public final class ProfileSettingViewModel {
     weak var coordinator: ProfileCoordinatorable?
-    private let converter = ProfileSectionConverter()
+    private let converter = ProfileSettingSectionConverter()
     private var cancellables = Set<AnyCancellable>()
     
     private let sectionItems = CurrentValueSubject<[SectionModelType], Never>([])

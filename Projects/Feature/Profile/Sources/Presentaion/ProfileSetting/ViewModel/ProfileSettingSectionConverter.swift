@@ -1,5 +1,5 @@
 //
-//  ProfileSectionConverter.swift
+//  ProfileSettingSectionConverter.swift
 //  Profile
 //
 //  Created by 이숭인 on 8/19/24.
@@ -8,7 +8,7 @@
 import Foundation
 import CoreUIKit
 
-final class ProfileSectionConverter {
+final class ProfileSettingSectionConverter {
     func createSections(
         menus: [ProfileSettingMenu]
     ) -> [SectionModelType] {
@@ -19,7 +19,7 @@ final class ProfileSectionConverter {
     }
 }
 
-extension ProfileSectionConverter {
+extension ProfileSettingSectionConverter {
     private func createMenuSection(with menus: [ProfileSettingMenu]) -> [SectionModelType] {
         let components = menus.map {
             ProfileSettingMenuComponent(

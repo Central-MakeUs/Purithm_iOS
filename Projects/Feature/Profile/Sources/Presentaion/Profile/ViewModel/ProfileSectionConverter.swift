@@ -13,7 +13,8 @@ final class ProfileSectionConverter {
         with profileModel: PurithmVerticalProfileModel
     ) -> [SectionModelType] {
         [
-            createProfileSection(with: profileModel)
+            createProfileSection(with: profileModel),
+            createStampSection(with: "")
         ]
         .flatMap { $0 }
     }
@@ -42,6 +43,32 @@ extension ProfileSectionConverter {
                                 heightDimension: .absolute(240)),
             groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
                                  heightDimension: .absolute(240)),
+            scrollBehavior: .none
+        )
+    }
+}
+
+//MARK: - Stamp
+extension ProfileSectionConverter {
+    private func createStampSection(with stampModel: String) -> [SectionModelType] {
+        let component = ProfileStampContainerComponent(identifier: "stamp_container")
+        
+        let section = SectionModel(
+            identifier: "stamp_section",
+            collectionLayout: createStampCollectionLayout(),
+            itemModels: [component]
+        )
+        
+        return [section]
+    }
+    
+    private func createStampCollectionLayout() -> CompositionalLayoutModelType {
+        CompositionalLayoutModel(
+            itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                heightDimension: .estimated(70)),
+            groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                 heightDimension: .estimated(70)),
+            sectionInset: .with(vertical: 20, horizontal: 20),
             scrollBehavior: .none
         )
     }

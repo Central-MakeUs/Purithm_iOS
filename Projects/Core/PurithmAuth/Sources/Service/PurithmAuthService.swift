@@ -12,7 +12,7 @@ import CombineMoya
 import CoreCommonKit
 
 public final class PurithmAuthService: PurithmAuthServiceManageable {
-    let provider = MoyaProvider<AuthAPI>()
+    let provider = MoyaProvider<AuthAPI>(plugins: [NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))])
     
     public init() { }
     

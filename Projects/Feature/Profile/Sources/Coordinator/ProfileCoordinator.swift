@@ -13,15 +13,23 @@ public final class ProfileCoordinator: ProfileCoordinatorable {
     public var navigationController: UINavigationController
     public var childCoordinators: [Coordinator] = []
     
+    private let usecase = ProfileUsecase(
+        profileService: ProfileService()
+    )
+    
     public var type: CoordinatorType { .profile }
     
     public init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
+        navigationController.setNavigationBarHidden(false, animated: true)
     }
     
     public func start() {
-        let viewModel = ProfileSettingViewModel(coordinator: self)
-        let profileViewController = ProfileSettingViewController(viewModel: viewModel)
+        let viewModel = ProfileViewModel(
+            coordinator: self,
+            usecase: usecase
+        )
+        let profileViewController = ProfileViewController(viewModel: viewModel)
         
         self.navigationController.viewControllers = [profileViewController]
     }

@@ -109,9 +109,9 @@ extension ProfileViewModel {
                     case .wishlist:
                         print("찜목록 화면으로 이동")
                     case .filterViewHistory:
-                        self?.coordinator?.pushMyReviewsViewController()
+                        print("열림 기록 화면으로 이동")
                     case .writtenReviews:
-                        print("작성한 리부 리스트 화면으로 이동")
+                        self?.coordinator?.pushMyReviewsViewController()
                     }
                 default:
                     break

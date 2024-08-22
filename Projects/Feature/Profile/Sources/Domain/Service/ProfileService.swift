@@ -13,8 +13,12 @@ import CoreCommonKit
 
 public protocol ProfileServiceManageable {
     func requestMyInfomation() -> AnyPublisher<ResponseWrapper<ProfileMyInformationResponseDTO>, Error>
+    func requestEditMyInfomation(parameter: ProfileEditRequestDTO) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error>
     func requestStampInfomation() -> AnyPublisher<ResponseWrapper<ProfileStamInfomationResponseDTO>, Error>
     func requestAccountInfomation() -> AnyPublisher<ResponseWrapper<ProfileAccountInfomationResponseDTO>, Error>
+    
+    func requestPrepareUploadURL() -> AnyPublisher<ResponseWrapper<PrepareUploadResponseDTO>, Error>
+    func requestUploadImage(urlString: String, imageData: Data) -> AnyPublisher<Void, Error>
 }
 
 public final class ProfileService: ProfileServiceManageable {
@@ -42,6 +46,31 @@ public final class ProfileService: ProfileServiceManageable {
         provider.requestPublisher(.fetchStampInfomation)
             .tryMap { response in
                 return try response.map(ResponseWrapper<ProfileStamInfomationResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestPrepareUploadURL() -> AnyPublisher<ResponseWrapper<PrepareUploadResponseDTO>, Error> {
+        provider.requestPublisher(.prepareUpload)
+            .tryMap { response in
+                return try response.map(ResponseWrapper<PrepareUploadResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestUploadImage(urlString: String, imageData: Data) -> AnyPublisher<Void, Error> {
+        provider.requestPublisher(.uploadImage(urlString: urlString,
+                                               imageData: imageData))
+            .tryMap { response in
+                return ()
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestEditMyInfomation(parameter: ProfileEditRequestDTO) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error> {
+        provider.requestPublisher(.editMyInfomation(parameter: parameter))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<EmptyResponseType>.self)
             }
             .eraseToAnyPublisher()
     }

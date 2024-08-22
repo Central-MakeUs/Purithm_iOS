@@ -11,8 +11,12 @@ import CoreKeychain
 
 enum ProfileAPI {
     case fetchMyInfomation
+    case editMyInfomation(parameter: ProfileEditRequestDTO)
     case fetchAccountInfomation
     case fetchStampInfomation
+    
+    case prepareUpload
+    case uploadImage(urlString: String, imageData: Data)
 }
 
 extension ProfileAPI: TargetType {
@@ -20,10 +24,15 @@ extension ProfileAPI: TargetType {
     }
     
     var baseURL: URL {
-        if let url = URL(string: "https://purithm.shop") {
-            return url
-        } else {
-            fatalError("The BACKEND_ENDPOINT environment variable was not found.")
+        switch self {
+        case .uploadImage(let urlString, _):
+            return URL(string: urlString)!
+        default:
+            if let url = URL(string: "https://purithm.shop") {
+                return url
+            } else {
+                fatalError("The BACKEND_ENDPOINT environment variable was not found.")
+            }
         }
     }
     
@@ -31,10 +40,16 @@ extension ProfileAPI: TargetType {
         switch self {
         case .fetchMyInfomation:
             return "api/users/me"
+        case .editMyInfomation:
+            return "api/users/me"
         case .fetchAccountInfomation:
             return "api/users/account"
         case .fetchStampInfomation:
             return "api/users/stamps"
+        case .prepareUpload:
+            return "api/file"
+        case .uploadImage:
+            return ""
         }
     }
     
@@ -42,10 +57,16 @@ extension ProfileAPI: TargetType {
         switch self {
         case .fetchMyInfomation:
             return .get
+        case .editMyInfomation:
+            return .post
         case .fetchAccountInfomation:
             return .get
         case .fetchStampInfomation:
             return .get
+        case .prepareUpload:
+            return .post
+        case .uploadImage:
+            return .put
         }
     }
     
@@ -53,15 +74,29 @@ extension ProfileAPI: TargetType {
         switch self {
         case .fetchMyInfomation:
             return .requestPlain
+        case .editMyInfomation(let parameter):
+            return .requestParameters(
+                parameters: parameter.toDictionary,
+                encoding: JSONEncoding.default
+            )
         case .fetchAccountInfomation:
             return .requestPlain
         case .fetchStampInfomation:
             return .requestPlain
+        case .prepareUpload:
+            return .requestParameters(
+                parameters: ["prefix": "user"],
+                encoding: URLEncoding.queryString
+            )
+        case .uploadImage(_, let imageData):
+            return .requestData(imageData)
         }
     }
     
     var headers: [String : String]? {
         switch self {
+        case .uploadImage:
+            return ["Content-Type": "image/jpeg"]
         default:
             print("::: filter header > \(serviceToken)")
             return [

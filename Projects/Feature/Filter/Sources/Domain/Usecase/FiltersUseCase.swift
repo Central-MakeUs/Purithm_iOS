@@ -18,6 +18,7 @@ public protocol FiltersServiceManageable {
     func requestReviewsFromFilter(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterReviewResponseDTO>, Error>
     func requestLike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error>
     func requestUnlike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error>
+    func requestBlock(with reviewID: String) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error>
 }
 
 public final class FiltersUseCase {
@@ -189,6 +190,31 @@ public final class FiltersUseCase {
                     guard let data = response.data else { return }
                     
                     return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { _ in } receiveValue: { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+
+            
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func requestBlock(with reviewID: String) -> AnyPublisher<Void, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = filterService.requestBlock(with: reviewID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    return promise(.success(()))
                 }
                 .store(in: &cancellables)
             

@@ -58,11 +58,65 @@ final class FeedsViewController: ViewController<FeedsView> {
                 self?.presentReportActionSheet()
             }
             .store(in: &cancellables)
+        
+        viewModel.presentBlockCompletePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.presentBlockCompleteAlert()
+            }
+            .store(in: &cancellables)
     }
 }
 
 //MARK: Present Report Sheet
 extension FeedsViewController {
+    private func presentBlockCompleteAlert() {
+        let alertController = UIAlertController(title: "차단이 완료되었습니다.", message: "해당 작성자의 모든 게시물이 더 이상 표시되지 않습니다.", preferredStyle: .alert)
+        
+        // 확인 액션 추가
+        let okAction = UIAlertAction(title: "확인", style: .default) { (action) in
+        }
+        alertController.addAction(okAction)
+        
+        // 알림 표시
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    private func presentReportMenuBottomSheet() {
+        let bottomSheetVC = PurithmMenuBottomSheet()
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return bottomSheetVC.preferredContentSize.height
+            })]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16.0
+        }
+        
+        bottomSheetVC.menus = viewModel.reportOption.map { option in
+            PurithmMenuModel(
+                identifier: option.identifier,
+                title: option.title,
+                isSelected: true
+            )
+        }
+        
+        bottomSheetVC.menuTapEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] identifier in
+                let option = FeedReportOption(rawValue: identifier) ?? .report
+                
+                switch option {
+                case .report:
+                    self?.presentReportActionSheet()
+                case .block:
+                    self?.viewModel.requestBlock()
+                }
+            }
+            .store(in: &self.cancellables)
+        
+        self.present(bottomSheetVC, animated: true, completion: nil)
+    }
+    
     private func presentReportActionSheet() {
         let alertController = UIAlertController(
             title: "신고 사유를 선택해주세요.",

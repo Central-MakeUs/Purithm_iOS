@@ -60,6 +60,12 @@ final class FeedsViewModel {
         reportEventSubject.eraseToAnyPublisher()
     }
     
+    private var selectedReportReviewID: String = ""
+    private let presentBlockCompleteSubject = PassthroughSubject<Void, Never>()
+    var presentBlockCompletePublisher: AnyPublisher<Void, Never> {
+        presentBlockCompleteSubject.eraseToAnyPublisher()
+    }
+    
     init(coordinator: FeedsCoordinatorable, usecase: FeedUsecase) {
         self.coordinator = coordinator
         self.usecase = usecase
@@ -164,7 +170,8 @@ final class FeedsViewModel {
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
                 case let action as FeedToDetailMoveAction:
                     self.coordinator?.pushFilterDetail(with: action.identifier)
-                case _ as FeedReportAction:
+                case let action as FeedReportAction:
+                    self.selectedReportReviewID = action.identifier
                     self.reportEventSubject.send(())
                 default:
                     break
@@ -172,6 +179,10 @@ final class FeedsViewModel {
 
             }
             .store(in: &cancellables)
+    }
+    
+    func requestBlock() {
+        requestBlock(with: selectedReportReviewID)
     }
 }
 
@@ -192,6 +203,15 @@ extension FeedsViewModel {
                 }) {
                     self?.orderOptionModels.value[targetIndex].reviewCount = convertedResponse.count
                 }
+            })
+            .store(in: &cancellables)
+    }
+    
+    private func requestBlock(with reviewID: String) {
+        usecase?.requestBlock(with: reviewID)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                self?.requestFeeds()
+                self?.presentBlockCompleteSubject.send(())
             })
             .store(in: &cancellables)
     }

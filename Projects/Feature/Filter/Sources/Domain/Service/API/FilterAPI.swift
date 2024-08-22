@@ -17,6 +17,8 @@ enum FilterAPI {
     case fetchReviewsFromFilter(filterID: String)
     case likeFilter(filterID: String)
     case unlikeFilter(filterID: String)
+    
+    case blockReview(reviewID: String)
 }
 
 extension FilterAPI: TargetType {
@@ -47,6 +49,8 @@ extension FilterAPI: TargetType {
             return "api/filters/\(filterID)/likes"
         case .unlikeFilter(let filterID):
             return "api/filters/\(filterID)/likes"
+        case .blockReview:
+            return "api/feeds/blocked-feed"
         }
     }
     
@@ -66,6 +70,8 @@ extension FilterAPI: TargetType {
             return .post
         case .unlikeFilter:
             return .delete
+        case .blockReview:
+            return .post
         }
     }
     
@@ -87,6 +93,9 @@ extension FilterAPI: TargetType {
         case .unlikeFilter(let filterID):
             let parameters: [String: Any] = ["filterId": filterID]
                return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
+        case .blockReview(let reviewID):
+            let parameters: [String: Any] = ["id": Int(reviewID) ?? .zero]
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
         }
     }
     

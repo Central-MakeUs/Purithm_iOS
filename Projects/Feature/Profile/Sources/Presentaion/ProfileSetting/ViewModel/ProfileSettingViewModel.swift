@@ -140,7 +140,7 @@ extension ProfileSettingViewModel {
                 case .accountInfo:
                     self?.coordinator?.pushAccountInfomationViewController()
                 case .editProfile:
-                    print("프로필 편집 화면으로 이동")
+                    self?.coordinator?.pushProfileEditViewController()
                 case .termsOfService:
                     if let url = URL(string: "https://palm-blizzard-691.notion.site/798f1bf6c507421584861961deb173d6") {
                         UIApplication.shared.open(url, options: [:], completionHandler: nil)

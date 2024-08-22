@@ -58,11 +58,31 @@ final class FilterDetailReviewListViewController: ViewController<FilterDetailRev
                 self?.presentReportMenuBottomSheet()
             }
             .store(in: &cancellables)
+        
+        viewModel.presentBlockCompletePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.presentBlockCompleteAlert()
+            }
+            .store(in: &cancellables)
     }
 }
 
 //MARK: Present Report Sheet
 extension FilterDetailReviewListViewController {
+    private func presentBlockCompleteAlert() {
+        let alertController = UIAlertController(title: "차단이 완료되었습니다.", message: "해당 작성자의 모든 게시물이 더 이상 표시되지 않습니다.", preferredStyle: .alert)
+        
+        // 확인 액션 추가
+        let okAction = UIAlertAction(title: "확인", style: .default) { (action) in
+        }
+        alertController.addAction(okAction)
+        
+        // 알림 표시
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    
     private func presentReportMenuBottomSheet() {
         let bottomSheetVC = PurithmMenuBottomSheet()
         if let sheet = bottomSheetVC.sheetPresentationController {
@@ -90,7 +110,7 @@ extension FilterDetailReviewListViewController {
                 case .report:
                     self?.presentReportActionSheet()
                 case .block:
-                    self?.presentReportActionSheet()
+                    self?.viewModel.requestBlock()
                 }
             }
             .store(in: &self.cancellables)

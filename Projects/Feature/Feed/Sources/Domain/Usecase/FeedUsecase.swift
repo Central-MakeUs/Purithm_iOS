@@ -42,4 +42,27 @@ public final class FeedUsecase {
         }
         .eraseToAnyPublisher()
     }
+    
+    public func requestBlock(with reviewID: String) -> AnyPublisher<Void, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = feedService.requestBlock(with: reviewID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    return promise(.success(()))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
 }

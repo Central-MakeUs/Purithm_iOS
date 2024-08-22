@@ -65,7 +65,7 @@ extension FeedDetailImageContainerComponent {
             }
             .store(in: &cancellable)
         
-        content.reportButton.tap
+        content.moreButton.tap
             .sink { [weak content] _ in
                 content?.actionEventEmitter.send(FeedReportAction(identifier: context.identifier))
             }
@@ -81,8 +81,10 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
     let contentLabel = PurithmLabel(typography: Constants.contentTypo).then {
         $0.numberOfLines = 0
     }
-    let reportButton = UIButton().then {
-        $0.setImage(.icReport.withTintColor(.red), for: .normal)
+    
+    let moreContainer = UIView()
+    let moreButton = UIButton().then {
+        $0.setImage(.icMenu.withTintColor(.gray300), for: .normal)
     }
     
     let blurButton = PurithmBlurButton(size: .normal).then {
@@ -102,9 +104,11 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         
         addSubview(imageContainer.view)
         addSubview(profileView)
-        addSubview(reportButton)
         addSubview(contentLabel)
+        addSubview(moreContainer)
         addSubview(blurButton)
+        
+        moreContainer.addSubview(moreButton)
     }
     
     public override func setupConstraints() {
@@ -123,21 +127,24 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         
         profileView.snp.makeConstraints { make in
             make.top.equalTo(imageContainer.view.snp.bottom).offset(10)
-            make.leading.equalToSuperview()
-            make.trailing.equalTo(reportButton.snp.leading).offset(-16)
-        }
-        
-        reportButton.snp.makeConstraints { make in
-            make.size.equalTo(24)
-            make.centerY.equalTo(profileView.snp.centerY)
-            make.trailing.equalToSuperview()
-            make.leading.equalTo(profileView.snp.trailing).offset(16)
+            make.horizontalEdges.equalToSuperview()
         }
         
         contentLabel.snp.makeConstraints { make in
             make.top.equalTo(profileView.snp.bottom).offset(10)
             make.horizontalEdges.equalToSuperview()
+        }
+        
+        moreContainer.snp.makeConstraints { make in
+            make.top.equalTo(contentLabel.snp.bottom)
+            make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview()
+        }
+        
+        moreButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
+            make.verticalEdges.equalToSuperview()
+            make.trailing.equalToSuperview()
         }
     }
     

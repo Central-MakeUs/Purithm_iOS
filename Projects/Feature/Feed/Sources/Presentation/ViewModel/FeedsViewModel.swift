@@ -44,6 +44,8 @@ final class FeedsViewModel {
         orderOptionModels.value
     }
     
+    var reportOption: [FeedReportOption] = FeedReportOption.allCases
+    
     private let feedRequestDTO = CurrentValueSubject<FeedsRequestDTO, Never>(
         FeedsRequestDTO(sortedBy: .earliest)
     )

@@ -10,8 +10,9 @@ import Combine
 
 public final class PurithmMenuBottomSheet: ViewController<PurithmMenuBottomSheetView> {
     var cancellables = Set<AnyCancellable>()
+    private let menuTapEventSubject = PassthroughSubject<String, Never>()
     public var menuTapEvent: AnyPublisher<String, Never> {
-        contentView.menuTapEvent
+        menuTapEventSubject.eraseToAnyPublisher()
     }
     
     /// 메뉴를 입력합니다.
@@ -34,8 +35,10 @@ public final class PurithmMenuBottomSheet: ViewController<PurithmMenuBottomSheet
     private func bindAction() {
         contentView.menuTapEvent
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.dismiss(animated: true)
+            .sink { [weak self] identifier in
+                self?.dismiss(animated: true) { [weak self] in
+                    self?.menuTapEventSubject.send(identifier)
+                }
             }
             .store(in: &cancellables)
     }

@@ -71,6 +71,16 @@ public final class ProfileCoordinator: ProfileCoordinatorable {
         
         self.navigationController.pushViewController(myReviewsViewController, animated: true)
     }
+    
+    public func pushMyWishlistViewController() {
+        let viewModel = ProfileMyWishlistViewModel(
+            coordinator: self,
+            usecase: usecase)
+        let myWishlistViewController = ProfileMyWishlistViewController(viewModel: viewModel)
+        myWishlistViewController.hidesBottomBarWhenPushed = true
+        
+        self.navigationController.pushViewController(myWishlistViewController, animated: true)
+    }
 }
 
 extension ProfileCoordinator {

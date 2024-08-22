@@ -15,4 +15,5 @@ public protocol ProfileCoordinatorable: Coordinator {
     func pushMyReviewsViewController()
     
     func pushFilterDetail(with filterID: String)
+    func pushMyWishlistViewController()
 }

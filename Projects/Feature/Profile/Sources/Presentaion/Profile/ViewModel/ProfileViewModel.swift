@@ -107,7 +107,7 @@ extension ProfileViewModel {
                     let menuType = ProfileMenu(rawValue: action.identifier) ?? .wishlist
                     switch menuType {
                     case .wishlist:
-                        print("찜목록 화면으로 이동")
+                        self?.coordinator?.pushMyWishlistViewController()
                     case .filterViewHistory:
                         print("열림 기록 화면으로 이동")
                     case .writtenReviews:

@@ -71,4 +71,12 @@ public final class FilterService: FiltersServiceManageable {
             }
             .eraseToAnyPublisher()
     }
+    
+    public func requestBlock(with reviewID: String) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error> {
+        provider.requestPublisher(.blockReview(reviewID: reviewID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<EmptyResponseType>.self)
+            }
+            .eraseToAnyPublisher()
+    }
 }

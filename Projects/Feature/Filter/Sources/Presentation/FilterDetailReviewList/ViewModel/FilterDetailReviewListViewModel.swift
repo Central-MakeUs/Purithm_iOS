@@ -44,6 +44,12 @@ final class FilterDetailReviewListViewModel {
         reportEventSubject.eraseToAnyPublisher()
     }
     
+    private var selectedReportReviewID: String = ""
+    private let presentBlockCompleteSubject = PassthroughSubject<Void, Never>()
+    var presentBlockCompletePublisher: AnyPublisher<Void, Never> {
+        presentBlockCompleteSubject.eraseToAnyPublisher()
+    }
+    
     init(usecase: FiltersUseCase,
          coordinator: FilterDetailCoordinatorable,
          filterID: String,
@@ -79,6 +85,10 @@ final class FilterDetailReviewListViewModel {
         
         return output
     }
+    
+    func requestBlock() {
+        requestBlock(reviewID: selectedReportReviewID)
+    }
 }
 
 extension FilterDetailReviewListViewModel {
@@ -89,7 +99,8 @@ extension FilterDetailReviewListViewModel {
                 guard let self else { return }
                 
                 switch actionItem {
-                case _ as FeedReportAction:
+                case let action as FeedReportAction:
+                    self.selectedReportReviewID = action.identifier
                     self.reportEventSubject.send(())
                 default:
                     break
@@ -106,6 +117,15 @@ extension FilterDetailReviewListViewModel {
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
                 let reviewModels = response.convertReviewModel()
                 self?.detailReviewsSubject.send(reviewModels)
+            })
+            .store(in: &cancellables)
+    }
+    
+    private func requestBlock(reviewID: String) {
+        filtersUsecase?.requestBlock(with: reviewID)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                self?.requestReviews(filterID: self?.filterID ?? "")
+                self?.presentBlockCompleteSubject.send(())
             })
             .store(in: &cancellables)
     }

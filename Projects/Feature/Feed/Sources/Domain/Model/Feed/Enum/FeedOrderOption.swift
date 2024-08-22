@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 public enum FeedOrderOption: String, CaseIterable {
     case earliest
     case latest

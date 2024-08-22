@@ -34,6 +34,8 @@ final class FilterDetailReviewListViewModel {
     
     private let converter = FilterDetailReviewListSectionConverter()
     
+    var reportOptions: [FilterReviewReportOption] = FilterReviewReportOption.allCases
+    
     private var detailReviewsSubject = CurrentValueSubject<[FeedReviewModel], Never>([])
     var willMoveItemIndexPath = PassthroughSubject<IndexPath, Never>()
     

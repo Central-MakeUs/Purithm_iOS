@@ -55,7 +55,7 @@ final class FeedsViewController: ViewController<FeedsView> {
         
         viewModel.reportEventPublisher
             .sink { [weak self] _ in
-                self?.presentReportActionSheet()
+                self?.presentReportMenuBottomSheet()
             }
             .store(in: &cancellables)
     }
@@ -63,6 +63,41 @@ final class FeedsViewController: ViewController<FeedsView> {
 
 //MARK: Present Report Sheet
 extension FeedsViewController {
+    private func presentReportMenuBottomSheet() {
+        let bottomSheetVC = PurithmMenuBottomSheet()
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return bottomSheetVC.preferredContentSize.height
+            })]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16.0
+        }
+        
+        bottomSheetVC.menus = viewModel.reportOption.map { option in
+            PurithmMenuModel(
+                identifier: option.identifier,
+                title: option.title,
+                isSelected: true
+            )
+        }
+        
+        bottomSheetVC.menuTapEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] identifier in
+                let option = FeedReportOption(rawValue: identifier) ?? .report
+                
+                switch option {
+                case .report:
+                    self?.presentReportActionSheet()
+                case .block:
+                    self?.presentReportActionSheet()
+                }
+            }
+            .store(in: &self.cancellables)
+        
+        self.present(bottomSheetVC, animated: true, completion: nil)
+    }
+    
     private func presentReportActionSheet() {
         let alertController = UIAlertController(
             title: "신고 사유를 선택해주세요.",

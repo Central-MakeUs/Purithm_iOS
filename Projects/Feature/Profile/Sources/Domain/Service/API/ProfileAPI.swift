@@ -22,6 +22,8 @@ enum ProfileAPI {
     case likeFilter(filterID: String)
     case unlikeFilter(filterID: String)
     
+    case fetchFilterAccessHistory
+    
     case prepareUpload
     case uploadImage(urlString: String, imageData: Data)
 }
@@ -59,6 +61,8 @@ extension ProfileAPI: TargetType {
             return "api/users/reviews/\(reviewID)"
         case .fetchMyWishlist:
             return "api/users/picks"
+        case .fetchFilterAccessHistory:
+            return "api/users/history"
         case .likeFilter(let filterID):
             return "api/filters/\(filterID)/likes"
         case .unlikeFilter(let filterID):
@@ -85,6 +89,8 @@ extension ProfileAPI: TargetType {
         case .removeReview:
             return .delete
         case .fetchMyWishlist:
+            return .get
+        case .fetchFilterAccessHistory:
             return .get
         case .likeFilter:
             return .post
@@ -118,6 +124,8 @@ extension ProfileAPI: TargetType {
                 encoding: JSONEncoding.default
             )
         case .fetchMyWishlist:
+            return .requestPlain
+        case .fetchFilterAccessHistory:
             return .requestPlain
         case .likeFilter(let filterID):
             let parameters: [String: Any] = ["filterId": filterID]

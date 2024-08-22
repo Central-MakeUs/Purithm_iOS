@@ -19,6 +19,8 @@ public protocol ProfileServiceManageable {
     func requestMyReviews() -> AnyPublisher<ResponseWrapper<[FeedsResponseDTO]>, Error>
     func requestRemoveReview(with reviewID: String) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error>
     func requestMyWishlist() -> AnyPublisher<ResponseWrapper<[ProfileMyWishlistResponseDTO]>, Error>
+    func requestFilterAccessHistory() -> AnyPublisher<ResponseWrapper<ProfileFilterAccessHistoryResponseDTO>, Error>
+    
     func requestLike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error>
     func requestUnlike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error>
     
@@ -83,6 +85,14 @@ public final class ProfileService: ProfileServiceManageable {
         provider.requestPublisher(.fetchMyWishlist)
             .tryMap { response in
                 return try response.map(ResponseWrapper<[ProfileMyWishlistResponseDTO]>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestFilterAccessHistory() -> AnyPublisher<ResponseWrapper<ProfileFilterAccessHistoryResponseDTO>, Error> {
+        provider.requestPublisher(.fetchFilterAccessHistory)
+            .tryMap { response in
+                return try response.map(ResponseWrapper<ProfileFilterAccessHistoryResponseDTO>.self)
             }
             .eraseToAnyPublisher()
     }

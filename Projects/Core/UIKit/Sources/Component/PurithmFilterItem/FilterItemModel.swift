@@ -36,6 +36,17 @@ public enum PlanType {
     case premium
     case premiumPlus
     
+    public var title: String {
+        switch self {
+        case .free:
+            return "basic"
+        case .premium:
+            return "premium"
+        case .premiumPlus:
+            return "premium +"
+        }
+    }
+    
     public static func calculatePlanType(with membership: String) -> PlanType {
         switch membership {
         case "BASIC":

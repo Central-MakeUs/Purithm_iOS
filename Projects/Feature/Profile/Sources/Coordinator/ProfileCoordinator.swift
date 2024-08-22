@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreCommonKit
+import Filter
 
 public final class ProfileCoordinator: ProfileCoordinatorable {
     public var finishDelegate: CoordinatorFinishDelegate?
@@ -59,6 +60,27 @@ public final class ProfileCoordinator: ProfileCoordinatorable {
         let profileEditViewController = ProfileEditViewController(viewModel: viewModel)
         
         self.navigationController.pushViewController(profileEditViewController, animated: true)
+    }
+    
+    public func pushMyReviewsViewController() {
+        let viewModel = ProfileMyReviewsViewModel(
+            coordinator: self,
+            usecase: usecase)
+        let myReviewsViewController = ProfileMyReviewsViewController(viewModel: viewModel)
+        myReviewsViewController.hidesBottomBarWhenPushed = true
+        
+        self.navigationController.pushViewController(myReviewsViewController, animated: true)
+    }
+}
+
+extension ProfileCoordinator {
+    public func pushFilterDetail(with filterID: String) {
+        let coordinator = FilterDetailCoordinator(self.navigationController)
+        coordinator.finishDelegate = self
+        coordinator.filterID = filterID
+        self.childCoordinators.append(coordinator)
+        coordinator.start()
+        
     }
 }
 

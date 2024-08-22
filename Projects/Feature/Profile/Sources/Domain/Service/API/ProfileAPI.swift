@@ -15,6 +15,9 @@ enum ProfileAPI {
     case fetchAccountInfomation
     case fetchStampInfomation
     
+    case fetchMyReviews
+    case removeReview(reviewID: String)
+    
     case prepareUpload
     case uploadImage(urlString: String, imageData: Data)
 }
@@ -46,6 +49,10 @@ extension ProfileAPI: TargetType {
             return "api/users/account"
         case .fetchStampInfomation:
             return "api/users/stamps"
+        case .fetchMyReviews:
+            return "api/users/reviews"
+        case .removeReview(let reviewID):
+            return "api/users/reviews/\(reviewID)"
         case .prepareUpload:
             return "api/file"
         case .uploadImage:
@@ -63,6 +70,10 @@ extension ProfileAPI: TargetType {
             return .get
         case .fetchStampInfomation:
             return .get
+        case .fetchMyReviews:
+            return .get
+        case .removeReview:
+            return .delete
         case .prepareUpload:
             return .post
         case .uploadImage:
@@ -83,6 +94,13 @@ extension ProfileAPI: TargetType {
             return .requestPlain
         case .fetchStampInfomation:
             return .requestPlain
+        case .fetchMyReviews:
+            return .requestPlain
+        case .removeReview(let reviewID):
+            return .requestParameters(
+                parameters: ["reviewId": reviewID],
+                encoding: JSONEncoding.default
+            )
         case .prepareUpload:
             return .requestParameters(
                 parameters: ["prefix": "user"],

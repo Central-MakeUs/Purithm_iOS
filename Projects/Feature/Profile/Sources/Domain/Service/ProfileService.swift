@@ -16,6 +16,8 @@ public protocol ProfileServiceManageable {
     func requestEditMyInfomation(parameter: ProfileEditRequestDTO) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error>
     func requestStampInfomation() -> AnyPublisher<ResponseWrapper<ProfileStamInfomationResponseDTO>, Error>
     func requestAccountInfomation() -> AnyPublisher<ResponseWrapper<ProfileAccountInfomationResponseDTO>, Error>
+    func requestMyReviews() -> AnyPublisher<ResponseWrapper<[FeedsResponseDTO]>, Error>
+    func requestRemoveReview(with reviewID: String) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error>
     
     func requestPrepareUploadURL() -> AnyPublisher<ResponseWrapper<PrepareUploadResponseDTO>, Error>
     func requestUploadImage(urlString: String, imageData: Data) -> AnyPublisher<Void, Error>
@@ -54,6 +56,22 @@ public final class ProfileService: ProfileServiceManageable {
         provider.requestPublisher(.prepareUpload)
             .tryMap { response in
                 return try response.map(ResponseWrapper<PrepareUploadResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestMyReviews() -> AnyPublisher<ResponseWrapper<[FeedsResponseDTO]>, Error> {
+        provider.requestPublisher(.fetchMyReviews)
+            .tryMap { response in
+                return try response.map(ResponseWrapper<[FeedsResponseDTO]>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestRemoveReview(with reviewID: String) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error> {
+        provider.requestPublisher(.removeReview(reviewID: reviewID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<EmptyResponseType>.self)
             }
             .eraseToAnyPublisher()
     }

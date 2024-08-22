@@ -16,6 +16,10 @@ public struct FeedToDetailMoveAction: ActionEventItem {
     public let identifier: String
 }
 
+public struct ReviewRemoveButtonAction: ActionEventItem {
+    public let identifier: String
+}
+
 public struct FeedReportAction: ActionEventItem {
     public let identifier: String
 }
@@ -24,15 +28,18 @@ public struct FeedDetailImageContainerComponent: Component {
     public var identifier: String
     let review: FeedReviewModel
     let filterInformation: (name: String, thumbnail: String)?
+    let isEnableDelete: Bool
     
     public init(
         identifier: String,
         review: FeedReviewModel,
-        filterInformation: (name: String, thumbnail: String)? = nil
+        filterInformation: (name: String, thumbnail: String)? = nil,
+        isEnableDelete: Bool
     ) {
         self.identifier = identifier
         self.review = review
         self.filterInformation = filterInformation
+        self.isEnableDelete = isEnableDelete
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -43,6 +50,7 @@ public struct FeedDetailImageContainerComponent: Component {
         hasher.combine(review.satisfactionLevel)
         hasher.combine(filterInformation?.name)
         hasher.combine(filterInformation?.thumbnail)
+        hasher.combine(isEnableDelete)
     }
     
     public func prepareForReuse(content: FilterDetailImageContainerView) {
@@ -56,7 +64,8 @@ extension FeedDetailImageContainerComponent {
     public func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
         content.configure(
             with: context.review,
-            information: context.filterInformation
+            information: context.filterInformation, 
+            isEnableDelete: context.isEnableDelete
         )
         
         content.blurButton.tap
@@ -70,6 +79,13 @@ extension FeedDetailImageContainerComponent {
                 content?.actionEventEmitter.send(FeedReportAction(identifier: context.review.feedID))
             }
             .store(in: &cancellable)
+        
+        content.deleteButton.tap
+            .sink { [weak content] _ in
+                content?.actionEventEmitter.send(ReviewRemoveButtonAction(identifier: context.review.feedID))
+            }
+            .store(in: &cancellable)
+            
     }
 }
 
@@ -93,6 +109,24 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         $0.hasContentShdaow = true
     }
     
+    let bottomContainer = UIStackView().then {
+        $0.axis = .horizontal
+        $0.distribution = .fill
+        $0.alignment = .center
+        $0.layer.cornerRadius = 12
+        $0.clipsToBounds = true
+    }
+    let deleteButton = UIButton().then {
+        $0.setTitle("삭제", for: .normal)
+        $0.setTitleColor(.gray300, for: .normal)
+        $0.setTitleColor(.gray400, for: .selected)
+        
+        $0.titleLabel?.font = UIFont.Pretendard.semiBold.font(size: 16)
+        $0.setBackgroundColor(.white, for: .normal)
+        $0.setBackgroundColor(.gray200, for: .disabled)
+        $0.setBackgroundColor(.gray200, for: .highlighted)
+    }
+    
     public override func setup() {
         super.setup()
         
@@ -107,8 +141,11 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         addSubview(contentLabel)
         addSubview(moreContainer)
         addSubview(blurButton)
+        addSubview(bottomContainer)
         
         moreContainer.addSubview(moreButton)
+        
+        bottomContainer.addArrangedSubview(deleteButton)
     }
     
     public override func setupConstraints() {
@@ -138,7 +175,6 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         moreContainer.snp.makeConstraints { make in
             make.top.equalTo(contentLabel.snp.bottom)
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview()
         }
         
         moreButton.snp.makeConstraints { make in
@@ -146,11 +182,23 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
             make.verticalEdges.equalToSuperview()
             make.trailing.equalToSuperview()
         }
+        
+        bottomContainer.snp.makeConstraints { make in
+            make.top.equalTo(moreContainer.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
+        
+        deleteButton.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.height.equalTo(48)
+        }
     }
     
     public func configure(
         with review: FeedReviewModel,
-        information: (name: String, thumbnail: String)?
+        information: (name: String, thumbnail: String)?,
+        isEnableDelete: Bool
     ) {
         imageContainer = ImageContainerPageViewController(imageURLs: review.imageURLStrings)
         contentLabel.text = review.content
@@ -164,6 +212,19 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         
         setupSubviews()
         setupConstraints()
+        
+        if !isEnableDelete {
+            deleteButton.removeFromSuperview()
+            bottomContainer.removeFromSuperview()
+            bottomContainer.isHidden = true
+            deleteButton.isHidden = true
+            
+            moreContainer.snp.remakeConstraints { make in
+                make.top.equalTo(contentLabel.snp.bottom)
+                make.horizontalEdges.equalToSuperview()
+                make.bottom.equalToSuperview()
+            }
+        }
         
         guard let info = information else {
             blurButton.isHidden = true

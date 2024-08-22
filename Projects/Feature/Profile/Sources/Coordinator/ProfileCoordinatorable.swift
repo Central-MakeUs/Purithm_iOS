@@ -12,4 +12,7 @@ public protocol ProfileCoordinatorable: Coordinator {
     func pushProfileSettingViewContriller()
     func pushAccountInfomationViewController()
     func pushProfileEditViewController()
+    func pushMyReviewsViewController()
+    
+    func pushFilterDetail(with filterID: String)
 }

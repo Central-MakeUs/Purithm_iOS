@@ -48,6 +48,14 @@ public final class PurithmVerticalProfileView: BaseView {
     let introductionLabel = PurithmLabel(typography: Constants.introductionTypo)
     let editProfileLabel = PurithmLabel(typography: Constants.editProfileTypo).then {
         $0.text = "Edit profile"
+        $0.isUserInteractionEnabled = true
+    }
+    public let editTapGesture = UITapGestureRecognizer()
+    
+    public override func setup() {
+        super.setup()
+        
+        editProfileLabel.addGestureRecognizer(editTapGesture)
     }
     
     public override func setupSubviews() {

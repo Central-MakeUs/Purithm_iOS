@@ -219,7 +219,7 @@ final class ProfileStampContainerView: BaseView {
     }
     
     func configure(stampCount: Int) {
-        stampCountLabel.text = "남은 스탬프 \(stampCount)"
+        stampCountLabel.text = "남은 스탬프 \(8 - stampCount)"
         unlockStamps(stampCount: stampCount)
         
         switch stampCount {
@@ -233,9 +233,9 @@ final class ProfileStampContainerView: BaseView {
     }
     
     private func unlockStamps(stampCount: Int) {
-        guard stampCount < 0 else { return }
+        guard stampCount > 0 else { return }
         
-        (0...stampCount)
+        (0..<stampCount)
             .compactMap { Stamp(rawValue: $0) }.forEach {
                 imageViews[$0]?.image = $0.unlockImage
             }

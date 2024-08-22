@@ -12,6 +12,10 @@ import CoreUIKit
 import CoreCommonKit
 import Combine
 
+struct ProfileUserEditAction: ActionEventItem {
+    
+}
+
 struct ProfileUserProfileComponent: Component {
     var identifier: String
     let profileModel: PurithmVerticalProfileModel
@@ -29,10 +33,18 @@ extension ProfileUserProfileComponent {
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
         content.configure(with: context.profileModel)
+        
+        content.profileView.editTapGesture.tapPublisher
+            .sink { [weak content] _ in
+                content?.actionEventEmitter.send(ProfileUserEditAction())
+            }
+            .store(in: &cancellable)
     }
 }
 
-final class ProfileUserProfileView: BaseView {
+final class ProfileUserProfileView: BaseView, ActionEventEmitable {
+    var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
+    
     let profileView = PurithmVerticalProfileView()
     
     override func setupSubviews() {

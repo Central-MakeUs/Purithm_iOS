@@ -99,8 +99,10 @@ extension ProfileViewModel {
 extension ProfileViewModel {
     private func handleAdapterActionEvent(input: Input, output: Output) {
         input.adapterActionEvent
-            .sink { actionItem in
+            .sink { [weak self] actionItem in
                 switch actionItem {
+                case _ as ProfileUserEditAction:
+                    self?.coordinator?.pushProfileEditViewController()
                 case let action as ProfileMenuSelectAction:
                     let menuType = ProfileMenu(rawValue: action.identifier) ?? .wishlist
                     switch menuType {

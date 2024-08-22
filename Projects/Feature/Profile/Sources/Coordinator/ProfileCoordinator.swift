@@ -81,6 +81,16 @@ public final class ProfileCoordinator: ProfileCoordinatorable {
         
         self.navigationController.pushViewController(myWishlistViewController, animated: true)
     }
+    
+    public func pushFilterAccessHistoryViewController() {
+        let viewModel = ProfileFilterAccessHistoryViewModel(
+            coordinator: self,
+            usecase: usecase)
+        let filterAccessHistoryViewController = ProfileFilterAccessHistoryViewController(viewModel: viewModel)
+        filterAccessHistoryViewController.hidesBottomBarWhenPushed = true
+        
+        self.navigationController.pushViewController(filterAccessHistoryViewController, animated: true)
+    }
 }
 
 extension ProfileCoordinator {

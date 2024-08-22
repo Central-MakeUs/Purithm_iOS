@@ -109,7 +109,7 @@ extension ProfileViewModel {
                     case .wishlist:
                         self?.coordinator?.pushMyWishlistViewController()
                     case .filterViewHistory:
-                        print("열림 기록 화면으로 이동")
+                        self?.coordinator?.pushFilterAccessHistoryViewController()
                     case .writtenReviews:
                         self?.coordinator?.pushMyReviewsViewController()
                     }

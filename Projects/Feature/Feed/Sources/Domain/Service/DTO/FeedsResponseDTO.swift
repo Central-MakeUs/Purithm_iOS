@@ -47,7 +47,8 @@ public struct FeedsResponseDTO: Codable {
             authorProfileURL: profile, 
             satisfactionValue: pureDegree,
             satisfactionLevel: SatisfactionLevel.calculateSatisfactionLevel(with: pureDegree),
-            content: content
+            content: content,
+            feedID: "\(id)"
         )
     }
 }

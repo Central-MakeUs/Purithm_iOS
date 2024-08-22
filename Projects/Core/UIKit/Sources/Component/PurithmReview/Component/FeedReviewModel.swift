@@ -16,6 +16,7 @@ public struct FeedReviewModel {
     public let satisfactionValue: Int
     public let satisfactionLevel: SatisfactionLevel
     public let content: String
+    public let feedID: String
     
     public init(
         identifier: String,
@@ -24,7 +25,8 @@ public struct FeedReviewModel {
         authorProfileURL: String,
         satisfactionValue: Int,
         satisfactionLevel: SatisfactionLevel,
-        content: String
+        content: String,
+        feedID: String = ""
     ) {
         self.identifier = identifier
         self.imageURLStrings = imageURLStrings
@@ -33,5 +35,6 @@ public struct FeedReviewModel {
         self.satisfactionValue = satisfactionValue
         self.satisfactionLevel = satisfactionLevel
         self.content = content
+        self.feedID = feedID
     }
 }

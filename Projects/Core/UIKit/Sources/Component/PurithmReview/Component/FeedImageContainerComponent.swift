@@ -67,7 +67,7 @@ extension FeedDetailImageContainerComponent {
         
         content.moreButton.tap
             .sink { [weak content] _ in
-                content?.actionEventEmitter.send(FeedReportAction(identifier: context.identifier))
+                content?.actionEventEmitter.send(FeedReportAction(identifier: context.review.feedID))
             }
             .store(in: &cancellable)
     }

@@ -348,7 +348,7 @@ extension ReviewViewModel {
             print("Error converting image to Data")
             return
         }
-        //TODO: 1. 업로드 시작 - 인디케이터 돌리기, 올리기 버튼 비활성화
+        
         if let targetIndex = willUploadImages.value.firstIndex(where: { $0.identifier == identifier }) {
             willUploadImages.value[targetIndex].isUploadContinue = true
             isUploadState.value[identifier] = false

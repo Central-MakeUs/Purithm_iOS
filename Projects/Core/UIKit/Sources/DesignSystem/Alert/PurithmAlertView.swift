@@ -27,6 +27,12 @@ public final class PurithmAlertView: BaseView {
         $0.layer.cornerRadius = 12
         $0.clipsToBounds = true
     }
+    
+    private let textContainer = UIStackView().then {
+        $0.axis = .vertical
+        $0.distribution = .fillProportionally
+        $0.alignment = .center
+    }
     private let alertLabel = PurithmLabel(typography: Constants.alertLabelTypo).then {
         $0.numberOfLines = 0
     }
@@ -46,12 +52,15 @@ public final class PurithmAlertView: BaseView {
         addSubview(backgroundView)
         addSubview(container)
         
-        [alertLabel, alertContentLabel, buttonStackView].forEach {
+        [textContainer, buttonStackView].forEach {
             container.addSubview($0)
         }
         
         buttonStackView.addArrangedSubview(cancelButton)
         buttonStackView.addArrangedSubview(conformButton)
+        
+        textContainer.addArrangedSubview(alertLabel)
+        textContainer.addArrangedSubview(alertContentLabel)
     }
     
     public override func setupConstraints() {
@@ -64,18 +73,13 @@ public final class PurithmAlertView: BaseView {
             make.horizontalEdges.equalToSuperview().inset(40)
         }
         
-        alertLabel.snp.makeConstraints { make in
+        textContainer.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(20)
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         
-        alertContentLabel.snp.makeConstraints { make in
-            make.top.equalTo(alertLabel.snp.bottom).offset(20)
-            make.horizontalEdges.equalToSuperview()
-        }
-        
         buttonStackView.snp.makeConstraints { make in
-            make.top.equalTo(alertContentLabel.snp.bottom).offset(20)
+            make.top.equalTo(textContainer.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview()
         }

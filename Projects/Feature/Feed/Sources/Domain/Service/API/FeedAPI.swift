@@ -11,7 +11,6 @@ import CoreKeychain
 
 enum FeedAPI {
     case fetchFeeds(parameter: FeedsRequestDTO)
-    case blockReview(reviewID: String)
 }
 
 extension FeedAPI: TargetType {
@@ -28,10 +27,8 @@ extension FeedAPI: TargetType {
     
     var path: String {
         switch self {
-        case .fetchFeeds:
+        case .fetchFeeds(let parameter):
             return "api/feeds"
-        case .blockReview:
-            return "api/feeds/blocked-feed"
         }
     }
     
@@ -39,8 +36,6 @@ extension FeedAPI: TargetType {
         switch self {
         case .fetchFeeds:
             return .get
-        case .blockReview:
-            return .post
         }
     }
     
@@ -49,11 +44,6 @@ extension FeedAPI: TargetType {
         case .fetchFeeds(let parameter):
                 .requestParameters(
                     parameters: parameter.toDictionary(),
-                    encoding: URLEncoding.queryString
-                )
-        case .blockReview(let reviewID):
-                .requestParameters(
-                    parameters: ["id": Int(reviewID) ?? .zero],
                     encoding: URLEncoding.queryString
                 )
         }

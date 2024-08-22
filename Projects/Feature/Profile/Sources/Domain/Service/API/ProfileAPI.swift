@@ -18,6 +18,10 @@ enum ProfileAPI {
     case fetchMyReviews
     case removeReview(reviewID: String)
     
+    case fetchMyWishlist
+    case likeFilter(filterID: String)
+    case unlikeFilter(filterID: String)
+    
     case prepareUpload
     case uploadImage(urlString: String, imageData: Data)
 }
@@ -53,6 +57,12 @@ extension ProfileAPI: TargetType {
             return "api/users/reviews"
         case .removeReview(let reviewID):
             return "api/users/reviews/\(reviewID)"
+        case .fetchMyWishlist:
+            return "api/users/picks"
+        case .likeFilter(let filterID):
+            return "api/filters/\(filterID)/likes"
+        case .unlikeFilter(let filterID):
+            return "api/filters/\(filterID)/likes"
         case .prepareUpload:
             return "api/file"
         case .uploadImage:
@@ -73,6 +83,12 @@ extension ProfileAPI: TargetType {
         case .fetchMyReviews:
             return .get
         case .removeReview:
+            return .delete
+        case .fetchMyWishlist:
+            return .get
+        case .likeFilter:
+            return .post
+        case .unlikeFilter:
             return .delete
         case .prepareUpload:
             return .post
@@ -101,6 +117,14 @@ extension ProfileAPI: TargetType {
                 parameters: ["reviewId": reviewID],
                 encoding: JSONEncoding.default
             )
+        case .fetchMyWishlist:
+            return .requestPlain
+        case .likeFilter(let filterID):
+            let parameters: [String: Any] = ["filterId": filterID]
+               return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
+        case .unlikeFilter(let filterID):
+            let parameters: [String: Any] = ["filterId": filterID]
+               return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
         case .prepareUpload:
             return .requestParameters(
                 parameters: ["prefix": "user"],

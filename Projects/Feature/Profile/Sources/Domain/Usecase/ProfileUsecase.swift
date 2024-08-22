@@ -162,6 +162,84 @@ public final class ProfileUsecase {
         .eraseToAnyPublisher()
     }
     
+    public func requestMyWishlist() -> AnyPublisher<[ProfileMyWishlistResponseDTO], Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = profileService.requestMyWishlist()
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func requestLike(with filterID: String) -> AnyPublisher<Bool, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = profileService.requestLike(with: filterID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { _ in } receiveValue: { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+
+            
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func requestUnlike(with filterID: String) -> AnyPublisher<Bool, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = profileService.requestUnlike(with: filterID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { _ in } receiveValue: { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+
+            
+        }
+        .eraseToAnyPublisher()
+    }
+    
     public func requestUploadImage(urlString: String, imageData: Data) -> AnyPublisher<Void, Error> {
         return Future { [weak self] promise in
             guard let self else { return }

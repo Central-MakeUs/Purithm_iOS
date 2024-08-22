@@ -18,6 +18,9 @@ public protocol ProfileServiceManageable {
     func requestAccountInfomation() -> AnyPublisher<ResponseWrapper<ProfileAccountInfomationResponseDTO>, Error>
     func requestMyReviews() -> AnyPublisher<ResponseWrapper<[FeedsResponseDTO]>, Error>
     func requestRemoveReview(with reviewID: String) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error>
+    func requestMyWishlist() -> AnyPublisher<ResponseWrapper<[ProfileMyWishlistResponseDTO]>, Error>
+    func requestLike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error>
+    func requestUnlike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error>
     
     func requestPrepareUploadURL() -> AnyPublisher<ResponseWrapper<PrepareUploadResponseDTO>, Error>
     func requestUploadImage(urlString: String, imageData: Data) -> AnyPublisher<Void, Error>
@@ -72,6 +75,30 @@ public final class ProfileService: ProfileServiceManageable {
         provider.requestPublisher(.removeReview(reviewID: reviewID))
             .tryMap { response in
                 return try response.map(ResponseWrapper<EmptyResponseType>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestMyWishlist() -> AnyPublisher<ResponseWrapper<[ProfileMyWishlistResponseDTO]>, Error> {
+        provider.requestPublisher(.fetchMyWishlist)
+            .tryMap { response in
+                return try response.map(ResponseWrapper<[ProfileMyWishlistResponseDTO]>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestLike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error> {
+        provider.requestPublisher(.likeFilter(filterID: filterID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<Bool>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestUnlike(with filterID: String) -> AnyPublisher<ResponseWrapper<Bool>, Error> {
+        provider.requestPublisher(.unlikeFilter(filterID: filterID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<Bool>.self)
             }
             .eraseToAnyPublisher()
     }

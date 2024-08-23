@@ -8,6 +8,7 @@
 import UIKit
 import CoreCommonKit
 import Filter
+import Review
 
 public final class ProfileCoordinator: ProfileCoordinatorable {
     public var finishDelegate: CoordinatorFinishDelegate?
@@ -93,6 +94,7 @@ public final class ProfileCoordinator: ProfileCoordinatorable {
     }
 }
 
+//MARK: - Filter
 extension ProfileCoordinator {
     public func pushFilterDetail(with filterID: String) {
         let coordinator = FilterDetailCoordinator(self.navigationController)
@@ -100,7 +102,38 @@ extension ProfileCoordinator {
         coordinator.filterID = filterID
         self.childCoordinators.append(coordinator)
         coordinator.start()
+    }
+    
+    public func pushFilterOptionDetail(with filterID: String, filterName: String) {
+        let coordinator = FilterDetailCoordinator(self.navigationController)
+        coordinator.finishDelegate = self
+        coordinator.filterID = filterID
+        self.childCoordinators.append(coordinator)
+        coordinator.start()
         
+        coordinator.pushFilterOptionDetail(
+            with: filterID,
+            filterName: filterName
+        )
+    }
+}
+
+//MARK: - Review
+extension ProfileCoordinator {
+    public func pushCreateReviewViewController(with filterID: String) {
+        let coordinator = ReviewCoordinator(self.navigationController)
+        coordinator.finishDelegate = self
+        coordinator.filterID = filterID
+        self.childCoordinators.append(coordinator)
+        coordinator.start()
+    }
+    
+    public func pushPostedReviewViewController(with reviewID: String) {
+        let coordinator = ReviewCoordinator(self.navigationController)
+        coordinator.finishDelegate = self
+        coordinator.isDirectPostedReview = (reviewID, true)
+        self.childCoordinators.append(coordinator)
+        coordinator.start()
     }
 }
 

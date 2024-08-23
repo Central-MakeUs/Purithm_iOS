@@ -42,28 +42,6 @@ final class ProfileFilterAccessHistoryViewModel {
     private let sectionItems = CurrentValueSubject<[SectionModelType], Never>([])
     
     private var filterCards = CurrentValueSubject<[String: [ProfileFilterCardModel]], Never>([:])
-    var sortedFilterCards: [String: [ProfileFilterCardModel]] {
-        // DateFormatter 설정
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            
-            // 정렬된 데이터를 저장할 딕셔너리
-            var sortedDictionary: [String: [ProfileFilterCardModel]] = [:]
-            
-            // filterCards에 저장된 데이터를 정렬
-            for (key, value) in filterCards.value {
-                // 날짜 기준으로 정렬
-                let sortedValues = value.sorted(by: { firstModel, secondModel in
-                    guard let date1 = dateFormatter.date(from: firstModel.createdAt),
-                          let date2 = dateFormatter.date(from: secondModel.createdAt) else {
-                        return false
-                    }
-                    return date1 > date2 // 내림차순
-                })
-                sortedDictionary[key] = sortedValues
-            }
-        return sortedDictionary
-    }
     
     init(coordinator: ProfileCoordinatorable, usecase: ProfileUsecase) {
         self.coordinator = coordinator
@@ -89,14 +67,14 @@ final class ProfileFilterAccessHistoryViewModel {
             .store(in: &cancellables)
         
         filterCards
-            .filter { !$0.isEmpty}
+            .filter { !$0.isEmpty }
             .sink { [weak self] cards in
                 guard let self else { return }
                 
                 let sections = self.converter.createSections(
-                    cards: self.sortedFilterCards
+                    cards: cards
                 )
-                output.sectionItems.send(sections)
+                self.sectionItems.send(sections)
             }
             .store(in: &cancellables)
     }
@@ -121,11 +99,18 @@ extension ProfileFilterAccessHistoryViewModel {
                 guard let self else { return }
                 switch actionItem {
                 case let action as ProfileCardReviewAction:
-                    print("리뷰로 이동")
+                    if action.hasReview {
+                        self.coordinator?.pushPostedReviewViewController(with: action.reviewID)
+                    } else {
+                        self.coordinator?.pushCreateReviewViewController(with: action.filterID)
+                    }
                 case let action as ProfileCardFilterAction:
-                    print("필터값 보기로 이동")
+                    self.coordinator?.pushFilterOptionDetail(
+                        with: action.filterID,
+                        filterName: action.filterName
+                    )
                 case let action as ProfileCardImageAction:
-                    print("필터 상세")
+                    self.coordinator?.pushFilterDetail(with: action.filterID)
                 default:
                     break
                 }
@@ -145,7 +130,8 @@ extension ProfileFilterAccessHistoryViewModel {
                     let cardModels = history.filters.map { filter in
                         ProfileFilterCardModel(
                             filterId: "\(filter.filterId)",
-                            filterName: filter.filterName,
+                            filterName: filter.filterName, 
+                            thumbnailURLString: filter.thumbnail,
                             author: filter.photographer,
                             hasReview: filter.hasReview,
                             reviewId: "\(filter.reviewId)",

@@ -45,6 +45,7 @@ struct FilterHistory: Codable {
 struct Filter: Codable {
     let filterId: Int
     let filterName: String
+    let thumbnail: String
     let photographer: String
     let membership: String
     let createdAt: String
@@ -55,6 +56,7 @@ struct Filter: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.filterId = try container.decode(Int.self, forKey: .filterId)
         self.filterName = try container.decode(String.self, forKey: .filterName)
+        self.thumbnail = try container.decode(String.self, forKey: .thumbnail)
         self.photographer = try container.decode(String.self, forKey: .photographer)
         self.membership = try container.decode(String.self, forKey: .membership)
         self.createdAt = try container.decode(String.self, forKey: .createdAt)

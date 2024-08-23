@@ -22,7 +22,8 @@ final class ProfileView: BaseView {
     
     override func setupConstraints() {
         collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
+            make.verticalEdges.equalTo(safeAreaLayoutGuide)
         }
     }
 }

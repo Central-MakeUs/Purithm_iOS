@@ -11,12 +11,14 @@ import CoreCommonKit
 import Combine
 
 struct ProfileCardReviewAction: ActionEventItem {
+    let filterID: String
     let reviewID: String
     let hasReview: Bool
 }
 
 struct ProfileCardFilterAction: ActionEventItem {
     let filterID: String
+    let filterName: String
 }
 
 struct ProfileCardImageAction: ActionEventItem {
@@ -28,6 +30,7 @@ struct ProfileFilterCardComponent: Component {
     let model: ProfileFilterCardModel
     
     func hash(into hasher: inout Hasher) {
+        hasher.combine(model.thumbnailURLString)
         hasher.combine(model.author)
         hasher.combine(model.createdAt)
         hasher.combine(model.filterId)
@@ -47,6 +50,7 @@ extension ProfileFilterCardComponent {
         content.leftButton.tap
             .sink { [weak content] _ in
                 content?.actionEventEmitter.send(ProfileCardReviewAction(
+                    filterID: context.model.filterId,
                     reviewID: context.model.reviewId,
                     hasReview: context.model.hasReview
                 ))
@@ -56,7 +60,8 @@ extension ProfileFilterCardComponent {
         content.rightButton.tap
             .sink { [weak content] _ in
                 content?.actionEventEmitter.send(ProfileCardFilterAction(
-                    filterID: context.model.filterId
+                    filterID: context.model.filterId, 
+                    filterName: context.model.filterName
                 ))
             }
             .store(in: &cancellable)
@@ -190,7 +195,7 @@ final class ProfileFilterCardView: BaseView, ActionEventEmitable {
         leftButton.setTitle(leftTitle, for: .normal)
         rightButton.setTitle("필터값 보기", for: .normal)
         
-        if let url = URL(string: "") {
+        if let url = URL(string: model.thumbnailURLString) {
             thumbnailImageView.kf.setImage(with: url, placeholder: UIImage.placeholderSquareLg)
         }
     }

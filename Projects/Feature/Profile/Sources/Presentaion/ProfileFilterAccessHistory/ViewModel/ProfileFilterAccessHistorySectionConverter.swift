@@ -56,7 +56,10 @@ extension ProfileFilterAccessHistorySectionConverter {
     ) -> [SectionModelType] {
         var sections: [SectionModelType] = []
         
-        cards.forEach { (key, cardModels) in
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd"
+        
+        cards.sorted { $0.key > $1.key }.forEach { (key, cardModels) in
             let header = ProfileFilterCardHeaderComponent(
                 identifier: key,
                 date: key

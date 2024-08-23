@@ -11,6 +11,7 @@ import CoreUIKit
 struct ProfileFilterCardModel {
     let filterId: String
     let filterName: String
+    let thumbnailURLString: String
     let author: String
     let hasReview: Bool
     let reviewId: String

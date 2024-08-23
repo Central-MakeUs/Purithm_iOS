@@ -48,12 +48,12 @@ final class FilterPremiumBadgeView: BaseView {
             self.isHidden = true
         case .premium:
             self.isHidden = false
-            label.text = "Premium +"
-            container.backgroundColor = .purple500
-        case .premiumPlus:
-            self.isHidden = false
             label.text = "Premium"
             container.backgroundColor = .blue400
+        case .premiumPlus:
+            self.isHidden = false
+            label.text = "Premium +"
+            container.backgroundColor = .purple500
         }
     }
 }

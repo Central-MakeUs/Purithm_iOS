@@ -28,6 +28,7 @@ struct ProfileCardImageAction: ActionEventItem {
 struct ProfileFilterCardComponent: Component {
     var identifier: String
     let model: ProfileFilterCardModel
+    let canAccessOnlyReview: Bool
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(model.thumbnailURLString)
@@ -38,6 +39,7 @@ struct ProfileFilterCardComponent: Component {
         hasher.combine(model.hasReview)
         hasher.combine(model.planType)
         hasher.combine(model.reviewId)
+        hasher.combine(canAccessOnlyReview)
     }
 }
 
@@ -45,7 +47,10 @@ extension ProfileFilterCardComponent {
     typealias ContentType = ProfileFilterCardView
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
-        content.configure(with: context.model)
+        content.configure(
+            with: context.model,
+            canAccessOnlyReview: context.canAccessOnlyReview
+        )
         
         content.leftButton.tap
             .sink { [weak content] _ in
@@ -183,7 +188,7 @@ final class ProfileFilterCardView: BaseView, ActionEventEmitable {
         }
     }
     
-    func configure(with model: ProfileFilterCardModel) {
+    func configure(with model: ProfileFilterCardModel, canAccessOnlyReview: Bool) {
         badgeView.configure(with: model.planType)
         
         filterLabel.text = model.filterName
@@ -194,6 +199,12 @@ final class ProfileFilterCardView: BaseView, ActionEventEmitable {
         let leftTitle = model.hasReview ? "남긴 후기" : "후기 남기기"
         leftButton.setTitle(leftTitle, for: .normal)
         rightButton.setTitle("필터값 보기", for: .normal)
+        
+        if canAccessOnlyReview {
+            rightButton.isHidden = true
+            leftButton.setTitle("남긴 후기", for: .normal)
+            leftButton.setTitleColor(.blue400, for: .normal)
+        }
         
         if let url = URL(string: model.thumbnailURLString) {
             thumbnailImageView.kf.setImage(with: url, placeholder: UIImage.placeholderSquareLg)

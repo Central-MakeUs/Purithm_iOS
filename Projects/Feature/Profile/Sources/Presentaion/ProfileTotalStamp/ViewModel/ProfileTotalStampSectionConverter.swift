@@ -1,18 +1,19 @@
 //
-//  ProfileFilterAccessHistorySectionConverter.swift
+//  ProfileTotalStampSectionConverter.swift
 //  Profile
 //
-//  Created by 이숭인 on 8/22/24.
+//  Created by 이숭인 on 8/23/24.
 //
 
 import Foundation
 import CoreUIKit
 
-final class ProfileFilterAccessHistorySectionConverter {
+final class ProfileTotalStampSectionConverter {
     func createSections(
         cards: [String: [ProfileFilterCardModel]]
     ) -> [SectionModelType] {
         [
+            createStampDescriptionSection(),
             createCountHeader(cards: cards),
             craateFilterCardSection(cards: cards)
         ]
@@ -20,14 +21,40 @@ final class ProfileFilterAccessHistorySectionConverter {
     }
 }
 
+extension ProfileTotalStampSectionConverter {
+    private func createStampDescriptionSection() -> [SectionModelType] {
+        let component = ProfileStampDescriptionComponent(
+            identifier: "stamp_description"
+        )
+        
+        let section = SectionModel(
+            identifier: "stamp_description_section",
+            collectionLayout: createStampDescriptionCollectionLayout(),
+            itemModels: [component]
+        )
+        
+        return [section]
+    }
+    
+    private func createStampDescriptionCollectionLayout() -> CompositionalLayoutModelType {
+        CompositionalLayoutModel(
+            itemStrategy: .item(widthDimension: .fractionalWidth(1.0), 
+                                heightDimension: .estimated(124)),
+            groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
+                                 heightDimension: .estimated(124)),
+            sectionInset: .with(top: 20, leading: 20, bottom: 0, trailing: 20),
+            scrollBehavior: .none)
+    }
+}
+
 //MARK: - Count Header
-extension ProfileFilterAccessHistorySectionConverter {
+extension ProfileTotalStampSectionConverter {
     private func createCountHeader(cards: [String: [ProfileFilterCardModel]]) -> [SectionModelType] {
         let cardCount = cards.values.flatMap { $0 }.count
         let header = ProfileFilterCardCountHeaderComponent(
             identifier: "header_component",
             count: cardCount, 
-            showDescription: false
+            showDescription: true
         )
         
         let section = SectionModel(
@@ -51,7 +78,7 @@ extension ProfileFilterAccessHistorySectionConverter {
 }
 
 //MARK: - Card
-extension ProfileFilterAccessHistorySectionConverter {
+extension ProfileTotalStampSectionConverter {
     private func craateFilterCardSection(
         cards: [String: [ProfileFilterCardModel]]
     ) -> [SectionModelType] {
@@ -69,8 +96,8 @@ extension ProfileFilterAccessHistorySectionConverter {
             let cardComponents = cardModels.map { card in
                 ProfileFilterCardComponent(
                     identifier: card.filterId,
-                    model: card, 
-                    canAccessOnlyReview: false
+                    model: card,
+                    canAccessOnlyReview: true
                 )
             }
             

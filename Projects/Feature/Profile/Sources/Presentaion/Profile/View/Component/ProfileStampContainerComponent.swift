@@ -65,6 +65,10 @@ enum Stamp: Int {
     }
 }
 
+struct ProfileTotalStampMoveAction: ActionEventItem {
+    
+}
+
 struct ProfileStampContainerComponent: Component {
     var identifier: String
     let stampCount: Int
@@ -79,10 +83,18 @@ extension ProfileStampContainerComponent {
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
         content.configure(stampCount: context.stampCount)
+        
+        content.stampContainerTapGesture.tapPublisher
+            .sink { [weak content] _ in
+                content?.actionEventEmitter.send(ProfileTotalStampMoveAction())
+            }
+            .store(in: &cancellable)
     }
 }
 
-final class ProfileStampContainerView: BaseView {
+final class ProfileStampContainerView: BaseView, ActionEventEmitable {
+    var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
+    
     let container = UIView().then {
         $0.backgroundColor = .white
     }
@@ -106,6 +118,7 @@ final class ProfileStampContainerView: BaseView {
     let rightArrowImageView = UIImageView().then {
         $0.image = .icMove.withTintColor(.white)
     }
+    let stampContainerTapGesture = UITapGestureRecognizer()
 
     let descriptionLabel = PurithmLabel(typography: Constants.descriptionTypo)
     
@@ -140,6 +153,8 @@ final class ProfileStampContainerView: BaseView {
         
         self.layer.cornerRadius = 12
         self.clipsToBounds = true
+        
+        totalStampContainer.addGestureRecognizer(stampContainerTapGesture)
     }
     
     override func setupSubviews() {
@@ -226,7 +241,7 @@ final class ProfileStampContainerView: BaseView {
         case 0...7:
             descriptionLabel.text = "\(8-stampCount)개 더 모으면 premium 필터를 열람할 수 있어요"
         case 8...15:
-            descriptionLabel.text = "\(8-stampCount)개 더 모으면 premium+ 필터를 열람할 수 있어요"
+            descriptionLabel.text = "\(16-stampCount)개 더 모으면 premium+ 필터를 열람할 수 있어요"
         default:
             descriptionLabel.text = "모든 스탬프를 모두 모았어요!"
         }

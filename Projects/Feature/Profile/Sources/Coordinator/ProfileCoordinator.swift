@@ -92,6 +92,16 @@ public final class ProfileCoordinator: ProfileCoordinatorable {
         
         self.navigationController.pushViewController(filterAccessHistoryViewController, animated: true)
     }
+    
+    public func pushTotalStampViewModel() {
+        let viewModel = ProfileTotalStampViewModel(
+            coordinator: self,
+            usecase: usecase)
+        let totalStampViewController = ProfileTotalStampViewController(viewModel: viewModel)
+        totalStampViewController.hidesBottomBarWhenPushed = true
+        
+        self.navigationController.pushViewController(totalStampViewController, animated: true)
+    }
 }
 
 //MARK: - Filter

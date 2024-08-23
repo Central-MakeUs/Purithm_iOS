@@ -101,6 +101,8 @@ extension ProfileViewModel {
         input.adapterActionEvent
             .sink { [weak self] actionItem in
                 switch actionItem {
+                case _ as ProfileTotalStampMoveAction:
+                    self?.coordinator?.pushTotalStampViewModel()
                 case _ as ProfileUserEditAction:
                     self?.coordinator?.pushProfileEditViewController()
                 case let action as ProfileMenuSelectAction:

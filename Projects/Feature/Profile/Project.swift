@@ -15,6 +15,7 @@ let project = Project.makeFeatureModule(
         .core(.uiKit),
         .core(.keychain),
         .feature(.filter),
+        .feature(.review),
         .thirdParty(.snapKit),
         .thirdParty(.then),
         .thirdParty(.kingfisher),

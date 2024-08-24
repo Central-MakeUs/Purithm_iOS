@@ -57,7 +57,7 @@ final class FilterDescriptionView: BaseView {
         }
         
         descriptionHeaderView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+            make.top.equalToSuperview().offset(30)
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         

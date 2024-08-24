@@ -34,6 +34,17 @@ public final class PurithmContentBottomSheetView: BaseView {
         conformButton.tap.eraseToAnyPublisher()
     }
     
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        descriptionLabel.snp.remakeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(30)
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.bottom.equalTo(contentContainer.snp.top).offset(-20)
+            make.height.equalTo(descriptionLabel.intrinsicContentSize.height)
+        }
+    }
+    
     public override func setup() {
         super.setup()
         

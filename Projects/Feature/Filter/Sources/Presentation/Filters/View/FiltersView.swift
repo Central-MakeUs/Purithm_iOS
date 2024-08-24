@@ -40,7 +40,14 @@ public final class FiltersView: BaseView {
         
         addSubview(chipRightGradientView)
         
-        filterCollectionView.backgroundView = FilterEmptyView()
+        let emptyView = PurithmEmptyView()
+        emptyView.configure(
+            image: .grFilter,
+            description: "아직 준비중이에요", 
+            buttonTitle: nil
+        )
+        
+        filterCollectionView.backgroundView = emptyView
         filterCollectionView.backgroundView?.isHidden = true
     }
     

@@ -23,6 +23,11 @@ extension ProfileMyReviewsViewModel {
             sectionItems.eraseToAnyPublisher()
         }
         
+        fileprivate let sectionEmptySubject = PassthroughSubject<Bool, Never>()
+        var sectionEmptyPublisher: AnyPublisher<Bool, Never> {
+            sectionEmptySubject.eraseToAnyPublisher()
+        }
+        
         let conformAlertPresentEvent = PassthroughSubject<Void, Never>()
     }
 }
@@ -69,9 +74,14 @@ final class ProfileMyReviewsViewModel {
                     filterInfo: self.filterInformations.value
                 )
                 
+                output.sectionEmptySubject.send(reviews.isEmpty)
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellables)
+    }
+    
+    func moveToAccessedFilterHistory() {
+        coordinator?.pushFilterAccessHistoryViewController()
     }
     
     func removeReview() {

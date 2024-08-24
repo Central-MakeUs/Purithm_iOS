@@ -30,7 +30,17 @@ final class ProfileMyReviewsViewController: ViewController<ProfileMyReviewsView>
         initNavigationBar(hideShadow: true)
         initNavigationTitleView(title: "남긴 후기")
         
+        bindAction()
         bindViewModel()
+    }
+    
+    private func bindAction() {
+        contentView.emptyViewConformEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.moveToAccessedFilterHistory()
+            }
+            .store(in: &cancellables)
     }
     
     private func bindViewModel() {
@@ -51,6 +61,13 @@ final class ProfileMyReviewsViewController: ViewController<ProfileMyReviewsView>
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.presentCompletePopup()
+            }
+            .store(in: &cancellables)
+        
+        output.sectionEmptyPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEmpty in
+                self?.contentView.showEmptyViewIfNeeded(with: isEmpty)
             }
             .store(in: &cancellables)
     }

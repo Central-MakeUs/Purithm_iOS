@@ -14,13 +14,19 @@ final class ProfileFilterAccessHistoryView: BaseView {
         $0.backgroundColor = .gray100
     }
     
-    
     override func setup() {
         super.setup()
         
         self.backgroundColor = .gray100
         
-        collectionView.backgroundView = FilterEmptyView()
+        let emptyView = PurithmEmptyView()
+        emptyView.configure(
+            image: .grFilter,
+            description: "열람한 필터가 존재하지 않습니다",
+            buttonTitle: nil
+        )
+        
+        collectionView.backgroundView = emptyView
         collectionView.backgroundView?.isHidden = true
     }
     

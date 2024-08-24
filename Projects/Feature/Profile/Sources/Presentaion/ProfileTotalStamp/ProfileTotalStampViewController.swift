@@ -30,7 +30,17 @@ final class ProfileTotalStampViewController: ViewController<ProfileTotalStampVie
         initNavigationBar(hideShadow: true)
         initNavigationTitleView(title: "누적 스탬프")
         
+        bindAction()
         bindViewModel()
+    }
+    
+    private func bindAction() {
+        contentView.emptyViewConformEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.moveToAccessedFilterHistory()
+            }
+            .store(in: &cancellables)
     }
     
     private func bindViewModel() {
@@ -44,6 +54,13 @@ final class ProfileTotalStampViewController: ViewController<ProfileTotalStampVie
         output.sections
             .sink { [weak self] sections in
                 _ = self?.adapter.receive(sections)
+            }
+            .store(in: &cancellables)
+        
+        output.sectionEmptyPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEmpty in
+                self?.contentView.showEmptyViewIfNeeded(with: isEmpty)
             }
             .store(in: &cancellables)
     }

@@ -46,6 +46,13 @@ final class ProfileFilterAccessHistoryViewController: ViewController<ProfileFilt
                 _ = self?.adapter.receive(sections)
             }
             .store(in: &cancellables)
+        
+        output.sectionEmptyPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEmpty in
+                self?.contentView.showEmptyViewIfNeeded(with: isEmpty)
+            }
+            .store(in: &cancellables)
     }
 }
 

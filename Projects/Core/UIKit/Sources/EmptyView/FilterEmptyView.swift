@@ -40,12 +40,13 @@ public final class FilterEmptyView: BaseView {
         
         imageView.snp.makeConstraints { make in
             make.size.equalTo(150)
-            make.center.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(titleLabel.snp.top).offset(-30)
         }
         
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(imageView.snp.bottom).offset(30)
-            make.centerX.equalToSuperview()
+            make.center.equalToSuperview()
         }
     }
 }

@@ -261,6 +261,6 @@ extension ProfileStampContainerView {
     private enum Constants {
         static let titleTypo = Typography(size: .size18, weight: .bold, color: .gray500, applyLineHeight: true)
         static let stampCountTypo = Typography(size: .size14, weight: .semibold, color: .white, applyLineHeight: true)
-        static let descriptionTypo = Typography(size: .size14, weight: .medium, alignment: .center, color: .gray500, applyLineHeight: true)
+        static let descriptionTypo = Typography(size: .size14, weight: .medium, alignment: .left, color: .gray500, applyLineHeight: true)
     }
 }

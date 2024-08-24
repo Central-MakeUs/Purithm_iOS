@@ -29,6 +29,7 @@ final class FilterOptionDetailView: BaseView {
     
     let bottomContainer = UIView()
     let contentImageView = UIImageView().then {
+        $0.clipsToBounds = true
         $0.contentMode = .scaleAspectFill
         $0.kf.indicatorType = .activity
     }

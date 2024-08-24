@@ -61,7 +61,7 @@ public final class ReviewCoordinator: ReviewCoordinatorable {
         
         self.navigationController.present(stampViewController, animated: false)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
             stampViewController.dismiss(animated: false)
             self?.navigationController.popViewController(animated: false)
             self?.presentWrittenReviewViewController(with: reviewID)

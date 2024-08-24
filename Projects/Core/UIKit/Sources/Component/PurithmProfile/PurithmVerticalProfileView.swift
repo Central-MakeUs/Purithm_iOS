@@ -48,6 +48,14 @@ public final class PurithmVerticalProfileView: BaseView {
     let introductionLabel = PurithmLabel(typography: Constants.introductionTypo)
     let editProfileLabel = PurithmLabel(typography: Constants.editProfileTypo).then {
         $0.text = "Edit profile"
+        $0.isUserInteractionEnabled = true
+    }
+    public let editTapGesture = UITapGestureRecognizer()
+    
+    public override func setup() {
+        super.setup()
+        
+        editProfileLabel.addGestureRecognizer(editTapGesture)
     }
     
     public override func setupSubviews() {
@@ -100,6 +108,15 @@ public final class PurithmVerticalProfileView: BaseView {
         
         if let url = URL(string: profileModel.profileURLString) {
             profileView.kf.setImage(with: url)
+        }
+        
+        //TODO: 이건 서버에서 고쳐주면 지우자 ..
+        //이름과 프로필이 빈 경우
+        if profileModel.name.isEmpty {
+            nameLabel.text = "귀여운 둥지"
+        }
+        if profileModel.profileURLString.isEmpty {
+            profileView.image = .placeholderSquareLg
         }
     }
 }

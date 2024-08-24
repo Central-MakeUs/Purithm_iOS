@@ -23,7 +23,8 @@ extension FilterDetailReviewListSectionConverter {
         let components = reviews.map { review in
             FeedDetailImageContainerComponent(
                 identifier: review.identifier,
-                review: review
+                review: review, 
+                isEnableDelete: false
             )
         }
         

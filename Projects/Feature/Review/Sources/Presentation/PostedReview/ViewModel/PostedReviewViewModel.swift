@@ -33,12 +33,6 @@ final class PostedReviewViewModel {
     private let converter = PostedReviewSectionConverter()
     private var cancellables = Set<AnyCancellable>()
     
-    
-    private let completeRemoveEvent = PassthroughSubject<Void, Never>()
-    var completeRemovePublisher: AnyPublisher<Void, Never> {
-        completeRemoveEvent.eraseToAnyPublisher()
-    }
-    
     private var reviewModel = CurrentValueSubject<FeedReviewModel?, Never>(nil)
     
     init(
@@ -88,7 +82,7 @@ extension PostedReviewViewModel {
     
     private func handleAdapterItemTapEvent(input: Input, output: Output) {
         input.adapterActionEvent
-            .sink { [weak self] actionItem in
+            .sink { actionItem in
                 switch actionItem {
                 case _ as ReviewRemoveButtonAction:
                     output.conformAlertPresentEvent.send(Void())
@@ -101,6 +95,10 @@ extension PostedReviewViewModel {
     
     func removeReview() {
         requestReviewRemove(with: reviewID)
+    }
+    
+    func closeViewController() {
+        coordinator?.finish()
     }
 }
 
@@ -120,7 +118,7 @@ extension PostedReviewViewModel {
         usecase?.requestRemoveReview(with: reviewID)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] _ in
-                self?.completeRemoveEvent.send(Void())
+                self?.coordinator?.finish()
             })
             .store(in: &cancellables)
     }

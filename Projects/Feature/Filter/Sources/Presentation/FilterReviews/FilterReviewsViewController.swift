@@ -54,6 +54,12 @@ final class FilterReviewsViewController: ViewController<FilterReviewsView> {
                 _ = self?.adapter.receive(sections)
             }
             .store(in: &cancellables)
+        
+        output.filterRecordForMePublisher
+            .sink { [weak self] recordModel in
+                self?.contentView.updateConformButton(with: recordModel)
+            }
+            .store(in: &cancellables)
     }
 }
 

@@ -8,7 +8,7 @@
 import UIKit
 import CoreCommonKit
 import CoreUIKit
-import Login // TODO: 이름 바꾸자 - PurithmLogin ??
+import Login
 
 final class DefaultAppCoordinator: AppCoordinator {
     var finishDelegate: CoordinatorFinishDelegate?

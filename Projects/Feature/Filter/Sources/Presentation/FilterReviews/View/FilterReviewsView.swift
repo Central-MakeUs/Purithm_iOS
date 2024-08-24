@@ -55,4 +55,14 @@ final class FilterReviewsView: BaseView {
             make.bottom.equalToSuperview()
         }
     }
+    
+    func updateConformButton(with recordModel: FilterRecordForMeModel) {
+        conformButton.text = "필터값 보기"
+        
+        if recordModel.hasReview && !recordModel.myReviewID.isEmpty {
+            conformButton.text = "내가 남긴 후기 보기"
+        } else if recordModel.hasViewd {
+            conformButton.text = "후기 남기고 스탬프 받기"
+        }
+    }
 }

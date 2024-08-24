@@ -32,7 +32,8 @@ extension FeedsSectionConverter {
             FeedDetailImageContainerComponent(
                 identifier: review.identifier,
                 review: review,
-                filterInformation: info
+                filterInformation: info, 
+                isEnableDelete: false
             )
         }
         

@@ -35,6 +35,10 @@ public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
     }
     
     public func start() {
+        showFilterDetailFlow()
+    }
+    
+    private func showFilterDetailFlow() {
         let viewModel = FilterDetailViewModel(
             with: filterID,
             coordinator: self,
@@ -94,11 +98,17 @@ public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
         self.navigationController.pushViewController(filterDescriptionViewController, animated: true)
     }
     
+    public func moveToFilterDetailFromFilterReviews(with filterName: String) {
+        self.popViewController(animated: false)
+        pushFilterOptionDetail(with: filterID, filterName: filterName)
+    }
+    
     public func popViewController(animated: Bool) {
         self.navigationController.popViewController(animated: animated)
     }
 }
 
+//MARK: - Move To Review Module VC
 extension FilterDetailCoordinator {
     public func pushReviewViewController() {
         let coordinator = ReviewCoordinator(self.navigationController)
@@ -107,8 +117,17 @@ extension FilterDetailCoordinator {
         self.childCoordinators.append(coordinator)
         coordinator.start()
     }
+    
+    public func pushPostedReviewViewController(with reviewID: String) {
+        let coordinator = ReviewCoordinator(self.navigationController)
+        coordinator.finishDelegate = self
+        coordinator.isDirectPostedReview = (reviewID, true)
+        self.childCoordinators.append(coordinator)
+        coordinator.start()
+    }
 }
 
+//MARK: - Finish Delegate
 extension FilterDetailCoordinator: CoordinatorFinishDelegate {
     public func coordinatorDidFinish(childCoordinator: Coordinator) {
         self.childCoordinators = self.childCoordinators.filter({ $0.type != childCoordinator.type })

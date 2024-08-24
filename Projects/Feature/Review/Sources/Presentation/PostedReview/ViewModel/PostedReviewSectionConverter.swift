@@ -11,8 +11,7 @@ import CoreUIKit
 final class PostedReviewSectionConverter {
     func createSections(review: FeedReviewModel) -> [SectionModelType] {
         [
-            createReviewSection(with: review),
-            createRemoveButtonSection()
+            createReviewSection(with: review)
         ]
         .flatMap { $0 }
         
@@ -24,7 +23,8 @@ extension PostedReviewSectionConverter {
     private func createReviewSection(with review: FeedReviewModel) -> [SectionModelType] {
         let component = FeedDetailImageContainerComponent(
             identifier: review.identifier,
-            review: review
+            review: review, 
+            isEnableDelete: true
         )
         
         let section = SectionModel(
@@ -43,32 +43,6 @@ extension PostedReviewSectionConverter {
             groupStrategy: .item(widthDimension: .fractionalWidth(1.0)
                                  , heightDimension: .estimated(500)),
             sectionInset: .with(vertical: 20, horizontal: 20),
-            scrollBehavior: .none
-        )
-    }
-}
-
-//MARK: - Bottom Button
-extension PostedReviewSectionConverter {
-    private func createRemoveButtonSection() -> [SectionModelType] {
-        let component = ReviewRemoveButtonComponent(identifier: "remove_button")
-        
-        let section = SectionModel(
-            identifier: "remove_button_section",
-            collectionLayout: createRemoveButtonCollectionLayout(),
-            itemModels: [component]
-        )
-        
-        return [section]
-    }
-    
-    private func createRemoveButtonCollectionLayout() -> CompositionalLayoutModelType {
-        CompositionalLayoutModel(
-            itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
-                                heightDimension: .absolute(48)),
-            groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
-                                 heightDimension: .absolute(48)),
-            sectionInset: NSDirectionalEdgeInsets(vertical: 20, horizontal: 20),
             scrollBehavior: .none
         )
     }

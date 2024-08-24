@@ -28,7 +28,7 @@ struct Filter: Codable {
         FilterItemModel(
             identifier: "\(id)",
             filterImageURLString: thumbnail,
-            planType: convertToPlanType(with: membership),
+            planType: PlanType.calculatePlanType(with: membership),
             filterTitle: name,
             author: photographerName,
             authorID: "\(photographerId)",
@@ -36,18 +36,5 @@ struct Filter: Codable {
             likeCount: likes,
             canAccess: canAccess
         )
-    }
-    
-    private func convertToPlanType(with membership: String) -> PlanType {
-        switch membership {
-        case "BASIC":
-            return .free
-        case "PREMIUM":
-            return .premium
-        case "PREMIUM_PLUS":
-            return .premiumPlus
-        default:
-            return .free
-        }
     }
 }

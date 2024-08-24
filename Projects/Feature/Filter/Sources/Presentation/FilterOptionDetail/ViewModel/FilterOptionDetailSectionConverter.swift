@@ -41,7 +41,7 @@ extension FilterOptionDetailSectionConverter {
             groupStrategy: .item(widthDimension: .fractionalWidth(0.5),
                                  heightDimension: .fractionalHeight(3.0)),
             itemSpacing: 20,
-            sectionInset: .with(vertical: 40, horizontal: 20),
+            sectionInset: .with(top: 40, leading: 20, bottom: 20, trailing: 20),
             scrollBehavior: .none)
     }
 }

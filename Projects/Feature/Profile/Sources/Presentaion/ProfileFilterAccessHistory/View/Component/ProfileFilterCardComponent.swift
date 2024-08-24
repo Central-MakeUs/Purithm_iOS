@@ -103,7 +103,7 @@ final class ProfileFilterCardView: BaseView, ActionEventEmitable {
     
     let thumbnailImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 16
         $0.clipsToBounds = true
         $0.image = .placeholderSquareLg
         $0.isUserInteractionEnabled = true

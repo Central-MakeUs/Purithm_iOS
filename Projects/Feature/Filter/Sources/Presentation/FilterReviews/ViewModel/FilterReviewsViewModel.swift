@@ -12,6 +12,12 @@ import CombineExt
 import CoreCommonKit
 
 extension FilterReviewsViewModel {
+    private enum Constants {
+        static let satisfactionIdentifier = "satisfaction_item_identifier"
+    }
+}
+
+extension FilterReviewsViewModel {
     struct Input {
         let viewWillAppearEvent: AnyPublisher<Bool, Never>
         let itemSelectEvent: AnyPublisher<ItemModelType, Never>
@@ -111,6 +117,10 @@ extension FilterReviewsViewModel {
         input.itemSelectEvent
             .receive(on: DispatchQueue.main)
             .sink { [weak self] itemModel in
+                guard itemModel.identifier != Constants.satisfactionIdentifier else {
+                    return
+                }
+                
                 let reviewID = itemModel.identifier
                 self?.coordinator?.pushFilterReviewDetailList(
                     with: reviewID,
@@ -157,7 +167,7 @@ extension FilterReviewsViewModel {
                 // 1. 평균 만족도 설정
                 let satisfactionLevel = SatisfactionLevel.calculateSatisfactionLevel(with: response.avg)
                 let satisfaction = FilterSatisfactionModel(
-                    identifier: UUID().uuidString,
+                    identifier: Constants.satisfactionIdentifier,
                     satisfactionLevel: satisfactionLevel,
                     averageValue: response.avg
                 )

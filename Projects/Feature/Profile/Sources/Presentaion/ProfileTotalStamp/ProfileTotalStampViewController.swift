@@ -60,7 +60,7 @@ final class ProfileTotalStampViewController: ViewController<ProfileTotalStampVie
         
         bottomSheetVC.contentModel = PurithmContentModel(
             contentType: .premiumFilterLock,
-            title: "잠금은 어떻게 푸나요?",
+            title: "스탬프는 어떻게 모으나요?",
             description: "필터를 사용해보고 후기를 남기면 스탬프가 찍히고,\n일정 개수를 모으면 프리미엄 필터를 열람할 수 있어요."
         )
         

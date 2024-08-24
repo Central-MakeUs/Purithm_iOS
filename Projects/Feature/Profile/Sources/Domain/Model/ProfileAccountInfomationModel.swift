@@ -15,9 +15,9 @@ extension ProfileAccountInfomationModel {
         var logoImage: UIImage {
             switch self {
             case .kakao:
-                return .purithmLogo
+                return .kakaoLogo
             case .apple:
-                return .purithmLogo
+                return .appleLogo
             }
         }
     }

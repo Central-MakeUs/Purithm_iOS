@@ -44,7 +44,7 @@ extension FilterDetailReviewListSectionConverter {
             groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
                                  heightDimension: .estimated(500)),
             groupSpacing: 50,
-            sectionInset: .with(bottom: 100),
+            sectionInset: .with(top: 20, bottom: 100),
             scrollBehavior: .none
         )
     }

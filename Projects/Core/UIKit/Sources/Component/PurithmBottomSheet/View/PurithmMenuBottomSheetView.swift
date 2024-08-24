@@ -31,7 +31,7 @@ public final class PurithmMenuBottomSheetView: BaseView {
     public override func setupConstraints() {
         container.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
-            make.top.equalToSuperview().inset(20)
+            make.top.equalToSuperview().inset(40)
             make.bottom.equalTo(safeAreaLayoutGuide)
         }
     }

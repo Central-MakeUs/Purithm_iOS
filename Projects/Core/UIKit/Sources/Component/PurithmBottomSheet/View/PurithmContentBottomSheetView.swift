@@ -52,7 +52,7 @@ public final class PurithmContentBottomSheetView: BaseView {
     
     public override func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(40)
+            make.top.equalTo(safeAreaLayoutGuide).inset(60)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(28)
         }

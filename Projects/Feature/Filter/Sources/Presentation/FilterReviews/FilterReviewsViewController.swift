@@ -88,7 +88,7 @@ extension FilterReviewsViewController: NavigationBarApplicable {
             .image(
                 identifier: Constants.questionImageIdentifier,
                 image: .icQuestion,
-                color: .gray500
+                color: .gray300
             )
         ]
     }

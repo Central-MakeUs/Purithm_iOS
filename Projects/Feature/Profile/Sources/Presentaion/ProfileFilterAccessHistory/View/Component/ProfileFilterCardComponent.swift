@@ -237,8 +237,8 @@ extension ProfileFilterCardView {
         
         override func setupConstraints() {
             label.snp.makeConstraints { make in
-                make.verticalEdges.equalToSuperview()
                 make.horizontalEdges.equalToSuperview().inset(8)
+                make.centerY.equalToSuperview()
             }
         }
         
@@ -262,6 +262,6 @@ extension ProfileFilterCardView {
 
 extension ProfileFilterCardView.FilterPlanBadgeView {
     private enum Constants {
-        static let titleTypo = Typography(size: .size14, weight: .medium, color: .gray400, applyLineHeight: true)
+        static let titleTypo = Typography(size: .size13, weight: .medium, color: .gray400, applyLineHeight: false)
     }
 }

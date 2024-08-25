@@ -68,6 +68,7 @@ final class FilterDetailView: BaseView {
     override func setup() {
         super.setup()
         
+        pageBadgeView.isHidden = true
         self.backgroundColor = .gray100
         bindAction()
     }
@@ -139,6 +140,9 @@ final class FilterDetailView: BaseView {
     }
     
     func updatePageBadge(total: Int, current: Int) {
-        pageBadgeView.configure(total: total, current: current)
+        if total > 0 {
+            pageBadgeView.isHidden = false
+            pageBadgeView.configure(total: total, current: current)
+        }
     }
 }

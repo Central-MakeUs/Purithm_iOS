@@ -29,7 +29,7 @@ extension Project {
                         with: [
                             "CFBundleIconName": "AppIcon",
                             "UILaunchStoryboardName": "LaunchScreen.storyboard",
-                            "CFBundleShortVersionString": "1.0.1", // Version
+                            "CFBundleShortVersionString": "1.0.2", // Version
                             "CFBundleVersion": "1",               // Build Number
                             "NSCameraUsageDescription": "이 앱은 카메라를 사용합니다.",
                             "NSPhotoLibraryUsageDescription": "이 앱은 사진 앨범에 접근합니다.",

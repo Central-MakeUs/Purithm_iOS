@@ -11,6 +11,10 @@ import CoreCommonKit
 import Combine
 
 public final class ReviewView: BaseView {
+    private var cancellables = Set<AnyCancellable>()
+    
+    let tapGesture = UITapGestureRecognizer()
+    
     let container = UIView().then {
         $0.backgroundColor = .gray100
     }
@@ -31,35 +35,75 @@ public final class ReviewView: BaseView {
         super.setup()
         
         self.backgroundColor = .gray100
+        self.addGestureRecognizer(tapGesture)
+        addKeyboardObserver()
     }
     
     public override func setupSubviews() {
         addSubview(container)
+        addSubview(conformButton)
         
         container.addSubview(collectionView)
-        container.addSubview(conformButton)
     }
     
     public override func setupConstraints() {
         container.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(keyboardLayoutGuide.snp.top)
+            make.bottom.equalTo(conformButton.snp.top)
         }
         
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(conformButton.snp.top)
+            make.bottom.equalToSuperview()
         }
         
         conformButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(20)
         }
     }
     
     func updateConformButtonState(with isEnabled: Bool) {
         conformButton.isEnabled = isEnabled
+    }
+}
+
+//MARK: - Keyboard Observe
+extension ReviewView {
+    private func addKeyboardObserver() {
+        // 키보드가 나타날 때
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] notification in
+                self?.handleKeyboardWillShow(notification: notification)
+            }
+            .store(in: &cancellables)
+        
+        // 키보드가 사라질 때
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] notification in
+                self?.handleKeyboardWillHide(notification: notification)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func handleKeyboardWillShow(notification: Notification) {
+        // 키보드가 나타날 때의 처리
+        container.snp.remakeConstraints { make in
+            make.top.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(keyboardLayoutGuide.snp.top)
+        }
+    }
+    
+    func handleKeyboardWillHide(notification: Notification) {
+        container.snp.remakeConstraints { make in
+            make.top.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(conformButton.snp.top)
+        }
     }
 }

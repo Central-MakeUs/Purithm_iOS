@@ -42,6 +42,8 @@ extension ReviewTextViewComponent {
             .asPublisher()
             .sink { [weak content] _ in
                 content?.changeFocusState(isFocus: false)
+                content?.updateBorderColor(isShow: false)
+                content?.checkValidateState()
             }
             .store(in: &cancellable)
         
@@ -49,6 +51,7 @@ extension ReviewTextViewComponent {
             .asPublisher()
             .sink { [weak content] _ in
                 content?.changeFocusState(isFocus: true)
+                content?.updateBorderColor(isShow: true)
             }
             .store(in: &cancellable)
         
@@ -82,11 +85,11 @@ final class ReviewTextViewView: BaseView, ActionEventEmitable {
         $0.textColor = .gray500
         $0.placeholder = "텍스트 20자 이상 입력해주세요\n\n주의! 부적절하거나 불쾌감을 줄 수 있는 컨텐츠는 제재를 받을 수 있습니다"
         $0.placeholderColor = .gray200
-        $0.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 30, right: 20)
+        $0.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 50, right: 20)
     }
     let countLabel = PurithmLabel(typography: Constants.countTypo)
     let textCountLabel = PurithmLabel(typography: Constants.textCountTypo).then {
-        $0.text = "/100 (최소 20자)"
+        $0.text = "100 (최소 20자)"
     }
     
     let maxLength = 100
@@ -146,10 +149,31 @@ final class ReviewTextViewView: BaseView, ActionEventEmitable {
     }
     
     func updateTextCount(with count: Int) {
-        countLabel.text = "\(count)"
+        countLabel.isHidden = false
+        textCountLabel.isHidden = false
+        
+        countLabel.text = "\(count)/"
+        textCountLabel.text = "100 (최소 20자)"
     
         countLabel.textColor =  count >= 20 ? .blue400 : .red500
-        textView.layer.borderColor =  count >= 20 ? UIColor.blue300.cgColor : UIColor.red500.cgColor
+    }
+    
+    func checkValidateState() {
+        let validTrigger = textView.text.count >= 20
+        
+        if validTrigger {
+            countLabel.isHidden = true
+            textCountLabel.isHidden = true
+        } else {
+            // 경고문구만 띄움
+            countLabel.isHidden = true
+            textCountLabel.text = "20자 이상 입력해주세요"
+            textCountLabel.textColor = .red500
+        }
+    }
+    
+    func updateBorderColor(isShow: Bool) {
+        textView.layer.borderColor = isShow ? UIColor.blue300.cgColor : UIColor.clear.cgColor
     }
     
     func changeFocusState(isFocus: Bool) {

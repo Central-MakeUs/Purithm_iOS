@@ -147,7 +147,7 @@ extension ReviewSectionConverter {
         let model = ReviewTermsAgreementComponentModel(
             identifier: "terms_agreement_section_item",
             title: "후기 약관 동의",
-            description: "작성하신 후기는 퓨리즘 및 퓨리즘 이용자에게 공개됩니다."
+            description: "후기 작성 안내"
         )
         
         let component = ReviewTermsAgreementComponent(
@@ -168,9 +168,9 @@ extension ReviewSectionConverter {
     private func createReviewTermsAgreementCollectionLayout() -> CompositionalLayoutModelType {
         CompositionalLayoutModel(
             itemStrategy: .item(widthDimension: .fractionalWidth(1.0),
-                                heightDimension: .estimated(120)),
+                                heightDimension: .estimated(460)),
             groupStrategy: .item(widthDimension: .fractionalWidth(1.0),
-                                 heightDimension: .estimated(120)),
+                                 heightDimension: .estimated(460)),
             sectionInset: NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 20, trailing: 20),
             scrollBehavior: .none
         )

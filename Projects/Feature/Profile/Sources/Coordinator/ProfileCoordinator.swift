@@ -119,7 +119,6 @@ extension ProfileCoordinator {
         coordinator.finishDelegate = self
         coordinator.filterID = filterID
         self.childCoordinators.append(coordinator)
-        coordinator.start()
         
         coordinator.pushFilterOptionDetail(
             with: filterID,

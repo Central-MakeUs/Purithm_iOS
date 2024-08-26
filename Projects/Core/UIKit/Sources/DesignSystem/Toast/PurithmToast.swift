@@ -16,6 +16,7 @@ public enum PurithmToastType {
 
 public final class PurithmToast: ViewController<PurithmToastView> {
     private var cancellables = Set<AnyCancellable>()
+    private let backgroundTapGesture = UITapGestureRecognizer()
     private let toastTapGesture = UITapGestureRecognizer()
     
     public init(with type: PurithmToastType) {
@@ -36,6 +37,7 @@ public final class PurithmToast: ViewController<PurithmToastView> {
     override public func viewDidLoad() {
         super.viewDidLoad()
         
+        contentView.addGestureRecognizer(backgroundTapGesture)
         contentView.toastContainer.addGestureRecognizer(toastTapGesture)
         
         hideToastIfNeeded()
@@ -49,6 +51,12 @@ public final class PurithmToast: ViewController<PurithmToastView> {
     }
     
     private func bindAction() {
+        backgroundTapGesture.tapPublisher
+            .sink { [weak self] _ in
+                self?.hide()
+            }
+            .store(in: &cancellables)
+        
         toastTapGesture.tapPublisher
             .sink { [weak self] _ in
                 self?.hide()

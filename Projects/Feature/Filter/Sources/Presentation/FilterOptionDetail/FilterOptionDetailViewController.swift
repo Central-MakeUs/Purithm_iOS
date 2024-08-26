@@ -61,6 +61,15 @@ final class FilterOptionDetailViewController: ViewController<FilterOptionDetailV
                 self?.presentScrollableBottomSheet()
             }
             .store(in: &cancellables)
+        
+        viewModel.completeLikeEventPublusher
+            .receive(on: DispatchQueue.main)
+            .sink { message in
+                let toast = PurithmToast(with: .bottom(message: message))
+                toast.show(animated: true)
+            }
+            .store(in: &cancellables)
+
     }
 }
 

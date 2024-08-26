@@ -33,6 +33,11 @@ final class FilterOptionDetailViewModel {
     
     private var filterID: String
     
+    private let completeLikeEventSubject = PassthroughSubject<String, Never>()
+    var completeLikeEventPublusher: AnyPublisher<String, Never> {
+        completeLikeEventSubject.eraseToAnyPublisher()
+    }
+    
     private var contentInfoSubject = CurrentValueSubject<(title: String, isLike: Bool, content: String), Never>(("", false, ""))
     var contentInfoPublisher: AnyPublisher<(title: String, isLike: Bool, content: String), Never> {
         contentInfoSubject.eraseToAnyPublisher()
@@ -94,16 +99,14 @@ extension FilterOptionDetailViewModel {
         contentInfoSubject.value.isLike.toggle()
         
         if contentInfo.isLike {
-            filtersUsecase?.requestUnlike(with: filterID)
-                .sink(receiveCompletion: { _ in }, receiveValue: { _ in
-                    //TODO: toast 띄우기
+            filtersUsecase?.requestLike(with: filterID)
+                .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] _ in
+                    self?.completeLikeEventSubject.send("찜 목록에 담겼어요")
                 })
                 .store(in: &cancellables)
-            
         } else {
-            filtersUsecase?.requestLike(with: filterID)
+            filtersUsecase?.requestUnlike(with: filterID)
                 .sink(receiveCompletion: { _ in }, receiveValue: { _ in
-                    //TODO: toast 띄우기
                 })
                 .store(in: &cancellables)
         }

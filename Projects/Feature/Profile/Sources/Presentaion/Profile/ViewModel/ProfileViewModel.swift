@@ -40,6 +40,11 @@ final class ProfileViewModel {
     private let userInfomationModel = CurrentValueSubject<ProfileUserInfomationModel?, Never>(nil)
     private let profileMenus: [ProfileMenu] = ProfileMenu.allCases
     
+    private let presentHelpSheetSubject = PassthroughSubject<Void, Never>()
+    var presentHelpSheetPublisher: AnyPublisher<Void, Never> {
+        presentHelpSheetSubject.eraseToAnyPublisher()
+    }
+    
     init(
         coordinator: ProfileCoordinatorable,
         usecase: ProfileUsecase
@@ -101,6 +106,8 @@ extension ProfileViewModel {
         input.adapterActionEvent
             .sink { [weak self] actionItem in
                 switch actionItem {
+                case _ as ProfileStampTapAction:
+                    self?.presentHelpSheetSubject.send(())
                 case _ as ProfileTotalStampMoveAction:
                     self?.coordinator?.pushTotalStampViewModel()
                 case _ as ProfileUserEditAction:

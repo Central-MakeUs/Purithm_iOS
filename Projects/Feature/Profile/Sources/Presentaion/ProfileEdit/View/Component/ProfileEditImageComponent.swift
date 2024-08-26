@@ -135,6 +135,8 @@ final class ProfileEditImageView: BaseView, ActionEventEmitable {
                 with: url,
                 placeholder: UIImage.placeholderSquareLg
             )
+        } else {
+            profileImageView.image = .emptyProfile
         }
         
         uploadStateBackgroundView.isHidden = !isUploadState

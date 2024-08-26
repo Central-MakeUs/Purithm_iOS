@@ -56,13 +56,10 @@ final class ProfileEditViewController: ViewController<ProfileEditView> {
             }
             .store(in: &cancellables)
         
-        output.galleryOpenEventPublisher
+        output.optionPresentEventPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                let imagePickerController = UIImagePickerController()
-                imagePickerController.delegate = self
-                imagePickerController.sourceType = .photoLibrary
-                self?.present(imagePickerController, animated: true, completion: nil)
+                self?.presentMenuBottomSheet()
             }
             .store(in: &cancellables)
         
@@ -83,6 +80,44 @@ final class ProfileEditViewController: ViewController<ProfileEditView> {
 }
 
 extension ProfileEditViewController {
+    private func presentMenuBottomSheet() {
+        let bottomSheetVC = PurithmMenuBottomSheet()
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return bottomSheetVC.preferredContentSize.height
+            })]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16.0
+        }
+        
+        bottomSheetVC.menus = viewModel.orderOptions.map { option in
+            PurithmMenuModel(
+                identifier: option.identifier,
+                title: option.option.title,
+                isSelected: option.isSelected
+            )
+        }
+        
+        bottomSheetVC.menuTapEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] identifier in
+                switch ProfileEditOption(rawValue: identifier) {
+                case .openGallery:
+                    let imagePickerController = UIImagePickerController()
+                    imagePickerController.delegate = self
+                    imagePickerController.sourceType = .photoLibrary
+                    self?.present(imagePickerController, animated: true, completion: nil)
+                case .setGeneral:
+                    self?.viewModel.resetProfileToDefault()
+                default:
+                    break
+                }
+            }
+            .store(in: &self.cancellables)
+        
+        self.present(bottomSheetVC, animated: true, completion: nil)
+    }
+    
     private func presentEditCompleteAlert() {
         let alert = PurithmAlert(with:
                 .withOneButton(

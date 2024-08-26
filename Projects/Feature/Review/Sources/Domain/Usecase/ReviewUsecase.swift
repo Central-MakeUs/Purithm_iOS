@@ -139,4 +139,28 @@ public final class ReviewUsecase {
         }
         .eraseToAnyPublisher()
     }
+    
+    public func requestFilterInfo(with filterID: String) -> AnyPublisher<FilterDetailResponseDTO, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = reviewService.requestFilterInfo(with: filterID)
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    guard let data = response.data else { return }
+                    return promise(.success(data))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
 }

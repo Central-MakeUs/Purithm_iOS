@@ -15,6 +15,8 @@ enum ReviewAPI {
     case uploadImage(urlString: String, imageData: Data)
     case fetchReview(reviewID: String)
     case removeReview(reviewID: String)
+    
+    case fetchFilter(filterID: String)
 }
 
 extension ReviewAPI: TargetType {
@@ -46,6 +48,8 @@ extension ReviewAPI: TargetType {
             return "api/reviews/\(reviewID)"
         case .removeReview(let reviewID):
             return "api/users/reviews/\(reviewID)"
+        case .fetchFilter(let filterID):
+            return "api/filters/\(filterID)"
         }
     }
     
@@ -61,6 +65,8 @@ extension ReviewAPI: TargetType {
             return .get
         case .removeReview:
             return .delete
+        case .fetchFilter:
+            return .get
         }
     }
     
@@ -88,6 +94,8 @@ extension ReviewAPI: TargetType {
                 parameters: ["reviewId": reviewID],
                 encoding: JSONEncoding.default
             )
+        case .fetchFilter(let filterID):
+            return .requestParameters(parameters: ["filterId": filterID], encoding: URLEncoding.queryString)
         }
     }
     

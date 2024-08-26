@@ -17,6 +17,8 @@ public protocol ReviewServiceManageable {
     func requestUploadImage(urlString: String, imageData: Data) -> AnyPublisher<Void, Error>
     func requestLoadReview(with reviewID: String) -> AnyPublisher<ResponseWrapper<ReviewLoadResponseDTO>, Error>
     func requestRemoveReview(with reviewID: String) -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error>
+    
+    func requestFilterInfo(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterDetailResponseDTO>, Error>
 }
 
 public final class ReviewService: ReviewServiceManageable {
@@ -61,6 +63,14 @@ public final class ReviewService: ReviewServiceManageable {
         provider.requestPublisher(.removeReview(reviewID: reviewID))
             .tryMap { response in
                 return try response.map(ResponseWrapper<EmptyResponseType>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestFilterInfo(with filterID: String) -> AnyPublisher<ResponseWrapper<FilterDetailResponseDTO>, Error> {
+        provider.requestPublisher(.fetchFilter(filterID: filterID))
+            .tryMap { response in
+                return try response.map(ResponseWrapper<FilterDetailResponseDTO>.self)
             }
             .eraseToAnyPublisher()
     }

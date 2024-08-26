@@ -73,7 +73,10 @@ final class ProfileEditViewController: ViewController<ProfileEditView> {
         viewModel.editCompletPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.presentEditCompleteAlert()
+                let toast = PurithmToast(with: .bottom(message: "프로필 수정 완료"))
+                toast.show(animated: true)
+                
+                self?.navigationController?.popViewController(animated: true)
             }
             .store(in: &cancellables)
     }
@@ -116,32 +119,6 @@ extension ProfileEditViewController {
             .store(in: &self.cancellables)
         
         self.present(bottomSheetVC, animated: true, completion: nil)
-    }
-    
-    private func presentEditCompleteAlert() {
-        let alert = PurithmAlert(with:
-                .withOneButton(
-                    title: "프로필 수정이 완료되었습니다.",
-                    conformTitle: "확인"
-                )
-        )
-        alert.conformTapEventPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                alert.hide()
-                self?.navigationController?.popViewController(animated: true)
-            }
-            .store(in: &cancellables)
-        
-        alert.cancelTapEventPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { _ in
-                alert.hide()
-            }
-            .store(in: &cancellables)
-        
-        
-        alert.show(animated: false)
     }
     
     private func presentUploadInProgressErrorAlert() {

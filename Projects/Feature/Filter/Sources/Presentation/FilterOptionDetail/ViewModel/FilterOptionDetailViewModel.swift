@@ -79,6 +79,10 @@ final class FilterOptionDetailViewModel {
         
         return output
     }
+    
+    func moveToWishlist() {
+        
+    }
 }
 
 //MARK: - API Request
@@ -110,6 +114,5 @@ extension FilterOptionDetailViewModel {
                 })
                 .store(in: &cancellables)
         }
-        
     }
 }

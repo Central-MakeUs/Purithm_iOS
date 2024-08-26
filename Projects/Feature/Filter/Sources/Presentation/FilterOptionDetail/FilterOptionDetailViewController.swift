@@ -64,9 +64,8 @@ final class FilterOptionDetailViewController: ViewController<FilterOptionDetailV
         
         viewModel.completeLikeEventPublusher
             .receive(on: DispatchQueue.main)
-            .sink { message in
-                let toast = PurithmToast(with: .bottom(message: message))
-                toast.show(animated: true)
+            .sink { [weak self] message in
+                self?.presentToast(with: message)
             }
             .store(in: &cancellables)
 
@@ -74,6 +73,21 @@ final class FilterOptionDetailViewController: ViewController<FilterOptionDetailV
 }
 
 extension FilterOptionDetailViewController {
+    private func presentToast(with message: String) {
+        let toast = PurithmToast(
+            with: .bottom(message: message),
+            option: "찜 목록 보기"
+        )
+        
+        toast.optionTapEvent
+            .sink { [weak self] _ in
+                self?.viewModel.moveToWishlist()
+            }
+            .store(in: &cancellables)
+        
+        toast.show(animated: true)
+    }
+    
     private func presentScrollableBottomSheet() {
         let bottomSheetVC = PurithmOptionHelpBottomSheet()
         if let sheet = bottomSheetVC.sheetPresentationController {

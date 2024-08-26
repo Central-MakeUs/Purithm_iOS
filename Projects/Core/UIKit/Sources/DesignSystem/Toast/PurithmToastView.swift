@@ -16,17 +16,23 @@ public final class PurithmToastView: BaseView {
         $0.backgroundColor = .blue400
     }
     let toastMessageLabel = PurithmLabel(typography: Constants.toastMessageTypo)
+    let optionLabel = PurithmLabel(typography: Constants.optionTypo).then {
+        $0.isUserInteractionEnabled = true
+    }
+    let optionTapGesture = UITapGestureRecognizer()
     
     public override func setup() {
         super.setup()
         
         self.backgroundColor = .clear
+        optionLabel.addGestureRecognizer(optionTapGesture)
     }
     
     public override func setupSubviews() {
         addSubview(toastContainer)
         
         toastContainer.addSubview(toastMessageLabel)
+        toastContainer.addSubview(optionLabel)
     }
     
     public override func setupConstraints() {
@@ -38,12 +44,20 @@ public final class PurithmToastView: BaseView {
         
         toastMessageLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.horizontalEdges.equalToSuperview().inset(20)
+            make.leading.equalToSuperview().inset(20)
+            make.trailing.equalTo(optionLabel.snp.leading).offset(-8)
+        }
+        
+        optionLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.equalToSuperview().inset(20)
+            make.leading.equalTo(toastMessageLabel.snp.trailing).offset(8)
         }
     }
     
-    func configure(message: String, direction: PurithmToastType) {
+    func configure(message: String, direction: PurithmToastType, optionTitle: String?) {
         toastMessageLabel.text = message
+        optionLabel.text = optionTitle
         
         switch direction {
         case .top:
@@ -65,5 +79,6 @@ public final class PurithmToastView: BaseView {
 extension PurithmToastView {
     private enum Constants {
         static let toastMessageTypo = Typography(size: .size16, weight: .medium, color: .white, applyLineHeight: true)
+        static let optionTypo = Typography(size: .size16, weight: .semibold, color: .white, applyLineHeight: true)
     }
 }

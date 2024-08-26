@@ -19,14 +19,26 @@ public final class PurithmToast: ViewController<PurithmToastView> {
     private let backgroundTapGesture = UITapGestureRecognizer()
     private let toastTapGesture = UITapGestureRecognizer()
     
-    public init(with type: PurithmToastType) {
+    public var optionTapEvent: AnyPublisher<Void, Never> {
+        contentView.optionTapGesture.tapPublisher.map { _ in Void() }.eraseToAnyPublisher()
+    }
+    
+    public init(with type: PurithmToastType, option: String? = nil) {
         super.init()
         
         switch type {
         case .top(let message):
-            contentView.configure(message: message, direction: type)
+            contentView.configure(
+                message: message,
+                direction: type,
+                optionTitle: option
+            )
         case .bottom(let message):
-            contentView.configure(message: message, direction: type)
+            contentView.configure(
+                message: message,
+                direction: type,
+                optionTitle: option
+            )
         }
     }
     

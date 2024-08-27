@@ -27,10 +27,24 @@ final class FilterReviewsView: BaseView {
         conformButton.tap
     }
     
+    let emptyView = PurithmEmptyView()
+    var emptyViewConformEvent: AnyPublisher<Void, Never> {
+        emptyView.buttonTapPublisher
+    }
+    
     override func setup() {
         super.setup()
         
         self.backgroundColor = .gray100
+        
+        emptyView.configure(
+            image: nil,
+            description: "이 필터의\n첫 후기를 남겨주세요",
+            buttonTitle: "후기 남기러 가기"
+        )
+        
+        collectionView.backgroundView = emptyView
+        collectionView.backgroundView?.isHidden = true
     }
     
     override func setupSubviews() {
@@ -64,5 +78,10 @@ final class FilterReviewsView: BaseView {
         } else if recordModel.hasViewd {
             conformButton.text = "후기 남기고 스탬프 받기"
         }
+    }
+    
+    func showEmptyViewIfNeeded(with isEmpty: Bool) {
+        collectionView.backgroundView?.isHidden = !isEmpty
+        conformButton.isHidden = isEmpty
     }
 }

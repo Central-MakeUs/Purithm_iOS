@@ -60,6 +60,20 @@ final class FilterReviewsViewController: ViewController<FilterReviewsView> {
                 self?.contentView.updateConformButton(with: recordModel)
             }
             .store(in: &cancellables)
+        
+        output.sectionEmptyPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEmpty in
+                self?.contentView.showEmptyViewIfNeeded(with: isEmpty)
+            }
+            .store(in: &cancellables)
+        
+        contentView.emptyViewConformEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.moveToCreateReview()
+            }
+            .store(in: &cancellables)
     }
 }
 

@@ -30,6 +30,11 @@ extension FilterReviewsViewModel {
             sectionsSubject.compactMap { $0 }.eraseToAnyPublisher()
         }
         
+        fileprivate let sectionEmptySubject = PassthroughSubject<Bool, Never>()
+        var sectionEmptyPublisher: AnyPublisher<Bool, Never> {
+            sectionEmptySubject.eraseToAnyPublisher()
+        }
+        
         fileprivate let filterRecordForMeSubject = PassthroughSubject<FilterRecordForMeModel, Never>()
         var filterRecordForMePublisher: AnyPublisher<FilterRecordForMeModel, Never> {
             filterRecordForMeSubject.eraseToAnyPublisher()
@@ -85,6 +90,7 @@ final class FilterReviewsViewModel {
                     reviewCount: self.reviewTotalCount
                 )
                 
+                output.sectionEmptySubject.send(reviews.isEmpty)
                 output.sectionsSubject.send(sections)
             }
             .store(in: &cancellables)
@@ -95,6 +101,10 @@ final class FilterReviewsViewModel {
                 output.filterRecordForMeSubject.send(recordModel)
             }
             .store(in: &cancellables)
+    }
+    
+    func moveToCreateReview() {
+        coordinator?.pushReviewViewController()
     }
 }
 

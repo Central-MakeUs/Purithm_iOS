@@ -47,6 +47,33 @@ final class ProfileViewController: ViewController<ProfileView> {
                 _ = self?.adapter.receive(sections)
             }
             .store(in: &cancellables)
+        
+        viewModel.presentHelpSheetPublisher
+            .sink { [weak self] _ in
+                self?.presentContentBottomSheet()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+extension ProfileViewController {
+    private func presentContentBottomSheet() {
+        let bottomSheetVC = PurithmContentBottomSheet()
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return bottomSheetVC.preferredContentSize.height
+            })]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16.0
+        }
+        
+        bottomSheetVC.contentModel = PurithmContentModel(
+            contentType: .premiumFilterLock,
+            title: "스탬프는 어떻게 모으나요?",
+            description: "필터를 사용해보고 후기를 남기면 스탬프가 찍히고,\n일정 개수를 모으면 프리미엄 필터를 열람할 수 있어요."
+        )
+        
+        self.present(bottomSheetVC, animated: true, completion: nil)
     }
 }
 

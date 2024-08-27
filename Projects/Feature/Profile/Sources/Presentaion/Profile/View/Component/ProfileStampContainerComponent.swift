@@ -65,9 +65,8 @@ enum Stamp: Int {
     }
 }
 
-struct ProfileTotalStampMoveAction: ActionEventItem {
-    
-}
+struct ProfileTotalStampMoveAction: ActionEventItem { }
+struct ProfileStampTapAction: ActionEventItem { }
 
 struct ProfileStampContainerComponent: Component {
     var identifier: String
@@ -84,9 +83,15 @@ extension ProfileStampContainerComponent {
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
         content.configure(stampCount: context.stampCount)
         
-        content.stampContainerTapGesture.tapPublisher
+        content.totalStampTapGesture.tapPublisher
             .sink { [weak content] _ in
                 content?.actionEventEmitter.send(ProfileTotalStampMoveAction())
+            }
+            .store(in: &cancellable)
+        
+        content.stampContainerTapGesture.tapPublisher
+            .sink { [weak content] _ in
+                content?.actionEventEmitter.send(ProfileStampTapAction())
             }
             .store(in: &cancellable)
     }
@@ -118,7 +123,7 @@ final class ProfileStampContainerView: BaseView, ActionEventEmitable {
     let rightArrowImageView = UIImageView().then {
         $0.image = .icMove.withTintColor(.white)
     }
-    let stampContainerTapGesture = UITapGestureRecognizer()
+    let totalStampTapGesture = UITapGestureRecognizer()
 
     let descriptionLabel = PurithmLabel(typography: Constants.descriptionTypo)
     
@@ -127,6 +132,8 @@ final class ProfileStampContainerView: BaseView, ActionEventEmitable {
         $0.distribution = .fillEqually
         $0.spacing = 20
     }
+    let stampContainerTapGesture = UITapGestureRecognizer()
+    
     let stampTopContainer = UIStackView().then {
         $0.axis = .horizontal
         $0.distribution = .equalSpacing
@@ -154,7 +161,8 @@ final class ProfileStampContainerView: BaseView, ActionEventEmitable {
         self.layer.cornerRadius = 12
         self.clipsToBounds = true
         
-        totalStampContainer.addGestureRecognizer(stampContainerTapGesture)
+        totalStampContainer.addGestureRecognizer(totalStampTapGesture)
+        stampContainer.addGestureRecognizer(stampContainerTapGesture)
     }
     
     override func setupSubviews() {
@@ -261,6 +269,6 @@ extension ProfileStampContainerView {
     private enum Constants {
         static let titleTypo = Typography(size: .size18, weight: .bold, color: .gray500, applyLineHeight: true)
         static let stampCountTypo = Typography(size: .size14, weight: .semibold, color: .white, applyLineHeight: true)
-        static let descriptionTypo = Typography(size: .size14, weight: .medium, alignment: .center, color: .gray500, applyLineHeight: true)
+        static let descriptionTypo = Typography(size: .size14, weight: .medium, alignment: .left, color: .gray500, applyLineHeight: true)
     }
 }

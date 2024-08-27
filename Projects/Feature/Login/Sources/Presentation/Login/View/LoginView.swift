@@ -29,7 +29,7 @@ public final class LoginView: BaseView {
     }
     
     let logoLabel = PurithmLabel(typography: Constants.logoTypo).then {
-        $0.text = "감성사진을 위한 필터 커머스, 퓨리즘"
+        $0.text = "감성 필터 모음집, 퓨리즘"
     }
     
     let appleLoginButton = UIButton().then {

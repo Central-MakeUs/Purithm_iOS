@@ -92,7 +92,7 @@ final class FilterReviewSatiscationView: BaseView {
     func configure(with level: SatisfactionLevel, averageValue: Int? = nil) {
         let isAverageValue = averageValue != nil
         
-        satisfactionLabel.text = "\(isAverageValue ? averageValue ?? .zero : level.rawValue) %"
+        satisfactionLabel.text = "\(isAverageValue ? averageValue ?? .zero : level.rawValue)%"
         backgroundView.image = level.circleBackgroundImage
         backgroundStarImageView.image = level.backgroundStarImage
     }

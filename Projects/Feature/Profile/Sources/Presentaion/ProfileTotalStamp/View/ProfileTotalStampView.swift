@@ -8,10 +8,16 @@
 import UIKit
 import CoreUIKit
 import CoreCommonKit
+import Combine
 
 final class ProfileTotalStampView: BaseView {
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.backgroundColor = .gray100
+    }
+    
+    let emptyView = PurithmEmptyView()
+    var emptyViewConformEvent: AnyPublisher<Void, Never> {
+        emptyView.buttonTapPublisher
     }
     
     override func setup() {
@@ -19,7 +25,13 @@ final class ProfileTotalStampView: BaseView {
         
         self.backgroundColor = .gray100
         
-        collectionView.backgroundView = FilterEmptyView()
+        emptyView.configure(
+            image: .grFlower,
+            description: "후기 남기고\n스탬프를 채워 보세요",
+            buttonTitle: "후기 남기러 가기"
+        )
+        
+        collectionView.backgroundView = emptyView
         collectionView.backgroundView?.isHidden = true
     }
     

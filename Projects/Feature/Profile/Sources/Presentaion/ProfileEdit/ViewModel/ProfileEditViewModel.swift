@@ -22,10 +22,10 @@ extension ProfileEditViewModel {
         var sections: AnyPublisher<[SectionModelType], Never> {
             sectionItems.eraseToAnyPublisher()
         }
-        
-        fileprivate let galleryOpenEvent = PassthroughSubject<Void, Never>()
-        var galleryOpenEventPublisher: AnyPublisher<Void, Never> {
-            galleryOpenEvent.eraseToAnyPublisher()
+
+        fileprivate let optionPresentEventSubject = PassthroughSubject<Void, Never>()
+        var optionPresentEventPublisher: AnyPublisher<Void, Never> {
+            optionPresentEventSubject.eraseToAnyPublisher()
         }
     }
 }
@@ -60,6 +60,11 @@ final class ProfileEditViewModel {
     private let editCompletSubject = PassthroughSubject<Void, Never>()
     var editCompletPublisher: AnyPublisher<Void, Never> {
         editCompletSubject.eraseToAnyPublisher()
+    }
+    
+    private var orderOptionModels = CurrentValueSubject<[ProfileEditOptionModel], Never>([])
+    var orderOptions: [ProfileEditOptionModel] {
+        orderOptionModels.value
     }
     
     func transform(input: Input) -> Output {
@@ -124,6 +129,17 @@ final class ProfileEditViewModel {
             .store(in: &cancellables)
     }
     
+    private func setupOrderOption() {
+        let orderOptions = ProfileEditOption.allCases.map { option in
+            ProfileEditOptionModel(
+                identifier: option.identifier,
+                option: option,
+                isSelected: true)
+        }
+        
+        orderOptionModels.send(orderOptions)
+    }
+    
     func requestEditProfile() {
         if isUploadState.value {
             uploadInProgressErrorSubject.send(())
@@ -133,6 +149,19 @@ final class ProfileEditViewModel {
             }
         }
     }
+    
+    func resetProfileToDefault() {
+        willUploadImageURLString = ""
+        
+        let profileModel = userInfomationModel.value
+        let sections = converter.createSections(
+            name: profileModel?.userName ?? "",
+            thumbnail: "",
+            isUploadState: false
+        )
+        
+        self.sectionItems.send(sections)
+    }
 }
 
 //MARK: - Handle View Will Appear Event
@@ -140,8 +169,8 @@ extension ProfileEditViewModel {
     private func handleViewWillAppearEvent(input: Input, output: Output) {
         input.viewWillAppearEvent
             .sink { [weak self] _ in
+                self?.setupOrderOption()
                 self?.requestMyInfomation()
-                
             }
             .store(in: &cancellables)
     }
@@ -155,7 +184,7 @@ extension ProfileEditViewModel {
                 switch actionItem {
                 case _ as ProfileEditImageAction:
                     self?.requestPrepareUploadReview()
-                    output.galleryOpenEvent.send(())
+                    output.optionPresentEventSubject.send(())
                 case let action as ProfileEditViewAction:
                     self?.willEditName = action.text
                 default:

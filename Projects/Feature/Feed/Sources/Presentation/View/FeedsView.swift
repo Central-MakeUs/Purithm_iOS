@@ -19,10 +19,6 @@ final class FeedsView: BaseView {
         $0.showsVerticalScrollIndicator = false
     }
     
-    let topGradientView = PurithmGradientView().then {
-        $0.colorType = .white(direction: .bottom)
-    }
-    
     override func setup() {
         super.setup()
         
@@ -31,7 +27,7 @@ final class FeedsView: BaseView {
     }
     
     override func setupSubviews() {
-        [headerView, collectionView, topGradientView].forEach {
+        [headerView, collectionView].forEach {
             addSubview($0)
         }
     }
@@ -40,12 +36,6 @@ final class FeedsView: BaseView {
         headerView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview()
-        }
-        
-        topGradientView.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom)
-            make.horizontalEdges.equalToSuperview()
-            make.height.equalTo(20)
         }
         
         collectionView.snp.makeConstraints { make in

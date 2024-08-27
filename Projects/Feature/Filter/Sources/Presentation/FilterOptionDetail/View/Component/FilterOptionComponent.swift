@@ -39,6 +39,9 @@ final class FilterOptionView: BaseView {
         $0.hasShadow = true
         $0.hasContentShdaow = true
     }
+    let untouchableAreaView = UIView().then {
+        $0.isUserInteractionEnabled = true
+    }
     
     override func setup() {
         super.setup()
@@ -47,6 +50,7 @@ final class FilterOptionView: BaseView {
     
     override func setupSubviews() {
         addSubview(container)
+        addSubview(untouchableAreaView)
         
         container.addSubview(optionButton)
     }
@@ -58,6 +62,10 @@ final class FilterOptionView: BaseView {
         }
         
         optionButton.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        untouchableAreaView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }

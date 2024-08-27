@@ -30,7 +30,17 @@ final class ProfileMyReviewsViewController: ViewController<ProfileMyReviewsView>
         initNavigationBar(hideShadow: true)
         initNavigationTitleView(title: "남긴 후기")
         
+        bindAction()
         bindViewModel()
+    }
+    
+    private func bindAction() {
+        contentView.emptyViewConformEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.moveToAccessedFilterHistory()
+            }
+            .store(in: &cancellables)
     }
     
     private func bindViewModel() {
@@ -53,6 +63,13 @@ final class ProfileMyReviewsViewController: ViewController<ProfileMyReviewsView>
                 self?.presentCompletePopup()
             }
             .store(in: &cancellables)
+        
+        output.sectionEmptyPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEmpty in
+                self?.contentView.showEmptyViewIfNeeded(with: isEmpty)
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -61,7 +78,7 @@ extension ProfileMyReviewsViewController {
     private func presentCompletePopup() {
         let alert = PurithmAlert(with:
                 .withTwoButton(
-                    title: "작성된 후기를 삭제할까요?",
+                    title: "작성한 후기를 삭제할까요?",
                     conformTitle: "삭제하기",
                     cancelTitle: "취소"
                 )

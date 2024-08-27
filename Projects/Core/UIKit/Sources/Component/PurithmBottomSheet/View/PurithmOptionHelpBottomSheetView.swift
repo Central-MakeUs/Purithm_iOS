@@ -58,12 +58,12 @@ public final class PurithmOptionHelpBottomSheetView: BaseView {
     }
     
     public override func setupSubviews() {
+        addSubview(titleLabel)
         addSubview(scrollView)
         addSubview(conformButton)
         
         scrollView.addSubview(container)
         
-        container.addSubview(titleLabel)
         container.addSubview(helpOptionContainer)
         
         helpOptionViews.forEach {
@@ -71,19 +71,24 @@ public final class PurithmOptionHelpBottomSheetView: BaseView {
         }
         
         //gradient
-        addSubview(bottomGradientView)
         addSubview(topGradientView)
+        addSubview(bottomGradientView)
     }
     
     public override func setupConstraints() {
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(safeAreaLayoutGuide).offset(60)
+            make.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
         topGradientView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
+            make.top.equalTo(scrollView.snp.top)
             make.horizontalEdges.equalToSuperview()
             make.height.equalTo(30)
         }
         
         scrollView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
+            make.top.equalTo(titleLabel.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(conformButton.snp.top).offset(-20)
         }
@@ -105,15 +110,10 @@ public final class PurithmOptionHelpBottomSheetView: BaseView {
             make.edges.equalToSuperview()
         }
         
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(30)
-            make.horizontalEdges.equalToSuperview().inset(20)
-        }
-        
         helpOptionContainer.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(30)
+            make.top.equalTo(scrollView.snp.top).offset(30)
             make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.lessThanOrEqualToSuperview()
+            make.bottom.lessThanOrEqualToSuperview().offset(-20)
         }
     }
 }

@@ -103,7 +103,7 @@ final class ProfileFilterCardView: BaseView, ActionEventEmitable {
     
     let thumbnailImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
-        $0.layer.cornerRadius = 12
+        $0.layer.cornerRadius = 16
         $0.clipsToBounds = true
         $0.image = .placeholderSquareLg
         $0.isUserInteractionEnabled = true
@@ -237,8 +237,8 @@ extension ProfileFilterCardView {
         
         override func setupConstraints() {
             label.snp.makeConstraints { make in
-                make.verticalEdges.equalToSuperview()
                 make.horizontalEdges.equalToSuperview().inset(8)
+                make.centerY.equalToSuperview()
             }
         }
         
@@ -262,6 +262,6 @@ extension ProfileFilterCardView {
 
 extension ProfileFilterCardView.FilterPlanBadgeView {
     private enum Constants {
-        static let titleTypo = Typography(size: .size14, weight: .medium, color: .gray400, applyLineHeight: true)
+        static let titleTypo = Typography(size: .size13, weight: .medium, color: .gray400, applyLineHeight: false)
     }
 }

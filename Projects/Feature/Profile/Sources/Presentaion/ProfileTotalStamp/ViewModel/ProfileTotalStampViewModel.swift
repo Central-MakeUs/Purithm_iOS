@@ -74,9 +74,15 @@ final class ProfileTotalStampViewModel {
                 let sections = self.converter.createSections(
                     cards: cards
                 )
+                
+                output.sectionEmptySubject.send(cards.isEmpty)
                 self.sectionItems.send(sections)
             }
             .store(in: &cancellables)
+    }
+    
+    func moveToAccessedFilterHistory() {
+        coordinator?.pushFilterAccessHistoryViewController()
     }
 }
 

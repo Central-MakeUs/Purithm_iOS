@@ -75,6 +75,7 @@ extension DefaultTabBarCoordinator {
         self.tabBarController.view.backgroundColor = .white
         self.tabBarController.tabBar.backgroundColor = .white
         self.tabBarController.tabBar.tintColor = .blue400
+        self.tabBarController.tabBar.unselectedItemTintColor = .gray300
         self.tabBarController.tabBar.barTintColor = .white
         self.tabBarController.tabBar.isTranslucent = false
         

@@ -135,7 +135,7 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
         premiumBadgeView.snp.makeConstraints { make in
             make.top.equalTo(filterImageView.snp.top).offset(10)
             make.trailing.equalTo(filterImageView.snp.trailing).offset(-10)
-            make.height.equalTo(22)
+            make.height.equalTo(24)
         }
         
         bottomContainer.snp.makeConstraints { make in

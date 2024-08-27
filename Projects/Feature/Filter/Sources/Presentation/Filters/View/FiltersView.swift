@@ -23,18 +23,9 @@ public final class FiltersView: BaseView {
         $0.backgroundColor = .gray100
         $0.showsVerticalScrollIndicator = false
     }
-    let filterTopGradientView = PurithmGradientView().then {
-        $0.colorType = .white(direction: .bottom)
-    }
-    let filterBottomGradientView = PurithmGradientView().then {
-        $0.colorType = .white(direction: .top)
-    }
     
     let chipCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.backgroundColor = .gray100
-    }
-    let chipLeftGradientView = PurithmGradientView().then {
-        $0.colorType = .white(direction: .trailing)
     }
     let chipRightGradientView = PurithmGradientView().then {
         $0.colorType = .white(direction: .leading)
@@ -47,11 +38,16 @@ public final class FiltersView: BaseView {
             addSubview($0)
         }
         
-        [chipLeftGradientView, chipRightGradientView, filterTopGradientView, filterBottomGradientView].forEach {
-            addSubview($0)
-        }
+        addSubview(chipRightGradientView)
         
-        filterCollectionView.backgroundView = FilterEmptyView()
+        let emptyView = PurithmEmptyView()
+        emptyView.configure(
+            image: .grFilter,
+            description: "아직 준비중이에요", 
+            buttonTitle: nil
+        )
+        
+        filterCollectionView.backgroundView = emptyView
         filterCollectionView.backgroundView?.isHidden = true
     }
     
@@ -66,14 +62,24 @@ public final class FiltersView: BaseView {
             make.horizontalEdges.equalToSuperview()
             make.height.equalTo(36)
         }
-        setupConstraintChipGradient() // chip gradient
+        
+        chipRightGradientView.snp.makeConstraints { make in
+            make.width.equalTo(20)
+            make.trailing.equalTo(chipCollectionView.snp.trailing)
+            make.verticalEdges.equalTo(chipCollectionView)
+        }
+        
+        chipRightGradientView.snp.makeConstraints { make in
+            make.width.equalTo(20)
+            make.trailing.equalTo(chipCollectionView.snp.trailing)
+            make.verticalEdges.equalTo(chipCollectionView)
+        }
         
         filterCollectionView.snp.makeConstraints { make in
             make.top.equalTo(chipCollectionView.snp.bottom).offset(10)
             make.bottom.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview()
         }
-        setupConstraintFilterGradient() // filter gradient
     }
     
     func configure(with type: PurithmHeaderType) {
@@ -82,32 +88,5 @@ public final class FiltersView: BaseView {
     
     func showEmptyViewIfNeeded(with isEmpty: Bool) {
         filterCollectionView.backgroundView?.isHidden = !isEmpty
-    }
-    
-    private func setupConstraintChipGradient() {
-        chipLeftGradientView.snp.makeConstraints { make in
-            make.width.equalTo(20)
-            make.leading.equalTo(chipCollectionView.snp.leading)
-            make.verticalEdges.equalTo(chipCollectionView)
-        }
-        chipRightGradientView.snp.makeConstraints { make in
-            make.width.equalTo(20)
-            make.trailing.equalTo(chipCollectionView.snp.trailing)
-            make.verticalEdges.equalTo(chipCollectionView)
-        }
-    }
-    
-    private func setupConstraintFilterGradient() {
-        filterTopGradientView.snp.makeConstraints { make in
-            make.horizontalEdges.equalTo(filterCollectionView)
-            make.top.equalTo(filterCollectionView.snp.top)
-            make.height.equalTo(10)
-        }
-        
-        filterBottomGradientView.snp.makeConstraints { make in
-            make.bottom.equalTo(filterCollectionView.snp.bottom)
-            make.horizontalEdges.equalTo(filterCollectionView)
-            make.height.equalTo(10)
-        }
     }
 }

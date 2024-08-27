@@ -29,7 +29,10 @@ public final class PurithmBarButtonItem: UIBarButtonItem {
     public init(image: UIImage?, tintColor: UIColor) {
         super.init()
 
-        button.setImage(image, for: .normal)
+        button.setImage(
+            image?.withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
         button.tintColor = tintColor
         button.adjustsImageWhenHighlighted = false
         button.backgroundColor = .clear

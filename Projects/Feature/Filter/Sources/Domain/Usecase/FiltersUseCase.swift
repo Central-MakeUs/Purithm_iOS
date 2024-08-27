@@ -150,7 +150,7 @@ public final class FiltersUseCase {
         .eraseToAnyPublisher()
     }
     
-    public func requestLike(with filterID: String) -> AnyPublisher<Bool, Error> {
+    public func requestLike(with filterID: String) -> AnyPublisher<Void, Error> {
         return Future { [weak self] promise in
             guard let self else { return }
             
@@ -160,9 +160,7 @@ public final class FiltersUseCase {
             
             publisher.values()
                 .sink { response in
-                    guard let data = response.data else { return }
-                    
-                    return promise(.success(data))
+                    return promise(.success(Void()))
                 }
                 .store(in: &cancellables)
             

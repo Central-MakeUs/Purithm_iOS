@@ -46,15 +46,10 @@ public final class ReviewViewController: ViewController<ReviewView> {
         
         let output = viewModel.transform(input: input)
         
-        adapter.didScrollPublisher
+        contentView.tapGesture.tapPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] (_ , contentOffset) in
-                guard let self else { return }
-                
-                if contentOffset.y < lastContentOffset.y {
-                    self.contentView.endEditing(true)
-                }
-                lastContentOffset = contentOffset
+            .sink { [weak self] _ in
+                self?.contentView.endEditing(true)
             }
             .store(in: &cancellables)
         

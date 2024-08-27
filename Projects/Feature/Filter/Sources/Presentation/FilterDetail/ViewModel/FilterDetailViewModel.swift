@@ -34,6 +34,11 @@ final class FilterDetailViewModel {
     
     private let converter = FilterDetailSectionConverter()
     
+    private let completeLikeEventSubject = PassthroughSubject<String, Never>()
+    var completeLikeEventPublusher: AnyPublisher<String, Never> {
+        completeLikeEventSubject.eraseToAnyPublisher()
+    }
+    
     private var filterID: String
     private var filterDetail = CurrentValueSubject<FilterDetailModel?, Never>(nil)
     var filter: FilterDetailModel? {
@@ -187,18 +192,14 @@ extension FilterDetailViewModel {
     
     private func requestFilterLike(with filterID: String) {
         usecase.requestLike(with: filterID)
-            .sink { _ in } receiveValue: { [weak self] _ in
-                //TODO: 토스트 띄우기
-                print("//TODO: like 토스트 띄우기")
+            .sink { _ in } receiveValue: { _ in
             }
             .store(in: &cancellabels)
     }
     
     private func requestFilterUnlike(with filterID: String) {
         usecase.requestUnlike(with: filterID)
-            .sink { _ in } receiveValue: { [weak self] _ in
-                //TODO: 토스트 띄우기
-                print("//TODO: unlike 토스트 띄우기")
+            .sink { _ in } receiveValue: { _ in
             }
             .store(in: &cancellabels)
     }

@@ -301,6 +301,10 @@ public final class ImageContainerPageViewController: UIPageViewController {
     }
     
     private func setupPageControl() {
+        if imagePages.count == 1 {
+            pageControl.isHidden = true
+        }
+        
         pageControl.numberOfPages = imagePages.count
         pageControl.currentPage = 0
         pageControl.pageIndicatorTintColor = .gray200

@@ -56,13 +56,10 @@ final class ProfileEditViewController: ViewController<ProfileEditView> {
             }
             .store(in: &cancellables)
         
-        output.galleryOpenEventPublisher
+        output.optionPresentEventPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                let imagePickerController = UIImagePickerController()
-                imagePickerController.delegate = self
-                imagePickerController.sourceType = .photoLibrary
-                self?.present(imagePickerController, animated: true, completion: nil)
+                self?.presentMenuBottomSheet()
             }
             .store(in: &cancellables)
         
@@ -76,37 +73,52 @@ final class ProfileEditViewController: ViewController<ProfileEditView> {
         viewModel.editCompletPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.presentEditCompleteAlert()
+                let toast = PurithmToast(with: .bottom(message: "프로필 수정 완료"))
+                toast.show(animated: true)
+                
+                self?.navigationController?.popViewController(animated: true)
             }
             .store(in: &cancellables)
     }
 }
 
 extension ProfileEditViewController {
-    private func presentEditCompleteAlert() {
-        let alert = PurithmAlert(with:
-                .withOneButton(
-                    title: "프로필 수정이 완료되었습니다.",
-                    conformTitle: "확인"
-                )
-        )
-        alert.conformTapEventPublisher
+    private func presentMenuBottomSheet() {
+        let bottomSheetVC = PurithmMenuBottomSheet()
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return bottomSheetVC.preferredContentSize.height
+            })]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16.0
+        }
+        
+        bottomSheetVC.menus = viewModel.orderOptions.map { option in
+            PurithmMenuModel(
+                identifier: option.identifier,
+                title: option.option.title,
+                isSelected: option.isSelected
+            )
+        }
+        
+        bottomSheetVC.menuTapEvent
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                alert.hide()
-                self?.navigationController?.popViewController(animated: true)
+            .sink { [weak self] identifier in
+                switch ProfileEditOption(rawValue: identifier) {
+                case .openGallery:
+                    let imagePickerController = UIImagePickerController()
+                    imagePickerController.delegate = self
+                    imagePickerController.sourceType = .photoLibrary
+                    self?.present(imagePickerController, animated: true, completion: nil)
+                case .setGeneral:
+                    self?.viewModel.resetProfileToDefault()
+                default:
+                    break
+                }
             }
-            .store(in: &cancellables)
+            .store(in: &self.cancellables)
         
-        alert.cancelTapEventPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { _ in
-                alert.hide()
-            }
-            .store(in: &cancellables)
-        
-        
-        alert.show(animated: false)
+        self.present(bottomSheetVC, animated: true, completion: nil)
     }
     
     private func presentUploadInProgressErrorAlert() {

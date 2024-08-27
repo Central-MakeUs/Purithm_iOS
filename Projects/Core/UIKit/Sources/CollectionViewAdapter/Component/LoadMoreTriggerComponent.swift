@@ -43,7 +43,7 @@ public final class LoadMoreTriggerView: BaseView {
         $0.color = .purple500
     }
     let descriptionLabel = PurithmLabel(typography: Constants.descriptionTypo).then {
-        $0.text = "마지막 페이지입니다."
+        $0.text = ""
     }
     
     public override func layoutSubviews() {

@@ -30,7 +30,17 @@ final class ProfileTotalStampViewController: ViewController<ProfileTotalStampVie
         initNavigationBar(hideShadow: true)
         initNavigationTitleView(title: "누적 스탬프")
         
+        bindAction()
         bindViewModel()
+    }
+    
+    private func bindAction() {
+        contentView.emptyViewConformEvent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.viewModel.moveToAccessedFilterHistory()
+            }
+            .store(in: &cancellables)
     }
     
     private func bindViewModel() {
@@ -44,6 +54,13 @@ final class ProfileTotalStampViewController: ViewController<ProfileTotalStampVie
         output.sections
             .sink { [weak self] sections in
                 _ = self?.adapter.receive(sections)
+            }
+            .store(in: &cancellables)
+        
+        output.sectionEmptyPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEmpty in
+                self?.contentView.showEmptyViewIfNeeded(with: isEmpty)
             }
             .store(in: &cancellables)
     }
@@ -60,7 +77,7 @@ final class ProfileTotalStampViewController: ViewController<ProfileTotalStampVie
         
         bottomSheetVC.contentModel = PurithmContentModel(
             contentType: .premiumFilterLock,
-            title: "잠금은 어떻게 푸나요?",
+            title: "스탬프는 어떻게 모으나요?",
             description: "필터를 사용해보고 후기를 남기면 스탬프가 찍히고,\n일정 개수를 모으면 프리미엄 필터를 열람할 수 있어요."
         )
         

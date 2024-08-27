@@ -212,22 +212,9 @@ extension ReviewViewModel {
     private func handleViewWillAppearEvent(input: Input, output: Output) {
         input.viewWillAppearEvent
             .sink { [weak self] _ in
-                self?.setupHeader()
+                self?.requestFilterInfo()
             }
             .store(in: &cancellables)
-    }
-    
-    private func setupHeader() {
-        let model = ReviewHeaderComponentModel(
-            identifier: UUID().uuidString,
-            title: "How Purithm?",
-            description: "아래 바를 조절해 만족도를 남겨주세요.",
-            thumbnailURLString: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
-            satisfactionLevel: .none,
-            intensity: .zero
-        )
-        
-        headerModel.send(model)
     }
 }
 
@@ -325,6 +312,23 @@ extension ReviewViewModel {
 }
 
 extension ReviewViewModel {
+    private func requestFilterInfo() {
+        usecase?.requestFilterInfo(with: filterID)
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                let model = ReviewHeaderComponentModel(
+                    identifier: UUID().uuidString,
+                    title: "How Purithm?",
+                    description: "아래 바를 조절해 만족도를 남겨주세요.",
+                    thumbnailURLString: response.thumbnail,
+                    satisfactionLevel: .none,
+                    intensity: .zero
+                )
+                
+                self?.headerModel.send(model)
+            })
+            .store(in: &cancellables)
+    }
+    
     private func requestCreateReview() {
         requestDTO.value.uploadedURLStrings = Array(willUploadURLString.values).filter { !$0.isEmpty }
         usecase?.requestCreateReview(with: requestDTO.value)

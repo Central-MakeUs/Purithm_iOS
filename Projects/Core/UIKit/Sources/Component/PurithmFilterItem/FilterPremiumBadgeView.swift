@@ -32,13 +32,12 @@ final class FilterPremiumBadgeView: BaseView {
     override func setupConstraints() {
         container.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalTo(22)
+            make.height.equalTo(24)
         }
         
         label.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.horizontalEdges.equalToSuperview().inset(8)
-            make.verticalEdges.lessThanOrEqualToSuperview()
         }
     }
     

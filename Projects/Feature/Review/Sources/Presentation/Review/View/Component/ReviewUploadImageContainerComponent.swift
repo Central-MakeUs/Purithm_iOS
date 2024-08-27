@@ -86,7 +86,7 @@ final class ReviewUploadImageContainerView: BaseView, ActionEventEmitable {
     }
     
     let iconImageView = UIImageView().then {
-        $0.image = .icCollector
+        $0.image = .icCollector.withTintColor(.gray200)
     }
     
     let cancelButton = UIButton().then {

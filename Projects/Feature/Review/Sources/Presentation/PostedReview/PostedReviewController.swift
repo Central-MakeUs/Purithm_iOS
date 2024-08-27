@@ -59,7 +59,7 @@ extension PostedReviewController {
     private func presentCompletePopup() {
         let alert = PurithmAlert(with:
                 .withTwoButton(
-                    title: "작성된 후기를 삭제할까요?",
+                    title: "작성한 후기를 삭제할까요?",
                     conformTitle: "삭제하기",
                     cancelTitle: "취소"
                 )

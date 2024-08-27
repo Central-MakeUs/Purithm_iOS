@@ -42,7 +42,7 @@ extension PostedReviewSectionConverter {
                                 , heightDimension: .estimated(500)),
             groupStrategy: .item(widthDimension: .fractionalWidth(1.0)
                                  , heightDimension: .estimated(500)),
-            sectionInset: .with(vertical: 20, horizontal: 20),
+            sectionInset: .with(vertical: 40, horizontal: 20),
             scrollBehavior: .none
         )
     }

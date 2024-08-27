@@ -12,9 +12,9 @@ import CoreCommonKit
 
 extension PurithmAlertView {
     enum Constants {
-        static let alertLabelTypo = Typography(size: .size18, weight: .semibold, alignment: .center, color: .gray500, applyLineHeight: true)
+        static let alertLabelTypo = Typography(size: .size18, weight: .semibold, alignment: .left, color: .gray500, applyLineHeight: true)
         
-        static let contentTypo = Typography(size: .size16, weight: .medium, alignment: .center, color: .gray400, applyLineHeight: true)
+        static let contentTypo = Typography(size: .size16, weight: .medium, alignment: .left, color: .gray400, applyLineHeight: true)
     }
 }
 
@@ -31,7 +31,8 @@ public final class PurithmAlertView: BaseView {
     private let textContainer = UIStackView().then {
         $0.axis = .vertical
         $0.distribution = .fillProportionally
-        $0.alignment = .center
+        $0.alignment = .leading
+//        $0.spacing = 10
     }
     private let alertLabel = PurithmLabel(typography: Constants.alertLabelTypo).then {
         $0.numberOfLines = 0
@@ -61,6 +62,8 @@ public final class PurithmAlertView: BaseView {
         
         textContainer.addArrangedSubview(alertLabel)
         textContainer.addArrangedSubview(alertContentLabel)
+        
+        textContainer.setCustomSpacing(10, after: alertLabel)
     }
     
     public override func setupConstraints() {

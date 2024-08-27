@@ -59,8 +59,9 @@ public final class FilterDetailCoordinator: FilterDetailCoordinatorable {
         
         let waitViewController = PurithmAnimateAlert<FilterWaitAnimateView>()
         waitViewController.contentView.configure(with: filterName)
-        waitViewController.modalPresentationStyle = .overCurrentContext
-        self.navigationController.present(waitViewController, animated: false)
+        waitViewController.modalPresentationStyle = .overFullScreen
+        waitViewController.modalTransitionStyle = .crossDissolve
+        self.navigationController.present(waitViewController, animated: true)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
             waitViewController.dismiss(animated: false)

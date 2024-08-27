@@ -251,7 +251,7 @@ final class ProfileStampContainerView: BaseView, ActionEventEmitable {
         case 8...15:
             descriptionLabel.text = "\(16-stampCount)개 더 모으면 premium+ 필터를 열람할 수 있어요"
         default:
-            descriptionLabel.text = "모든 스탬프를 모두 모았어요!"
+            descriptionLabel.text = "premium 시리즈를 모두 열람할 수 있어요!"
         }
     }
     

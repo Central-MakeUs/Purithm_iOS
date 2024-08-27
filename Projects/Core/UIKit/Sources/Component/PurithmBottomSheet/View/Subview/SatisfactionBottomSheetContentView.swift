@@ -32,7 +32,7 @@ final class SatisfactionBottomSheetContentView: BaseView {
         }
         
         satisfactionImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(20)
+            make.edges.equalToSuperview()
             make.height.equalTo(70)
         }
     }

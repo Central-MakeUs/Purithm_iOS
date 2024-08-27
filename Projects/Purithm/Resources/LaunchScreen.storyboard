@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -17,26 +16,26 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bg_lg" translatesAutoresizingMaskIntoConstraints="NO" id="Mjd-of-6Gu">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bg_lg" translatesAutoresizingMaskIntoConstraints="NO" id="d0F-Wk-AHq">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="purithm_logo" translatesAutoresizingMaskIntoConstraints="NO" id="2hK-eR-QsH">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="purithm_logo" translatesAutoresizingMaskIntoConstraints="NO" id="Fc1-4a-eNw">
                                 <rect key="frame" x="96.666666666666686" y="326" width="200" height="200"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="200" id="EZ3-8b-1vq"/>
-                                    <constraint firstAttribute="height" constant="200" id="axq-S1-aHn"/>
+                                    <constraint firstAttribute="width" constant="200" id="hSM-CQ-H2S"/>
+                                    <constraint firstAttribute="height" constant="200" id="zNX-qz-wp5"/>
                                 </constraints>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="2hK-eR-QsH" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="4jJ-6H-WEp"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Mjd-of-6Gu" secondAttribute="trailing" id="K1G-uy-4V0"/>
-                            <constraint firstItem="Mjd-of-6Gu" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="K8i-vP-TNz"/>
-                            <constraint firstItem="Mjd-of-6Gu" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="NI5-ZM-y3k"/>
-                            <constraint firstItem="2hK-eR-QsH" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="gGr-b6-MMa"/>
-                            <constraint firstAttribute="bottom" secondItem="Mjd-of-6Gu" secondAttribute="bottom" id="hxE-1U-cT0"/>
+                            <constraint firstItem="d0F-Wk-AHq" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="AK8-wr-XWO"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="d0F-Wk-AHq" secondAttribute="trailing" id="GCz-Bb-yvL"/>
+                            <constraint firstItem="Fc1-4a-eNw" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="Kf6-Hz-V3H"/>
+                            <constraint firstItem="Fc1-4a-eNw" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="olj-0G-Cae"/>
+                            <constraint firstAttribute="bottom" secondItem="d0F-Wk-AHq" secondAttribute="bottom" id="xhm-zj-EXb"/>
+                            <constraint firstItem="d0F-Wk-AHq" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="zf1-Wi-dMW"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -48,8 +47,5 @@
     <resources>
         <image name="bg_lg" width="375" height="650"/>
         <image name="purithm_logo" width="200" height="200"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
     </resources>
 </document>

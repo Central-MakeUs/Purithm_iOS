@@ -81,6 +81,6 @@ public final class PurithmEmptyView: BaseView {
 
 extension PurithmEmptyView {
     private enum Constants {
-        static let descriptionLabelTypo = Typography(size: .size16, weight: .medium, color: .gray400, applyLineHeight: true)
+        static let descriptionLabelTypo = Typography(size: .size16, weight: .medium, alignment: .center, color: .gray400, applyLineHeight: true)
     }
 }

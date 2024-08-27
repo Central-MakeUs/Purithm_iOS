@@ -30,7 +30,7 @@ enum IPhonePhotoFilter: String, CaseIterable {
         case .exposure:
             return "노출"
         case .brightness:
-            return "휘도"
+            return "밝기"
         case .highlight:
             return "하이라이트"
         case .shadow:
@@ -38,7 +38,7 @@ enum IPhonePhotoFilter: String, CaseIterable {
         case .contrast:
             return "대비"
         case .luminance:
-            return "밝기"
+            return "휘도"
         case .blackPoint:
             return "블랙포인트"
         case .saturation:

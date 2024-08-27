@@ -25,7 +25,7 @@ struct ReviewHeaderComponentModel {
     }
     
     mutating private func updateSatisfactionLevel() {
-        satisfactionLevel = SatisfactionLevel(rawValue: Int(intensity)) ?? .low
+        satisfactionLevel = SatisfactionLevel.calculateSatisfactionLevel(with: Int(intensity))
     }
 }
 
@@ -114,7 +114,7 @@ final class ReviewHeaderView: BaseView {
     }
     
     private func updateTextTypo(with headerModel: ReviewHeaderComponentModel) {
-        let intensity = Int(headerModel.intensity)
+        let intensity = headerModel.satisfactionLevel.rawValue
         
         switch SatisfactionLevel(rawValue: intensity) {
         case .veryHigh, .mediumHigh, .high, .medium, .low:

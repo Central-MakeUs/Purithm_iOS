@@ -98,6 +98,8 @@ public enum SatisfactionLevel: Int, CaseIterable {
     
     public static func calculateSatisfactionLevel(with averageValue: Int) -> SatisfactionLevel {
         switch averageValue {
+        case 0...19:
+            return SatisfactionLevel.none
         case 20...30:
             return SatisfactionLevel.low
         case 31...50:

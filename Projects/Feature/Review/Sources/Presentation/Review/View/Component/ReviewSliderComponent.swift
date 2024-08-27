@@ -9,6 +9,7 @@ import UIKit
 import CoreUIKit
 import CoreCommonKit
 import Combine
+import CombineCocoa
 import RxSwift
 
 struct ReviewSliderAction: ActionEventItem {
@@ -28,20 +29,32 @@ extension ReviewSliderComponent {
     typealias ContentType = ReviewSliderView
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
-        content.sliderView.valuePublisher
-            .map { value -> CGFloat in
-                let step: Float = 20
-                return CGFloat(round(value / step) * step)
+        
+        let step: Float = 20
+
+        let sliderValue = content.sliderView.controlEventPublisher(for: .valueChanged)
+            .map { content.sliderView.value }
+            .map { value -> Int in
+                return Int(round(value / step) * step)
             }
+            .filter { $0 != Int(content.sliderView.value) }
+            .removeDuplicates(by: { $0 == $1 })
+        
+        sliderValue
             .sink { [weak content] value in
-                print("::: value > \(value)")
-                guard let content else { return }
-                content.sliderView.setValue(Float(value), animated: true)
-                
-                content.actionEventEmitter.send(ReviewSliderAction(
+                content?.actionEventEmitter.send(ReviewSliderAction(
                     identifier: context.identifier,
-                    intensity: value
+                    intensity: CGFloat(value)
                 ))
+            }
+            .store(in: &cancellable)
+        
+        content.sliderView.controlEventPublisher(for: [.touchUpInside, .touchUpOutside])
+            .map { content.sliderView.value }
+            .sink { [weak content] value in
+                let calculatedValue = SatisfactionLevel.calculateSatisfactionLevel(with: Int(value)).rawValue
+                
+                content?.sliderView.setValue(Float(calculatedValue), animated: true)
             }
             .store(in: &cancellable)
     }
@@ -56,7 +69,7 @@ final class ReviewSliderView: BaseView, ActionEventEmitable {
         $0.maximumValue = 100
         $0.minimumTrackTintColor = .white
         $0.maximumTrackTintColor = .white
-        $0.isContinuous = false
+//        $0.isContinuous = false
         $0.setThumbImage(.bubble, for: .normal)
     }
     

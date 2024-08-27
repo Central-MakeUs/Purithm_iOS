@@ -28,7 +28,7 @@ extension ReviewUploadImageContainerHeaderComponent {
 
 final class ReviewUploadImageContainerHeaderView: BaseView {
     let descriptionLabel = PurithmLabel(typography: Constants.descriptionTypo).then {
-        $0.text = "(필수) 사진 1장 이상"
+        $0.text = "사진 1장 이상 올려주세요"
     }
     
     override func setup() {

@@ -75,15 +75,11 @@ final class ReviewTextViewView: BaseView, ActionEventEmitable {
         $0.text = "필터 사용 후기를 남겨주세요."
     }
     
-    let descriptionLabel = PurithmLabel(typography: Constants.descriptionTypo).then {
-        $0.text = "(필수) 텍스트 20자 이상"
-    }
-    
     let textView = PlaceholderTextView().then {
         $0.layer.cornerRadius = 12
         $0.font = UIFont.Pretendard.medium.font(size: 16)
         $0.textColor = .gray500
-        $0.placeholder = "텍스트 20자 이상 입력해주세요\n\n주의! 부적절하거나 불쾌감을 줄 수 있는 컨텐츠는 제재를 받을 수 있습니다"
+        $0.placeholder = "텍스트 20자 이상 입력해주세요"
         $0.placeholderColor = .gray200
         $0.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 50, right: 20)
     }
@@ -106,7 +102,6 @@ final class ReviewTextViewView: BaseView, ActionEventEmitable {
         self.backgroundColor = .gray100
         
         container.addSubview(titleLabel)
-        container.addSubview(descriptionLabel)
         container.addSubview(textView)
         
         container.addSubview(countLabel)
@@ -125,13 +120,8 @@ final class ReviewTextViewView: BaseView, ActionEventEmitable {
             make.horizontalEdges.equalToSuperview()
         }
         
-        descriptionLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(20)
-            make.horizontalEdges.equalToSuperview()
-        }
-        
         textView.snp.makeConstraints { make in
-            make.top.equalTo(descriptionLabel.snp.bottom).offset(10)
+            make.top.equalTo(titleLabel.snp.bottom).offset(10)
             make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview()
             make.height.equalTo(200)

@@ -242,7 +242,7 @@ final class ProfileStampContainerView: BaseView, ActionEventEmitable {
     }
     
     func configure(stampCount: Int) {
-        stampCountLabel.text = "남은 스탬프 \(8 - stampCount)"
+        stampCountLabel.text = "누적 스탬프 \(8 - stampCount)"
         unlockStamps(stampCount: stampCount)
         
         switch stampCount {

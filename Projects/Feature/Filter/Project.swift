@@ -15,6 +15,7 @@ let project = Project.makeFeatureModule(
         .core(.common),
         .core(.uiKit),
         .core(.keychain),
+        .thirdParty(.skeletonView),
         .thirdParty(.snapKit),
         .thirdParty(.then),
         .thirdParty(.rxSwift),

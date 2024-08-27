@@ -92,5 +92,7 @@ public enum Module {
         case kingfisher = "Kingfisher"
         case moya = "Moya"
         case combineMoya = "CombineMoya"
+        case lottie = "Lottie"
+        case skeletonView = "SkeletonView"
     }
 }

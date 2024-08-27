@@ -12,6 +12,7 @@ let project = Project.makeCoreModule(
     .uiKit,
     dependencies: [
         .core(.common),
+        .thirdParty(.lottie),
         .thirdParty(.snapKit),
         .thirdParty(.then),
         .thirdParty(.combineCocoa),

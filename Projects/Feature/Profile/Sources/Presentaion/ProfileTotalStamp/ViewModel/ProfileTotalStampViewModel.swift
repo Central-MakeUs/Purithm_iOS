@@ -67,15 +67,18 @@ final class ProfileTotalStampViewModel {
             .store(in: &cancellables)
         
         filterCards
-            .filter { !$0.isEmpty }
             .sink { [weak self] cards in
                 guard let self else { return }
+                
+                guard !cards.isEmpty else {
+                    output.sectionEmptySubject.send(true)
+                    return
+                }
                 
                 let sections = self.converter.createSections(
                     cards: cards
                 )
                 
-                output.sectionEmptySubject.send(cards.isEmpty)
                 self.sectionItems.send(sections)
             }
             .store(in: &cancellables)

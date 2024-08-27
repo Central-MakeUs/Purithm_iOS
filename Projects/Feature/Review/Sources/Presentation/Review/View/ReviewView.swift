@@ -13,7 +13,9 @@ import Combine
 public final class ReviewView: BaseView {
     private var cancellables = Set<AnyCancellable>()
     
-    let tapGesture = UITapGestureRecognizer()
+    let tapGesture = UITapGestureRecognizer().then {
+        $0.cancelsTouchesInView = false
+    }
     
     let container = UIView().then {
         $0.backgroundColor = .gray100

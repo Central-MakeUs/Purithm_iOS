@@ -45,7 +45,9 @@ final class ProfileMenuView: BaseView, ActionEventEmitable {
     var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
     
     let leftImageView = UIImageView()
-    let menuTitleLabel = PurithmLabel(typography: Constants.titleTypo)
+    let menuTitleLabel = PurithmLabel(typography: Constants.titleTypo).then {
+        $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+    }
     
     let rightContainer = UIStackView().then {
         $0.axis = .horizontal
@@ -62,6 +64,14 @@ final class ProfileMenuView: BaseView, ActionEventEmitable {
     }
     
     let menuSelectTapGesture = UITapGestureRecognizer()
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        countLabel.snp.remakeConstraints { make in
+            make.width.equalTo(countLabel.intrinsicContentSize.width)
+        }
+    }
     
     override func setup() {
         super.setup()

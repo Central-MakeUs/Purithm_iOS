@@ -62,6 +62,9 @@ final class ProfileMenuView: BaseView, ActionEventEmitable {
     let rightImageView = UIImageView().then {
         $0.image = .icArrowRight.withTintColor(.gray300)
     }
+    let bottomDivider = UIView().then {
+        $0.backgroundColor = .gray200
+    }
     
     let menuSelectTapGesture = UITapGestureRecognizer()
     
@@ -84,6 +87,7 @@ final class ProfileMenuView: BaseView, ActionEventEmitable {
         addSubview(leftImageView)
         addSubview(menuTitleLabel)
         addSubview(rightContainer)
+        addSubview(bottomDivider)
         
         rightContainer.addArrangedSubview(countLabel)
         rightContainer.addArrangedSubview(rightImageView)
@@ -110,6 +114,12 @@ final class ProfileMenuView: BaseView, ActionEventEmitable {
         rightImageView.snp.makeConstraints { make in
             make.size.equalTo(20)
         }
+        
+        bottomDivider.snp.makeConstraints { make in
+            make.height.equalTo(1)
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
     }
     
     func configure(menu: ProfileMenu, count: Int) {
@@ -117,6 +127,8 @@ final class ProfileMenuView: BaseView, ActionEventEmitable {
         menuTitleLabel.text = menu.title
         
         countLabel.text = "\(count)"
+        
+        bottomDivider.isHidden = menu == .writtenReviews
     }
 }
 

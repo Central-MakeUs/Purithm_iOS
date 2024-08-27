@@ -22,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        sleep(1)
+        
         //TODO: PurithmAuth Module로 옮겨야할듯
         KakaoSDK.initSDK(appKey: "c6e355b541377b0886d546a44fc76f50")
         UICollectionReusableView.swizzlePrepareForReuse()

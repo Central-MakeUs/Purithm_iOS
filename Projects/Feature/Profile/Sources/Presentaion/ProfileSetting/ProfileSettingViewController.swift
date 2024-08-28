@@ -105,7 +105,7 @@ extension ProfileSettingViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 alert.hide()
-                self?.viewModel.terminationEvent.send(Void())
+                self?.viewModel.requestAccountDeactive()
             }
             .store(in: &cancellables)
         

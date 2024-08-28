@@ -82,7 +82,6 @@ public final class ProfileSettingViewModel {
     private var menus: [ProfileSettingMenu] = ProfileSettingMenu.allCases
     
     let logoutEvent = PassthroughSubject<Void, Never>()
-    let terminationEvent = PassthroughSubject<Void, Never>()
     
     init(coordinator: ProfileCoordinatorable, usecase: ProfileUsecase) {
         self.coordinator = coordinator
@@ -116,14 +115,15 @@ public final class ProfileSettingViewModel {
                 self?.coordinator?.finish()
             }
             .store(in: &cancellables)
-        
-        terminationEvent
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+    }
+    
+    func requestAccountDeactive() {
+        usecase?.requestAccountDeactivated()
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] _ in
                 //TODO: 추후 repository를 만들어 거기서 핸들링하도록 하자
                 try? KeychainManager.shared.deleteAuthToken()
                 self?.coordinator?.finish()
-            }
+            })
             .store(in: &cancellables)
     }
 }

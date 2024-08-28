@@ -32,7 +32,15 @@ extension FilterOrderOptionComponent {
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
         content.configure(with: context.optionTitle)
-        content.containerTapGesture.tapPublisher
+        
+        content.labelTapGesture.tapPublisher
+            .sink { [weak content] _ in
+                let action = FilterOrderOptionAction(identifier: context.identifier)
+                content?.actionEventEmitter.send(action)
+            }
+            .store(in: &cancellable)
+        
+        content.imageTapGesture.tapPublisher
             .sink { [weak content] _ in
                 let action = FilterOrderOptionAction(identifier: context.identifier)
                 content?.actionEventEmitter.send(action)
@@ -45,18 +53,24 @@ final class FilterOrderOptionView: BaseView, ActionEventEmitable {
     var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
     
     let container = UIView()
-    let containerTapGesture = UITapGestureRecognizer()
     
-    let optionLabel = PurithmLabel(typography: Constants.optionTitleTypo)
+    let optionLabel = PurithmLabel(typography: Constants.optionTitleTypo).then {
+        $0.isUserInteractionEnabled = true
+    }
     let downImageView = UIImageView().then {
         $0.image = .icArrowBottom.withTintColor(.gray400)
+        $0.isUserInteractionEnabled = true
     }
+    
+    let labelTapGesture = UITapGestureRecognizer()
+    let imageTapGesture = UITapGestureRecognizer()
     
     override func setup() {
         super.setup()
         self.backgroundColor = .gray100
         
-        container.addGestureRecognizer(containerTapGesture)
+        optionLabel.addGestureRecognizer(labelTapGesture)
+        downImageView.addGestureRecognizer(imageTapGesture)
     }
     
     override func setupSubviews() {

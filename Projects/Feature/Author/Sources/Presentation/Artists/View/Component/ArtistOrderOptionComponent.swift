@@ -33,7 +33,14 @@ extension ArtistOrderOptionComponent {
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
         content.configure(count: context.artistCount, optionTitle: context.optionTitle)
         
-        content.containerTapGesture.tapPublisher
+        content.labelTapGesture.tapPublisher
+            .sink { [weak content] _ in
+                let action = ArtistOrderOptionAction(identifier: context.identifier)
+                content?.actionEventEmitter.send(action)
+            }
+            .store(in: &cancellable)
+        
+        content.imageTapGesture.tapPublisher
             .sink { [weak content] _ in
                 let action = ArtistOrderOptionAction(identifier: context.identifier)
                 content?.actionEventEmitter.send(action)
@@ -48,20 +55,26 @@ final class ArtistOrderOptionView: BaseView, ActionEventEmitable {
     let container = UIView().then {
         $0.isUserInteractionEnabled = true
     }
-    let containerTapGesture = UITapGestureRecognizer()
     
     let reviewCountLabel = PurithmLabel(typography: Constants.reviewTitleTypo)
     
-    let orderLabel = PurithmLabel(typography: Constants.orderTypo)
+    let orderLabel = PurithmLabel(typography: Constants.orderTypo).then {
+        $0.isUserInteractionEnabled = true
+    }
     let downImageView = UIImageView().then {
         $0.image = .icArrowBottom.withTintColor(.gray400)
+        $0.isUserInteractionEnabled = true
     }
+    
+    let labelTapGesture = UITapGestureRecognizer()
+    let imageTapGesture = UITapGestureRecognizer()
     
     override func setup() {
         super.setup()
         
         self.backgroundColor = .gray100
-        container.addGestureRecognizer(containerTapGesture)
+        orderLabel.addGestureRecognizer(labelTapGesture)
+        downImageView.addGestureRecognizer(imageTapGesture)
     }
     
     override func setupSubviews() {

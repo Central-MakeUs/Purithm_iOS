@@ -35,7 +35,14 @@ extension FeedOrderOptionComponent {
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
         content.configure(count: context.reviewCount, optionTitle: context.optionTitle)
         
-        content.containerTapGesture.tapPublisher
+        content.labelTapGesture.tapPublisher
+            .sink { [weak content] _ in
+                let action = FeedOrderOptionAction(identifier: context.identifier)
+                content?.actionEventEmitter.send(action)
+            }
+            .store(in: &cancellable)
+        
+        content.imageTapGesture.tapPublisher
             .sink { [weak content] _ in
                 let action = FeedOrderOptionAction(identifier: context.identifier)
                 content?.actionEventEmitter.send(action)
@@ -48,20 +55,27 @@ final class FeedOrderOptionView: BaseView, ActionEventEmitable {
     var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
     
     let container = UIView()
-    let containerTapGesture = UITapGestureRecognizer()
     
     let reviewCountLabel = PurithmLabel(typography: Constants.reviewTitleTypo)
     
-    let orderLabel = PurithmLabel(typography: Constants.orderTypo)
+    let orderLabel = PurithmLabel(typography: Constants.orderTypo).then {
+        $0.isUserInteractionEnabled = true
+    }
     let downImageView = UIImageView().then {
         $0.image = .icArrowBottom.withTintColor(.gray400)
+        $0.isUserInteractionEnabled = true
     }
+    
+    let labelTapGesture = UITapGestureRecognizer()
+    let imageTapGesture = UITapGestureRecognizer()
     
     override func setup() {
         super.setup()
         
         self.backgroundColor = .gray100
-        container.addGestureRecognizer(containerTapGesture)
+        
+        orderLabel.addGestureRecognizer(labelTapGesture)
+        downImageView.addGestureRecognizer(imageTapGesture)
     }
     
     override func setupSubviews() {

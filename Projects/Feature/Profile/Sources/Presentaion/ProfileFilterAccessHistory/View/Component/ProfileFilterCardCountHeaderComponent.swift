@@ -66,12 +66,12 @@ final class ProfileFilterCardCountHeaderView: BaseView {
         
         descriptionLabel.isHidden = !showDescription
         switch count {
-        case 0...7:
-            descriptionLabel.text = "premium 까지 \(8 - count)개 남음"
-        case 8...15:
-            descriptionLabel.text = "premium+ 까지 \(16 - count)개 남음"
+        case 0...3:
+            descriptionLabel.text = "premium 까지 \(4 - count)개 남음"
+        case 4...7:
+            descriptionLabel.text = "premium+ 까지 \(8 - count)개 남음"
         default:
-            descriptionLabel.text = "모든 스탬프를 모두 모았어요!"
+            descriptionLabel.text = "premium 시리즈를 모두 열람할 수 있어요!"
         }
     }
 }

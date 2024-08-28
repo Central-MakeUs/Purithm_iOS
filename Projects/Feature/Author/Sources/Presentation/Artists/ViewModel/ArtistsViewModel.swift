@@ -53,7 +53,7 @@ final class ArtistsViewModel {
     
     //Data
     private var artistsRequestDTO = CurrentValueSubject<AuthorsRequestDTO, Never>(
-        AuthorsRequestDTO(sorted: .earliest)
+        AuthorsRequestDTO(sorted: .filterCountHigh)
     )
     
     private var artistModels = CurrentValueSubject<[ArtistScrapModel], Never>([])

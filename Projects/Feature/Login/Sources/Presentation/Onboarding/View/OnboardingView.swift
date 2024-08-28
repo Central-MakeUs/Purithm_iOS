@@ -40,7 +40,7 @@ final class OnboardingView: BaseView {
         backgroundImageView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.horizontalEdges.equalToSuperview()
-            make.height.equalTo(450)
+            make.height.equalToSuperview().multipliedBy(0.55)
         }
         
         titleLabel.snp.makeConstraints { make in

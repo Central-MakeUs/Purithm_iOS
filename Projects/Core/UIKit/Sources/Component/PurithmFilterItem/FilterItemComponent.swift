@@ -180,7 +180,7 @@ public final class FilterItemView: BaseView, ActionEventEmitable {
         }
         
         if let url = URL(string: item.filterImageURLString) {
-            filterImageView.kf.setImage(with: url, placeholder: UIImage.placeholderSquareLg)
+            filterImageView.kf.setImage(with: url)
         }
         
         filterTitleLabel.text = item.filterTitle

@@ -14,14 +14,8 @@ public final class PurithmLoadingView: BaseView {
     let container = UIView()
     
     let animationView: LottieAnimationView? = {
-        // 다른 번들 참조
-        let bundleIdentifier = "com.purithm.UIKit.core"
-        guard let coreBundle = Bundle(identifier: bundleIdentifier) else {
-            return nil
-        }
-        
-        // 번들에서 Lottie 애니메이션 로드
-        guard let animation = LottieAnimation.named("indicator_lottie", bundle: coreBundle) else {
+        // 메인 번들 참조
+        guard let animation = LottieAnimation.named("indicator_lottie", bundle: .main) else {
             return nil
         }
         

@@ -52,13 +52,13 @@ extension FilterItemComponent {
         
         content.imageTapGesture.tapPublisher
             .sink { [weak content] _ in
-                content?.actionEventEmitter.send(FilterDidTapAction(identifier: context.identifier))
+                content?.actionEventEmitter.send(FilterDidTapAction(identifier: context.item.filterID))
             }
             .store(in: &cancellable)
         
         content.likeButton.tap
             .sink { [weak content] _ in
-                content?.actionEventEmitter.send(FilterLikeAction(identifier: context.identifier))
+                content?.actionEventEmitter.send(FilterLikeAction(identifier: context.item.filterID))
             }
             .store(in: &cancellable)
     }

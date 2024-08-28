@@ -9,6 +9,7 @@ import Foundation
 
 public struct FilterItemModel {
     public let identifier: String
+    public let filterID: String
     public let filterImageURLString: String
     public let planType: PlanType
     public let filterTitle: String
@@ -18,8 +19,9 @@ public struct FilterItemModel {
     public var likeCount: Int
     public let canAccess: Bool
     
-    public init(identifier: String, filterImageURLString: String, planType: PlanType, filterTitle: String, author: String, authorID: String, isLike: Bool, likeCount: Int, canAccess: Bool) {
+    public init(identifier: String, filterID: String, filterImageURLString: String, planType: PlanType, filterTitle: String, author: String, authorID: String, isLike: Bool, likeCount: Int, canAccess: Bool) {
         self.identifier = identifier
+        self.filterID = filterID
         self.filterImageURLString = filterImageURLString
         self.planType = planType
         self.filterTitle = filterTitle

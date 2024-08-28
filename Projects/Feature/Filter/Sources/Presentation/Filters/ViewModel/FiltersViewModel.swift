@@ -271,7 +271,7 @@ extension FiltersViewModel {
                 case _ as FilterOrderOptionAction:
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
                 case let action as FilterLikeAction:
-                    if let targetIndex = self.filters.firstIndex(where: { $0.identifier == action.identifier }) {
+                    if let targetIndex = self.filters.firstIndex(where: { $0.filterID == action.identifier }) {
                         self.filters[targetIndex].isLike.toggle()
                         
                         if self.filters[targetIndex].isLike {
@@ -285,7 +285,7 @@ extension FiltersViewModel {
                         self.filtersSubject.send(filters)
                     }
                 case let action as FilterDidTapAction:
-                    if let targetIndex = self.filters.firstIndex(where: { $0.identifier == action.identifier }) {
+                    if let targetIndex = self.filters.firstIndex(where: { $0.filterID == action.identifier }) {
                         if self.filters[targetIndex].canAccess {
                             DispatchQueue.main.async {
                                 self.coordinator?.pushFilterDetail(with: action.identifier)

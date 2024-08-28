@@ -28,6 +28,7 @@ public struct AuthorFiltersResponseDTO: Codable {
         func convertModel() -> FilterItemModel {
             FilterItemModel(
                 identifier: "\(id)",
+                filterID: "\(id)",
                 filterImageURLString: thumbnail,
                 planType: PlanType.calculatePlanType(with: membership),
                 filterTitle: name,

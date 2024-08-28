@@ -27,6 +27,7 @@ struct Filter: Codable {
     func convertModel() -> FilterItemModel {
         FilterItemModel(
             identifier: "\(UUID().uuidString)_\(id)",
+            filterID: "\(id)",
             filterImageURLString: thumbnail,
             planType: PlanType.calculatePlanType(with: membership),
             filterTitle: name,

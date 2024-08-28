@@ -145,7 +145,8 @@ extension ProfileMyWishlistViewModel {
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
                 let filters = response.map { item in
                     let itemModel = FilterItemModel(
-                        identifier: "\(item.id)",
+                        identifier: "\(item.id)", 
+                        filterID: "\(item.id)",
                         filterImageURLString: item.thumbnail,
                         planType: PlanType.calculatePlanType(with: item.membership),
                         filterTitle: item.name,

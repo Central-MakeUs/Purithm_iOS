@@ -72,7 +72,7 @@ public final class FiltersViewModel {
     private var filtersRequestDTO = CurrentValueSubject<FilterListRequestDTO, Never>(
         FilterListRequestDTO(
             tag: .all,
-            sortedBy: .earliest,
+            sortedBy: .name,
             page: 0,
             size: 20
         )
@@ -195,7 +195,7 @@ public final class FiltersViewModel {
             FilterOrderOptionModel(
                 identifier: option.identifier,
                 option: option,
-                isSelected: option == .earliest ? true : false)
+                isSelected: option == .name ? true : false)
         }
         
         orderOptionModels.send(orderOptions)
@@ -211,14 +211,15 @@ public final class FiltersViewModel {
             
             orderOptionModels.send(tempOrderOptions)
             
+            filtersRequestDTO.value.page = 0
             filtersRequestDTO.value.sortedBy = {
                 switch tempOrderOptions[targetIndex].option {
-                case .earliest:
-                    return FilterListRequestDTO.Sort.earliest
-                case .latest:
-                    return FilterListRequestDTO.Sort.latest
+                case .name:
+                    return FilterListRequestDTO.Sort.name
+                case .rating:
+                    return FilterListRequestDTO.Sort.rating
                 case .pureIndexHigh:
-                    return FilterListRequestDTO.Sort.popular
+                    return FilterListRequestDTO.Sort.pureIndexHigh
                 }
             }()
             
@@ -247,11 +248,11 @@ extension FiltersViewModel {
                     
                     filtersRequestDTO.value.tag = tempChipModels[targetIndex].chipType
                     filtersRequestDTO.value.page = 0
-                    filtersRequestDTO.value.sortedBy = .earliest
+                    filtersRequestDTO.value.sortedBy = .name
                     
                     var tempOrderOptions = orderOptionModels.value
                     for index in tempOrderOptions.indices {
-                        tempOrderOptions[index].isSelected = tempOrderOptions[index].option == .earliest ? true : false
+                        tempOrderOptions[index].isSelected = tempOrderOptions[index].option == .name ? true : false
                     }
                     orderOptionModels.send(tempOrderOptions)
                     

@@ -15,9 +15,9 @@ public struct FilterListRequestDTO {
     var size: Int
     
     enum Sort: String {
-        case earliest
-        case latest
-        case popular
+        case name
+        case pureIndexHigh
+        case rating = "membership"
     }
     
     func toDictionary() -> [String: Any] {

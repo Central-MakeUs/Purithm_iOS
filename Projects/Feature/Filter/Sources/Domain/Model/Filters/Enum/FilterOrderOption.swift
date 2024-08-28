@@ -8,9 +8,9 @@
 import Foundation
 
 public enum FilterOrderOption: String, CaseIterable {
-    case earliest
-    case latest
+    case name
     case pureIndexHigh
+    case rating
     
     var identifier: String {
         return self.rawValue
@@ -18,12 +18,12 @@ public enum FilterOrderOption: String, CaseIterable {
     
     var title: String {
         switch self {
-        case .earliest:
-            return "최신순"
-        case .latest:
-            return "오래된순"
+        case .name:
+            return "이름순"
         case .pureIndexHigh:
             return "퓨어지수 높은순"
+        case .rating:
+            return "등급 낮은 순"
         }
     }
 }

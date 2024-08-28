@@ -65,7 +65,7 @@ final class ArtistDetailViewModel {
     private var filterRequestDTO = CurrentValueSubject<AuthorFiltersRequestDTO, Never>(
         AuthorFiltersRequestDTO(
             authorID: "",
-            sortedBy: .earliest,
+            sortedBy: .name,
             page: 0,
             size: 20
         )
@@ -176,10 +176,10 @@ final class ArtistDetailViewModel {
             
             filterRequestDTO.value.sortedBy = {
                 switch tempOrderOptions[targetIndex].option {
-                case .earliest:
-                    return AuthorFiltersRequestDTO.Sort.earliest
-                case .latest:
-                    return AuthorFiltersRequestDTO.Sort.latest
+                case .name:
+                    return AuthorFiltersRequestDTO.Sort.name
+                case .rating:
+                    return AuthorFiltersRequestDTO.Sort.rating
                 case .pureIndexHigh:
                     return AuthorFiltersRequestDTO.Sort.pureIndexHigh
                 }
@@ -212,7 +212,7 @@ extension ArtistDetailViewModel {
                 identifier: option.identifier,
                 option: option,
                 filterCount: 0,
-                isSelected: option == .earliest ? true : false)
+                isSelected: option == .name ? true : false)
         }
         
         orderOptionModels.send(orderOptions)

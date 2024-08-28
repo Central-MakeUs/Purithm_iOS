@@ -86,7 +86,7 @@ public final class FiltersView: BaseView {
         }
         
         loadingView.snp.makeConstraints { make in
-            make.top.equalTo(chipCollectionView.snp.bottom).offset(10 + 60)
+            make.top.equalTo(chipCollectionView.snp.bottom).offset(10 + 50)
             make.bottom.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview()
         }

@@ -15,7 +15,8 @@ extension Settings {
                 "CODE_SIGN_ENTITLEMENTS": "$(SRCROOT)/Purithm.entitlements",
                 
                 "DEVELOPMENT_TEAM": "7W64WHVKVN",  // 팀 ID를 설정합니다.
-                "CODE_SIGN_STYLE": "Automatic"
+                "CODE_SIGN_STYLE": "Automatic",
+                "OTHER_LDFLAGS": "$(inherited) -ObjC"
             ]
         )
     }

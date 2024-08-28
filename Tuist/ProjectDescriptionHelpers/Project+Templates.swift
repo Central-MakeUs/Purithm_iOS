@@ -75,7 +75,11 @@ extension Project {
         let name = target.rawValue
         return Project(
             name: name,
-            settings: .settings(defaultSettings: .recommended),
+            settings: .settings(
+                base: [
+                    "OTHER_LDFLAGS": "$(inherited) -ObjC"
+                ]
+            ),
             targets: [
                 makeTarget(
                     name: "\(name)",

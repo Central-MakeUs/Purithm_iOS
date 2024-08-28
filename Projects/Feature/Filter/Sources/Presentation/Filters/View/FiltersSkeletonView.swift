@@ -19,7 +19,7 @@ final class FiltersSkeletonView: BaseView {
     override func setup() {
         super.setup()
         
-        self.backgroundColor = .clear
+        self.backgroundColor = .gray100
         
         [firstView, secondView, thirdView, fourthView].forEach {
             $0.isSkeletonable = true
@@ -39,7 +39,7 @@ final class FiltersSkeletonView: BaseView {
         
         views.forEach { view in
             view.snp.makeConstraints { make in
-                make.width.equalToSuperview().dividedBy(2).offset(-30)
+                make.width.equalToSuperview().dividedBy(2).offset(-25)
                 make.height.equalTo(view.snp.width).multipliedBy(1.25)
             }
         }
@@ -52,7 +52,7 @@ final class FiltersSkeletonView: BaseView {
         // Constraints for the second view (top-right)
         secondView.snp.makeConstraints { make in
             make.top.trailing.equalToSuperview().inset(20)
-            make.leading.equalTo(firstView.snp.trailing).offset(20)
+            make.leading.equalTo(firstView.snp.trailing).offset(10)
         }
         
         // Constraints for the third view (bottom-left)
@@ -64,7 +64,7 @@ final class FiltersSkeletonView: BaseView {
         // Constraints for the fourth view (bottom-right)
         fourthView.snp.makeConstraints { make in
             make.top.equalTo(secondView.snp.bottom).offset(20)
-            make.leading.equalTo(thirdView.snp.trailing).offset(20)
+            make.leading.equalTo(thirdView.snp.trailing).offset(10)
         }
     }
 }

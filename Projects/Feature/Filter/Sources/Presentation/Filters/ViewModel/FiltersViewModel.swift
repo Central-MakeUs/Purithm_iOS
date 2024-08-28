@@ -170,6 +170,7 @@ public final class FiltersViewModel {
         input.viewWillAppearEvent
             .first()
             .sink { [weak self] _ in
+//                self?.isFirstLoadingState.send(true)
                 self?.setupFilterChips() // chips setting
                 self?.setupOrderOption() // order option setting
                 

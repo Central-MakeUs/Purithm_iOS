@@ -32,7 +32,9 @@ public final class FiltersView: BaseView {
         $0.colorType = .white(direction: .leading)
     }
     
-    let skeletonView = FiltersSkeletonView()
+    let skeletonView = FiltersSkeletonView().then {
+        $0.isHidden = true
+    }
     
     public override func setupSubviews() {
         self.backgroundColor = .gray100
@@ -54,7 +56,6 @@ public final class FiltersView: BaseView {
         filterCollectionView.backgroundView?.isHidden = true
         
         skeletonView.isSkeletonable = true
-        skeletonView.showAnimatedGradientSkeleton()
     }
     
     public override func setupConstraints() {
@@ -88,7 +89,7 @@ public final class FiltersView: BaseView {
         }
         
         skeletonView.snp.makeConstraints { make in
-            make.top.equalTo(chipCollectionView.snp.bottom).offset(10)
+            make.top.equalTo(chipCollectionView.snp.bottom).offset(10 + 60)
             make.bottom.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview()
         }
@@ -103,7 +104,7 @@ public final class FiltersView: BaseView {
     }
     
     func showSkeletonIfNeeded(with isShow: Bool) {
-        isShow ? skeletonView.showAnimatedGradientSkeleton() : skeletonView.hideSkeleton()
+        isShow ? skeletonView.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: .gray200)) : skeletonView.hideSkeleton()
         skeletonView.isHidden = !isShow
     }
 }

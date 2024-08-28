@@ -93,7 +93,7 @@ public final class FiltersViewController: ViewController<FiltersView> {
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isLoading in
-                self?.contentView.showSkeletonIfNeeded(with: isLoading)
+//                self?.contentView.showSkeletonIfNeeded(with: isLoading)
             }
             .store(in: &cancellables)
     }

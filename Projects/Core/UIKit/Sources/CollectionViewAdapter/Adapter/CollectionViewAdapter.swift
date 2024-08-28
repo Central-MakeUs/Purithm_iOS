@@ -49,6 +49,11 @@ public final class CollectionViewAdapter: NSObject {
         inputSectionSubject.value
     }
     
+    private let reloadFinishSubject = PassthroughSubject<Void, Never>()
+    public var reloadFinishPublisher: AnyPublisher<Void, Never> {
+        reloadFinishSubject.eraseToAnyPublisher()
+    }
+    
     public init(with collectionView: UICollectionView) {
         super.init()
         
@@ -157,6 +162,7 @@ extension CollectionViewAdapter {
         }
         
         self.dataSource.apply(snapshot, animatingDifferences: false)
+        self.reloadFinishSubject.send(())
     }
     
     private func bindDelegateEvent() {

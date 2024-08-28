@@ -117,7 +117,7 @@ extension FiltersViewSectionConverter {
             isHorizontalGroup: true,
             itemSpacing: 12,
             groupSpacing: 30,
-            sectionInset: .with(vertical: 0, horizontal: 20),
+            sectionInset: .with(top: 0, leading: 20, bottom: 20, trailing: 20),
             scrollBehavior: .none
         )
     }

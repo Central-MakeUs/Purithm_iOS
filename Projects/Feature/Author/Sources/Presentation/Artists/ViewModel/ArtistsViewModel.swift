@@ -23,6 +23,11 @@ extension ArtistsViewModel {
             sectionItems.eraseToAnyPublisher()
         }
         
+        fileprivate let sectionEmptySubject = PassthroughSubject<Bool, Never>()
+        var sectionEmptyPublisher: AnyPublisher<Bool, Never> {
+            sectionEmptySubject.eraseToAnyPublisher()
+        }
+        
         fileprivate let presentOrderOptionBottomSheetEventSubject = PassthroughSubject<Void, Never>()
         var presentOrderOptionBottomSheetEvent: AnyPublisher<Void, Never> {
             presentOrderOptionBottomSheetEventSubject.eraseToAnyPublisher()
@@ -57,6 +62,10 @@ final class ArtistsViewModel {
         artistModels.eraseToAnyPublisher()
     }
     
+    private var isFirstLoadingState = CurrentValueSubject<Bool, Never>(false)
+    var firstLoadingStatePublisher: AnyPublisher<Bool, Never> {
+        isFirstLoadingState.eraseToAnyPublisher()
+    }
     
     init(coordinator: ArtistCoordinatorable, usecase: AuthorUsecase) {
         self.coordinator = coordinator
@@ -84,6 +93,7 @@ final class ArtistsViewModel {
                     orderOption: selectedOrderOption
                 )
                 
+                output.sectionEmptySubject.send(artistModels.value.isEmpty)
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellables)
@@ -97,6 +107,7 @@ final class ArtistsViewModel {
                     orderOption: selectedOrderOption
                 )
                 
+                output.sectionEmptySubject.send(artistModels.value.isEmpty)
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellables)
@@ -173,8 +184,14 @@ extension ArtistsViewModel {
 
 extension ArtistsViewModel {
     private func requestArtists() {
+        // 새로 요청시 로딩
+        isFirstLoadingState.send(true)
+        
         usecase?.requestAuthors(with: artistsRequestDTO.value)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                // 로딩 종료
+                self?.isFirstLoadingState.send(false)
+                
                 let convertedResponse = response.map { $0.convertModel() }
                 self?.artistModels.send(convertedResponse)
                 

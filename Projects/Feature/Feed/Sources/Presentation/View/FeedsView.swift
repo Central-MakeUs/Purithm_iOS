@@ -19,15 +19,24 @@ final class FeedsView: BaseView {
         $0.showsVerticalScrollIndicator = false
     }
     
+    let emptyView = PurithmEmptyView()
+    let loadingView = PurithmLoadingView()
+    
     override func setup() {
         super.setup()
         
         self.backgroundColor = .gray100
         self.collectionView.backgroundColor = .gray100
+        
+        emptyView.configure(
+            image: .grFilter,
+            description: "아직 준비중이에요",
+            buttonTitle: nil
+        )
     }
     
     override func setupSubviews() {
-        [headerView, collectionView].forEach {
+        [headerView, collectionView, loadingView].forEach {
             addSubview($0)
         }
     }
@@ -42,6 +51,26 @@ final class FeedsView: BaseView {
             make.top.equalTo(headerView.snp.bottom)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.equalToSuperview()
+        }
+        
+        loadingView.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom)
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview()
+        }
+    }
+    
+    func showEmptyViewIfNeeded(with isEmpty: Bool) {
+        collectionView.backgroundView = emptyView
+        collectionView.backgroundView?.isHidden = !isEmpty
+    }
+    
+    func showLoadingViewInNeeded(with isShow: Bool) {
+        let delay = isShow ? 0.0 : 0.3
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            self?.loadingView.isHidden = !isShow
+            self?.loadingView.showActivityIndicatorIfNeeded(with: isShow)
         }
     }
 }

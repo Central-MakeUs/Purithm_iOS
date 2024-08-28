@@ -32,30 +32,27 @@ public final class FiltersView: BaseView {
         $0.colorType = .white(direction: .leading)
     }
     
-    let skeletonView = FiltersSkeletonView().then {
-        $0.isHidden = true
+    let emptyView = PurithmEmptyView()
+    let loadingView = PurithmLoadingView()
+    
+    public override func setup() {
+        super.setup()
+        
+        emptyView.configure(
+            image: .grFilter,
+            description: "아직 준비중이에요",
+            buttonTitle: nil
+        )
     }
     
     public override func setupSubviews() {
         self.backgroundColor = .gray100
         
-        [headerView, chipCollectionView, filterCollectionView, skeletonView].forEach {
+        [headerView, chipCollectionView, filterCollectionView, loadingView].forEach {
             addSubview($0)
         }
         
         addSubview(chipRightGradientView)
-        
-        let emptyView = PurithmEmptyView()
-        emptyView.configure(
-            image: .grFilter,
-            description: "아직 준비중이에요", 
-            buttonTitle: nil
-        )
-        
-        filterCollectionView.backgroundView = emptyView
-        filterCollectionView.backgroundView?.isHidden = true
-        
-        skeletonView.isSkeletonable = true
     }
     
     public override func setupConstraints() {
@@ -88,7 +85,7 @@ public final class FiltersView: BaseView {
             make.horizontalEdges.equalToSuperview()
         }
         
-        skeletonView.snp.makeConstraints { make in
+        loadingView.snp.makeConstraints { make in
             make.top.equalTo(chipCollectionView.snp.bottom).offset(10 + 60)
             make.bottom.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview()
@@ -100,11 +97,16 @@ public final class FiltersView: BaseView {
     }
     
     func showEmptyViewIfNeeded(with isEmpty: Bool) {
+        filterCollectionView.backgroundView = emptyView
         filterCollectionView.backgroundView?.isHidden = !isEmpty
     }
     
-    func showSkeletonIfNeeded(with isShow: Bool) {
-        isShow ? skeletonView.showAnimatedGradientSkeleton(usingGradient: .init(baseColor: .gray200)) : skeletonView.hideSkeleton()
-        skeletonView.isHidden = !isShow
+    func showLoadingViewInNeeded(with isShow: Bool) {
+        let delay = isShow ? 0.0 : 0.3
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            self?.loadingView.isHidden = !isShow
+            self?.loadingView.showActivityIndicatorIfNeeded(with: isShow)
+        }
     }
 }

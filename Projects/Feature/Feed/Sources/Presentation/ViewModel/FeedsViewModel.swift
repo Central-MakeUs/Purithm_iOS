@@ -22,6 +22,11 @@ extension FeedsViewModel {
             sectionItems.eraseToAnyPublisher()
         }
         
+        fileprivate let sectionEmptySubject = PassthroughSubject<Bool, Never>()
+        var sectionEmptyPublisher: AnyPublisher<Bool, Never> {
+            sectionEmptySubject.eraseToAnyPublisher()
+        }
+        
         fileprivate let presentOrderOptionBottomSheetEventSubject = PassthroughSubject<Void, Never>()
         var presentOrderOptionBottomSheetEvent: AnyPublisher<Void, Never> {
             presentOrderOptionBottomSheetEventSubject.eraseToAnyPublisher()
@@ -68,6 +73,11 @@ final class FeedsViewModel {
         presentBlockCompleteSubject.eraseToAnyPublisher()
     }
     
+    private var isFirstLoadingState = CurrentValueSubject<Bool, Never>(false)
+    var firstLoadingStatePublisher: AnyPublisher<Bool, Never> {
+        isFirstLoadingState.eraseToAnyPublisher()
+    }
+    
     init(coordinator: FeedsCoordinatorable, usecase: FeedUsecase) {
         self.coordinator = coordinator
         self.usecase = usecase
@@ -95,6 +105,7 @@ final class FeedsViewModel {
                     orderOption: selectedOrderOption
                 )
                 
+                output.sectionEmptySubject.send(reviewsModels.value.isEmpty)
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellables)
@@ -109,6 +120,7 @@ final class FeedsViewModel {
                     orderOption: selectedOrderOption
                 )
                 
+                output.sectionEmptySubject.send(reviewsModels.value.isEmpty)
                 output.sectionItems.send(sections)
             }
             .store(in: &cancellables)
@@ -190,8 +202,14 @@ final class FeedsViewModel {
 
 extension FeedsViewModel {
     private func requestFeeds() {
+        // 새로 요청시 로딩
+        isFirstLoadingState.send(true)
+        
         usecase?.reqeustFeeds(with: feedRequestDTO.value)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
+                // 로딩 종료
+                self?.isFirstLoadingState.send(false)
+                
                 let convertedResponse = response.map { $0.convertModel() }
                 let informations = response.map { $0.retriveFilterInformation() }
                 

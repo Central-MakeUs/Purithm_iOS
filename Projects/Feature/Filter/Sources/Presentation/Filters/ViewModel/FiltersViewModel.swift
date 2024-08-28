@@ -170,7 +170,6 @@ public final class FiltersViewModel {
         input.viewWillAppearEvent
             .first()
             .sink { [weak self] _ in
-//                self?.isFirstLoadingState.send(true)
                 self?.setupFilterChips() // chips setting
                 self?.setupOrderOption() // order option setting
                 
@@ -337,6 +336,7 @@ extension FiltersViewModel {
         usecase?.requestFilterList(with: filtersRequestDTO.value)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
                 guard let self else { return }
+                isFirstLoadingState.send(false)
                 
                 let filters = response.filters.map { $0.convertModel() }
                 self.isLast = response.isLast
@@ -356,7 +356,6 @@ extension FiltersViewModel {
                     self.filters = newFilters
                     self.filtersSubject.send(newFilters)
                 }
-                isFirstLoadingState.send(false)
             })
             .store(in: &cancellabels)
     }

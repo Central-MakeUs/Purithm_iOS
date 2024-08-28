@@ -53,6 +53,21 @@ final class ArtistsViewController: ViewController<ArtistsView> {
                 self?.presentMenuBottomSheet()
             }
             .store(in: &cancellables)
+        
+        output.sectionEmptyPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEmpty in
+                self?.contentView.showEmptyViewIfNeeded(with: isEmpty)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.firstLoadingStatePublisher
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                self?.contentView.showLoadingViewInNeeded(with: isLoading)
+            }
+            .store(in: &cancellables)
     }
 }
 

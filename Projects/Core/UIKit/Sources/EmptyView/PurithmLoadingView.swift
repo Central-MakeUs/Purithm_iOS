@@ -8,13 +8,28 @@
 import UIKit
 import CoreCommonKit
 import SnapKit
+import Lottie
 
 public final class PurithmLoadingView: BaseView {
     let container = UIView()
     
-    let activityIndicator = UIActivityIndicatorView(style: .medium).then {
-        $0.color = .blue400
-    }
+    let animationView: LottieAnimationView? = {
+        // 다른 번들 참조
+        let bundleIdentifier = "com.purithm.UIKit.core"
+        guard let coreBundle = Bundle(identifier: bundleIdentifier) else {
+            return nil
+        }
+        
+        // 번들에서 Lottie 애니메이션 로드
+        guard let animation = LottieAnimation.named("indicator_lottie", bundle: coreBundle) else {
+            return nil
+        }
+        
+        let view = LottieAnimationView(animation: animation)
+        view.contentMode = .scaleAspectFit
+        view.loopMode = .loop
+        return view
+    }()
     
     public override func setup() {
         super.setup()
@@ -23,18 +38,18 @@ public final class PurithmLoadingView: BaseView {
     }
     
     public override func setupSubviews() {
-        addSubview(activityIndicator)
-        
+        guard let animationView else { return }
+        addSubview(animationView)
     }
     
     public override func setupConstraints() {
-        activityIndicator.snp.makeConstraints { make in
+        animationView?.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.size.equalTo(60)
+            make.size.equalTo(30)
         }
     }
     
     public func showActivityIndicatorIfNeeded(with isShow: Bool) {
-        isShow ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+        isShow ? animationView?.play() : animationView?.pause()
     }
 }

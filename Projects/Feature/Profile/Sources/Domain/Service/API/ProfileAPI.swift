@@ -26,6 +26,8 @@ enum ProfileAPI {
     
     case prepareUpload
     case uploadImage(urlString: String, imageData: Data)
+    
+    case requestAccountDeactivated
 }
 
 extension ProfileAPI: TargetType {
@@ -63,6 +65,8 @@ extension ProfileAPI: TargetType {
             return "api/users/picks"
         case .fetchFilterAccessHistory:
             return "api/users/history"
+        case .requestAccountDeactivated:
+            return "api/users"
         case .likeFilter(let filterID):
             return "api/filters/\(filterID)/likes"
         case .unlikeFilter(let filterID):
@@ -92,6 +96,8 @@ extension ProfileAPI: TargetType {
             return .get
         case .fetchFilterAccessHistory:
             return .get
+        case .requestAccountDeactivated:
+            return .delete
         case .likeFilter:
             return .post
         case .unlikeFilter:
@@ -127,6 +133,8 @@ extension ProfileAPI: TargetType {
             return .requestPlain
         case .fetchFilterAccessHistory:
             return .requestPlain
+        case .requestAccountDeactivated:
+            return.requestPlain
         case .likeFilter(let filterID):
             let parameters: [String: Any] = ["filterId": filterID]
                return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)

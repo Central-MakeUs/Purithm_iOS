@@ -26,6 +26,8 @@ public protocol ProfileServiceManageable {
     
     func requestPrepareUploadURL() -> AnyPublisher<ResponseWrapper<PrepareUploadResponseDTO>, Error>
     func requestUploadImage(urlString: String, imageData: Data) -> AnyPublisher<Void, Error>
+    
+    func requestAccountDeactivated() -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error>
 }
 
 public final class ProfileService: ProfileServiceManageable {
@@ -93,6 +95,14 @@ public final class ProfileService: ProfileServiceManageable {
         provider.requestPublisher(.fetchFilterAccessHistory)
             .tryMap { response in
                 return try response.map(ResponseWrapper<ProfileFilterAccessHistoryResponseDTO>.self)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestAccountDeactivated() -> AnyPublisher<ResponseWrapper<EmptyResponseType>, Error> {
+        provider.requestPublisher(.requestAccountDeactivated)
+            .tryMap { response in
+                return try response.map(ResponseWrapper<EmptyResponseType>.self)
             }
             .eraseToAnyPublisher()
     }

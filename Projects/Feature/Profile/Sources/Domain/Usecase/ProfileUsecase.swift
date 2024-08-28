@@ -210,6 +210,29 @@ public final class ProfileUsecase {
         .eraseToAnyPublisher()
     }
     
+    public func requestAccountDeactivated() -> AnyPublisher<Void, Error> {
+        return Future { [weak self] promise in
+            guard let self else { return }
+            
+            let publisher = profileService.requestAccountDeactivated()
+                .share()
+                .materialize()
+            
+            publisher.values()
+                .sink { response in
+                    return promise(.success(Void()))
+                }
+                .store(in: &cancellables)
+            
+            publisher.failures()
+                .sink { error in
+                    return promise(.failure(error))
+                }
+                .store(in: &cancellables)
+        }
+        .eraseToAnyPublisher()
+    }
+    
     public func requestLike(with filterID: String) -> AnyPublisher<Bool, Error> {
         return Future { [weak self] promise in
             guard let self else { return }

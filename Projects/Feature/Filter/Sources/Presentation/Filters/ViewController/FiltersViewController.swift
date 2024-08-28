@@ -8,7 +8,7 @@
 import UIKit
 import CoreUIKit
 import CoreCommonKit
-
+import SkeletonView
 import Combine
 
 public final class FiltersViewController: ViewController<FiltersView> {
@@ -86,6 +86,14 @@ public final class FiltersViewController: ViewController<FiltersView> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.presentContentBottomSheet()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.firstLoadingStatePublisher
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                self?.contentView.showSkeletonIfNeeded(with: isLoading)
             }
             .store(in: &cancellables)
     }

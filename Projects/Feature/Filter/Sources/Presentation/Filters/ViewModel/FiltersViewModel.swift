@@ -82,6 +82,10 @@ public final class FiltersViewModel {
     private var filters: [FilterItemModel] = []
     private var filtersSubject = CurrentValueSubject<[FilterItemModel], Never>([])
     private var isLast: Bool = true
+    private var isFirstLoadingState = CurrentValueSubject<Bool, Never>(false)
+    var firstLoadingStatePublisher: AnyPublisher<Bool, Never> {
+        isFirstLoadingState.eraseToAnyPublisher()
+    }
     
     public init(coordinator: FiltersCoordinatorable, usecase: FiltersUseCase) {
         self.coordinator = coordinator
@@ -324,6 +328,11 @@ extension FiltersViewModel {
 //MARK: - Filter List Request
 extension FiltersViewModel {
     private func requestFilters() {
+        if filtersRequestDTO.value.page == 0 {
+            // 첫 페이지일때만 로딩
+            isFirstLoadingState.send(true)
+        }
+        
         usecase?.requestFilterList(with: filtersRequestDTO.value)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] response in
                 guard let self else { return }
@@ -346,6 +355,7 @@ extension FiltersViewModel {
                     self.filters = newFilters
                     self.filtersSubject.send(newFilters)
                 }
+                isFirstLoadingState.send(false)
             })
             .store(in: &cancellabels)
     }

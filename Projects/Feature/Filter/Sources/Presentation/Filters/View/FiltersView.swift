@@ -9,6 +9,7 @@ import UIKit
 import CoreUIKit
 import CoreCommonKit
 import SnapKit
+import SkeletonView
 
 extension FiltersView {
     enum Constants {
@@ -31,10 +32,12 @@ public final class FiltersView: BaseView {
         $0.colorType = .white(direction: .leading)
     }
     
+    let skeletonView = FiltersSkeletonView()
+    
     public override func setupSubviews() {
         self.backgroundColor = .gray100
         
-        [headerView, chipCollectionView, filterCollectionView].forEach {
+        [headerView, chipCollectionView, filterCollectionView, skeletonView].forEach {
             addSubview($0)
         }
         
@@ -49,6 +52,9 @@ public final class FiltersView: BaseView {
         
         filterCollectionView.backgroundView = emptyView
         filterCollectionView.backgroundView?.isHidden = true
+        
+        skeletonView.isSkeletonable = true
+        skeletonView.showAnimatedGradientSkeleton()
     }
     
     public override func setupConstraints() {
@@ -80,6 +86,12 @@ public final class FiltersView: BaseView {
             make.bottom.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview()
         }
+        
+        skeletonView.snp.makeConstraints { make in
+            make.top.equalTo(chipCollectionView.snp.bottom).offset(10)
+            make.bottom.equalTo(safeAreaLayoutGuide)
+            make.horizontalEdges.equalToSuperview()
+        }
     }
     
     func configure(with type: PurithmHeaderType) {
@@ -88,5 +100,10 @@ public final class FiltersView: BaseView {
     
     func showEmptyViewIfNeeded(with isEmpty: Bool) {
         filterCollectionView.backgroundView?.isHidden = !isEmpty
+    }
+    
+    func showSkeletonIfNeeded(with isShow: Bool) {
+        isShow ? skeletonView.showAnimatedGradientSkeleton() : skeletonView.hideSkeleton()
+        skeletonView.isHidden = !isShow
     }
 }

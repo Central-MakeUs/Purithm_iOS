@@ -51,7 +51,9 @@ final class ReviewTermsItemView: BaseView, ActionEventEmitable {
     
     let tapGesture = UITapGestureRecognizer()
     let imageView = UIImageView()
-    let titleLabel = PurithmLabel(typography: Constants.titleTypo)
+    let titleLabel = PurithmLabel(typography: Constants.titleTypo).then {
+        $0.numberOfLines = 0
+    }
     
     override func setup() {
         super.setup()

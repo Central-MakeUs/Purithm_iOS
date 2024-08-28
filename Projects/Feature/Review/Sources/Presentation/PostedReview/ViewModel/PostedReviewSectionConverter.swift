@@ -24,7 +24,8 @@ extension PostedReviewSectionConverter {
         let component = FeedDetailImageContainerComponent(
             identifier: review.identifier,
             review: review, 
-            isEnableDelete: true
+            isEnableDelete: true,
+            isShowReport: false
         )
         
         let section = SectionModel(

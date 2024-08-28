@@ -29,17 +29,20 @@ public struct FeedDetailImageContainerComponent: Component {
     let review: FeedReviewModel
     let filterInformation: (name: String, thumbnail: String)?
     let isEnableDelete: Bool
+    let isShowReport: Bool
     
     public init(
         identifier: String,
         review: FeedReviewModel,
         filterInformation: (name: String, thumbnail: String)? = nil,
-        isEnableDelete: Bool
+        isEnableDelete: Bool,
+        isShowReport: Bool = true
     ) {
         self.identifier = identifier
         self.review = review
         self.filterInformation = filterInformation
         self.isEnableDelete = isEnableDelete
+        self.isShowReport = isShowReport
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -51,6 +54,7 @@ public struct FeedDetailImageContainerComponent: Component {
         hasher.combine(filterInformation?.name)
         hasher.combine(filterInformation?.thumbnail)
         hasher.combine(isEnableDelete)
+        hasher.combine(isShowReport)
     }
     
     public func prepareForReuse(content: FilterDetailImageContainerView) {
@@ -65,7 +69,8 @@ extension FeedDetailImageContainerComponent {
         content.configure(
             with: context.review,
             information: context.filterInformation, 
-            isEnableDelete: context.isEnableDelete
+            isEnableDelete: context.isEnableDelete, 
+            isShowReport: context.isShowReport
         )
         
         content.blurButton.tap
@@ -93,14 +98,20 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
     public var actionEventEmitter = PassthroughSubject<ActionEventItem, Never>()
     
     var imageContainer: ImageContainerPageViewController?
-    let profileView = PurithmHorizontalProfileView()
-    let contentLabel = PurithmLabel(typography: Constants.contentTypo).then {
-        $0.numberOfLines = 0
-    }
     
-    let moreContainer = UIView()
+    let profileContainer = UIStackView().then {
+        $0.axis = .horizontal
+        $0.distribution = .fillProportionally
+        $0.alignment = .center
+        $0.spacing = 16
+    }
+    let profileView = PurithmHorizontalProfileView()
     let moreButton = UIButton().then {
         $0.setImage(.icMenu.withTintColor(.gray300), for: .normal)
+    }
+    
+    let contentLabel = PurithmLabel(typography: Constants.contentTypo).then {
+        $0.numberOfLines = 0
     }
     
     let blurButton = PurithmBlurButton(size: .normal).then {
@@ -137,13 +148,13 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         guard let imageContainer = imageContainer else { return }
         
         addSubview(imageContainer.view)
-        addSubview(profileView)
+        addSubview(profileContainer)
         addSubview(contentLabel)
-        addSubview(moreContainer)
         addSubview(blurButton)
         addSubview(bottomContainer)
         
-        moreContainer.addSubview(moreButton)
+        profileContainer.addArrangedSubview(profileView)
+        profileContainer.addArrangedSubview(moreButton)
         
         bottomContainer.addArrangedSubview(deleteButton)
     }
@@ -163,6 +174,14 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
         }
         
         profileView.snp.makeConstraints { make in
+            make.height.equalTo(40)
+        }
+        
+        moreButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
+        
+        profileContainer.snp.makeConstraints { make in
             make.top.equalTo(imageContainer.view.snp.bottom).offset(10)
             make.horizontalEdges.equalToSuperview()
         }
@@ -172,19 +191,8 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
             make.horizontalEdges.equalToSuperview()
         }
         
-        moreContainer.snp.makeConstraints { make in
-            make.top.equalTo(contentLabel.snp.bottom)
-            make.horizontalEdges.equalToSuperview()
-        }
-        
-        moreButton.snp.makeConstraints { make in
-            make.size.equalTo(24)
-            make.verticalEdges.equalToSuperview()
-            make.trailing.equalToSuperview()
-        }
-        
         bottomContainer.snp.makeConstraints { make in
-            make.top.equalTo(moreContainer.snp.bottom).offset(20)
+            make.top.equalTo(contentLabel.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview()
         }
@@ -198,7 +206,8 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
     public func configure(
         with review: FeedReviewModel,
         information: (name: String, thumbnail: String)?,
-        isEnableDelete: Bool
+        isEnableDelete: Bool,
+        isShowReport: Bool
     ) {
         imageContainer = ImageContainerPageViewController(imageURLs: review.imageURLStrings)
         contentLabel.text = review.content
@@ -219,12 +228,14 @@ public final class FilterDetailImageContainerView: BaseView, ActionEventEmitable
             bottomContainer.isHidden = true
             deleteButton.isHidden = true
             
-            moreContainer.snp.remakeConstraints { make in
-                make.top.equalTo(contentLabel.snp.bottom)
+            contentLabel.snp.remakeConstraints { make in
+                make.top.equalTo(profileView.snp.bottom).offset(10)
                 make.horizontalEdges.equalToSuperview()
                 make.bottom.equalToSuperview()
             }
         }
+        
+        moreButton.isHidden = !isShowReport
         
         guard let info = information else {
             blurButton.isHidden = true

@@ -39,7 +39,8 @@ extension ProfileMyReviewsSectionConverter {
                 identifier: review.identifier,
                 review: review,
                 filterInformation: info,
-                isEnableDelete: true
+                isEnableDelete: true,
+                isShowReport: false
             )
         }
         

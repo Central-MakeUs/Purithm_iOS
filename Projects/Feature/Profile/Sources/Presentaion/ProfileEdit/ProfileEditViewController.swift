@@ -79,6 +79,14 @@ final class ProfileEditViewController: ViewController<ProfileEditView> {
                 self?.navigationController?.popViewController(animated: true)
             }
             .store(in: &cancellables)
+        
+        viewModel.errorPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+                let toast = PurithmToast(with: .top(message: "낙네임을 다시 입력해주세요"))
+                toast.show(animated: true)
+            }
+            .store(in: &cancellables)
     }
 }
 

@@ -67,6 +67,11 @@ final class ProfileEditViewModel {
         orderOptionModels.value
     }
     
+    private let errorSubject = PassthroughSubject<Void, Never>()
+    var errorPublisher: AnyPublisher<Void, Never> {
+        errorSubject.eraseToAnyPublisher()
+    }
+    
     func transform(input: Input) -> Output {
         let output = Output()
         
@@ -245,6 +250,12 @@ extension ProfileEditViewModel {
             name: willEditName,
             profile: willUploadImageURLString
         )
+        
+        guard willEditName.count <= 12 else {
+            errorSubject.send(())
+            return
+        }
+        
         usecase?.requestEditMyInfomation(parameter: parameter)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] _ in
                 self?.editCompletSubject.send(())

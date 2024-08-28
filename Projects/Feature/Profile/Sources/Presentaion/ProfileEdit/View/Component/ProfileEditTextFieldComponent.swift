@@ -144,7 +144,7 @@ final class ProfileEditTextFieldView: BaseView, ActionEventEmitable {
     }
     
     func updateTextCount(with count: Int) {
-        let countTrigger = count >= 1 && count <= 20
+        let countTrigger = count >= 1 && count <= 12
         
         countLabel.text = "\(count)"
         countLabel.textColor = countTrigger ? .blue400 : .red500
@@ -162,8 +162,8 @@ final class ProfileEditTextFieldView: BaseView, ActionEventEmitable {
             return
         }
         
-        let countTrigger = count >= 1 && count <= 20
-        descriptionLabel.text = countTrigger ? "국문 또는 영문으로 띄어쓰기 없이 작성해주세요." : "최소 1자 이상, 최대 20자 이하로 입력해주세요."
+        let countTrigger = count >= 1 && count <= 12
+        descriptionLabel.text = countTrigger ? "국문 또는 영문으로 띄어쓰기 없이 작성해주세요." : "최소 1자 이상, 최대 12자 이하로 입력해주세요."
         descriptionLabel.textColor = countTrigger ? .gray300 : .red500
         editTextField.layer.borderColor = countTrigger ? UIColor.blue400.cgColor : UIColor.red500.cgColor
     }

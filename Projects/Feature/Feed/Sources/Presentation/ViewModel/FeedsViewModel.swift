@@ -31,6 +31,11 @@ extension FeedsViewModel {
         var presentOrderOptionBottomSheetEvent: AnyPublisher<Void, Never> {
             presentOrderOptionBottomSheetEventSubject.eraseToAnyPublisher()
         }
+        
+        fileprivate let presentFilterRockBottomSheetSubject = PassthroughSubject<Void, Never>()
+        var presentFilterRockBottomSheetEvent: AnyPublisher<Void, Never> {
+            presentFilterRockBottomSheetSubject.eraseToAnyPublisher()
+        }
     }
 }
 
@@ -183,7 +188,11 @@ final class FeedsViewModel {
                 case _ as FeedOrderOptionAction:
                     output.presentOrderOptionBottomSheetEventSubject.send(Void())
                 case let action as FeedToDetailMoveAction:
-                    self.coordinator?.pushFilterDetail(with: action.identifier)
+                    if action.canAccess {
+                        self.coordinator?.pushFilterDetail(with: action.identifier)
+                    } else {
+                        output.presentFilterRockBottomSheetSubject.send(Void())
+                    }
                 case let action as FeedReportAction:
                     self.selectedReportReviewID = action.identifier
                     self.reportEventSubject.send(())

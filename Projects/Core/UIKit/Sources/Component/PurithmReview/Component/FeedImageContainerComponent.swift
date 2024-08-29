@@ -14,6 +14,7 @@ import Kingfisher
 
 public struct FeedToDetailMoveAction: ActionEventItem {
     public let identifier: String
+    public let canAccess: Bool
 }
 
 public struct ReviewRemoveButtonAction: ActionEventItem {
@@ -75,7 +76,10 @@ extension FeedDetailImageContainerComponent {
         
         content.blurButton.tap
             .sink { [weak content] _ in
-                content?.actionEventEmitter.send(FeedToDetailMoveAction(identifier: context.identifier))
+                content?.actionEventEmitter.send(FeedToDetailMoveAction(
+                    identifier: context.identifier,
+                    canAccess: context.review.canAccess)
+                )
             }
             .store(in: &cancellable)
         

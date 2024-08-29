@@ -17,6 +17,7 @@ public struct FeedReviewModel {
     public let satisfactionLevel: SatisfactionLevel
     public let content: String
     public let feedID: String
+    public let canAccess: Bool
     
     public init(
         identifier: String,
@@ -26,7 +27,8 @@ public struct FeedReviewModel {
         satisfactionValue: Int,
         satisfactionLevel: SatisfactionLevel,
         content: String,
-        feedID: String = ""
+        feedID: String = "",
+        canAccess: Bool = true
     ) {
         self.identifier = identifier
         self.imageURLStrings = imageURLStrings
@@ -36,5 +38,6 @@ public struct FeedReviewModel {
         self.satisfactionLevel = satisfactionLevel
         self.content = content
         self.feedID = feedID
+        self.canAccess = canAccess
     }
 }

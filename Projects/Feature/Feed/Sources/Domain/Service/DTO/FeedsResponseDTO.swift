@@ -20,6 +20,7 @@ public struct FeedsResponseDTO: Codable {
     let pictures: [String]
     let id: Int
     let filterThumbnail: String
+    let canAccess: Bool
     
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -33,6 +34,7 @@ public struct FeedsResponseDTO: Codable {
         self.pictures = try container.decode([String].self, forKey: .pictures)
         self.id = try container.decode(Int.self, forKey: .id)
         self.filterThumbnail = try container.decode(String.self, forKey: .filterThumbnail)
+        self.canAccess = try container.decode(Bool.self, forKey: .canAccess)
     }
     
     func retriveFilterInformation() -> (name: String, thumbnail: String) {
@@ -48,7 +50,8 @@ public struct FeedsResponseDTO: Codable {
             satisfactionValue: pureDegree,
             satisfactionLevel: SatisfactionLevel.calculateSatisfactionLevel(with: pureDegree),
             content: content,
-            feedID: "\(id)"
+            feedID: "\(id)",
+            canAccess: canAccess
         )
     }
 }

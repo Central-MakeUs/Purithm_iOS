@@ -100,15 +100,15 @@ public enum SatisfactionLevel: Int, CaseIterable {
         switch averageValue {
         case 0...19:
             return SatisfactionLevel.none
-        case 20...30:
+        case 20...39:
             return SatisfactionLevel.low
-        case 31...50:
+        case 40...59:
             return SatisfactionLevel.medium
-        case 51...70:
+        case 60...79:
             return SatisfactionLevel.mediumHigh
-        case 71...90:
+        case 80...99:
             return SatisfactionLevel.high
-        case 91...100:
+        case 100:
             return SatisfactionLevel.veryHigh
         default:
             return SatisfactionLevel.none

@@ -29,22 +29,35 @@ extension ReviewSliderComponent {
     typealias ContentType = ReviewSliderView
     
     func render(content: ContentType, context: Self, cancellable: inout Set<AnyCancellable>) {
-        
-        let step: Float = 20
-
         let sliderValue = content.sliderView.controlEventPublisher(for: .valueChanged)
-            .map { content.sliderView.value }
+            .map { Int(content.sliderView.value) }
             .map { value -> Int in
-                return Int(round(value / step) * step)
+                switch value {
+                case 0...19:
+                    return 0
+                case 20...39:
+                    return 20
+                case 40...59:
+                    return 40
+                case 60...79:
+                    return 60
+                case 80...99:
+                    return 80
+                case 100:
+                    return 100
+                default:
+                    return 0
+                }
             }
-            .filter { $0 != Int(content.sliderView.value) }
             .removeDuplicates(by: { $0 == $1 })
         
         sliderValue
             .sink { [weak content] value in
+                let calculatedValue = SatisfactionLevel.calculateSatisfactionLevel(with: Int(value)).rawValue
+                
                 content?.actionEventEmitter.send(ReviewSliderAction(
                     identifier: context.identifier,
-                    intensity: CGFloat(value)
+                    intensity: CGFloat(calculatedValue)
                 ))
             }
             .store(in: &cancellable)
@@ -137,3 +150,12 @@ extension ReviewSliderView {
         
     }
 }
+//
+//sliderValue
+//    .sink { [weak content] value in
+//        content?.actionEventEmitter.send(ReviewSliderAction(
+//            identifier: context.identifier,
+//            intensity: CGFloat(value)
+//        ))
+//    }
+//    .store(in: &cancellable)

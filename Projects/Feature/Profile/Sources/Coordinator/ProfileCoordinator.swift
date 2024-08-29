@@ -59,6 +59,7 @@ public final class ProfileCoordinator: ProfileCoordinatorable {
             coordinator: self,
             usecase: usecase)
         let profileEditViewController = ProfileEditViewController(viewModel: viewModel)
+        profileEditViewController.hidesBottomBarWhenPushed = true
         
         self.navigationController.pushViewController(profileEditViewController, animated: true)
     }

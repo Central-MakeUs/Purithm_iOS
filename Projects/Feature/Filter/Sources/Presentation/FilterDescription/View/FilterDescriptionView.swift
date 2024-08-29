@@ -99,6 +99,6 @@ final class FilterDescriptionView: BaseView {
             thirdDescriptionView.configure(with: thirdContent)
         }
         
-        tagLabel.text = descriptionModel.tags.map { "#\($0)" }.joined(separator: ", ")
+        tagLabel.text = descriptionModel.tags.map { "#\($0)" }.joined(separator: " ")
     }
 }

@@ -80,7 +80,7 @@ final class ProfileMenuView: BaseView, ActionEventEmitable {
         super.setup()
         
         self.backgroundColor = .gray100
-        rightContainer.addGestureRecognizer(menuSelectTapGesture)
+        self.addGestureRecognizer(menuSelectTapGesture)
     }
     
     override func setupSubviews() {

@@ -51,6 +51,9 @@ final class ProfileEditViewModel {
     private var willEditName: String = ""
     private var willUploadImageURLString: String = ""
     private var isUploadState = CurrentValueSubject<Bool, Never>(false)
+    private var validWillEditNameCountTrigger: Bool {
+        willEditName.count >= 1 && willEditName.count <= 12
+    }
     
     private let uploadInProgressErrorSubject = PassthroughSubject<Void, Never>()
     var uploadInProgressErrorPublisher: AnyPublisher<Void, Never> {
@@ -149,7 +152,7 @@ final class ProfileEditViewModel {
         if isUploadState.value {
             uploadInProgressErrorSubject.send(())
         } else {
-            if willEditName.count >= 4 {
+            if validWillEditNameCountTrigger {
                 requestEditInfomation()
             }
         }
@@ -247,11 +250,11 @@ extension ProfileEditViewModel {
     
     private func requestEditInfomation() {
         let parameter = ProfileEditRequestDTO(
-            name: willEditName,
+            name: willEditName.replacingOccurrences(of: " ", with: ""),
             profile: willUploadImageURLString
         )
         
-        guard willEditName.count <= 12 else {
+        guard validWillEditNameCountTrigger else {
             errorSubject.send(())
             return
         }

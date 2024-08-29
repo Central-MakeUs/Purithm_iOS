@@ -115,7 +115,8 @@ extension FilterReviewsViewController {
         bottomSheetVC.contentModel = PurithmContentModel(
             contentType: .satisfaction,
             title: "필터 만족도",
-            description: "퓨어지수는 퓨리즘만의 별점 시스템입니다. 구매 만족도가 높을수록 100%에 가까워요."
+            description: "필터 만족도는 필터를 사용한 사람들의 만족도입니다.\n만족도가 높을수록 100%에 가까워요."
+            
         )
         
         if let sheet = bottomSheetVC.sheetPresentationController {
